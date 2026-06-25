@@ -490,60 +490,35 @@
 
     if (!mainEls.length) return;
 
-    document.body.classList.add("tool-layout-ready", "tool-page-side-rail");
+    document.body.classList.add("tool-layout-ready", "tool-page-wide");
 
-    const grid = document.createElement("div");
-    grid.className = "tool-layout-grid";
+    const shell = document.createElement("div");
+    shell.className = "tool-layout-grid";
 
-    const rail = document.createElement("aside");
-    rail.className = "tool-side-rail";
-    rail.setAttribute("aria-label", "Tool controls and info");
+    const topChrome = document.createElement("div");
+    topChrome.className = "tool-top-chrome";
 
-    const topBar = document.createElement("div");
-    topBar.className = "tool-rail-top";
+    const chromeRow = document.createElement("div");
+    chromeRow.className = "tool-chrome-row";
 
     const hero = chromeEls.find((e) => e.classList.contains("page-hero"));
     const statusBar = chromeEls.find((e) => e.classList.contains("status-bar"));
 
     if (hero) {
-      hero.classList.add("tool-rail-hero");
-      hero.querySelector("p")?.classList.add("tool-rail-desc");
-      topBar.appendChild(hero);
+      hero.classList.add("tool-chrome-hero");
+      hero.querySelector("p")?.classList.add("tool-chrome-desc");
+      chromeRow.appendChild(hero);
     }
 
     if (statusBar) {
-      statusBar.classList.add("tool-rail-status");
-      const tools = statusBar.querySelector(".status-bar-tools");
-      if (tools) {
-        const statusText = document.createElement("div");
-        statusText.className = "tool-rail-status-text";
-        [...statusBar.childNodes].forEach((node) => {
-          if (node !== tools) statusText.appendChild(node);
-        });
-        statusBar.appendChild(statusText);
-      }
-      topBar.appendChild(statusBar);
+      statusBar.classList.add("tool-chrome-status");
+      chromeRow.appendChild(statusBar);
     }
 
-    rail.appendChild(topBar);
+    topChrome.appendChild(chromeRow);
 
-    const more = document.createElement("details");
-    more.className = "tool-rail-more";
-    more.open = window.matchMedia("(min-width: 1024px)").matches;
-    const moreSummary = document.createElement("summary");
-    moreSummary.textContent = "Options & info";
-    more.appendChild(moreSummary);
-
-    const panel = document.createElement("div");
-    panel.className = "tool-rail-panel";
-
-    if (statusBar) {
-      const tools = statusBar.querySelector(".status-bar-tools");
-      if (tools) {
-        tools.classList.add("tool-rail-tools");
-        panel.appendChild(tools);
-      }
-    }
+    const metaRow = document.createElement("div");
+    metaRow.className = "tool-chrome-meta";
 
     chromeEls.forEach((el) => {
       if (el === hero || el === statusBar) return;
@@ -552,28 +527,22 @@
         return;
       }
       if (el.classList.contains("tool-summary-strip") || (el.id && el.id.endsWith("Summary"))) {
-        el.classList.add("tool-rail-summary");
+        el.classList.add("tool-chrome-summary");
       }
-      panel.appendChild(el);
+      metaRow.appendChild(el);
     });
 
-    more.appendChild(panel);
-    rail.appendChild(more);
+    if (metaRow.children.length) topChrome.appendChild(metaRow);
 
     const mainCol = document.createElement("div");
     mainCol.className = "tool-main-column";
     mainEls.forEach((el) => mainCol.appendChild(el));
 
-    grid.appendChild(rail);
-    grid.appendChild(mainCol);
+    shell.appendChild(topChrome);
+    shell.appendChild(mainCol);
 
-    if (header) header.insertAdjacentElement("afterend", grid);
-    else document.body.insertBefore(grid, document.querySelector(".site-footer"));
-
-    const mq = window.matchMedia("(min-width: 1024px)");
-    mq.addEventListener("change", (ev) => {
-      more.open = ev.matches;
-    });
+    if (header) header.insertAdjacentElement("afterend", shell);
+    else document.body.insertBefore(shell, document.querySelector(".site-footer"));
   }
 
   function unwrapLegacyLayout() {
