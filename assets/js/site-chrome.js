@@ -302,6 +302,104 @@
     });
   }
 
+  function isToolChromeEl(el) {
+    if (!el || el.nodeType !== 1) return false;
+    const cls = el.classList;
+    if (
+      cls.contains("page-hero") ||
+      cls.contains("tool-subnav") ||
+      cls.contains("economy-subnav") ||
+      cls.contains("disclaimer") ||
+      cls.contains("disclaimer-collapsible") ||
+      cls.contains("status-bar") ||
+      cls.contains("tool-summary-strip") ||
+      cls.contains("tool-tip-bar") ||
+      cls.contains("tool-tip-collapsible")
+    ) {
+      return true;
+    }
+    return Boolean(el.id && el.id.endsWith("Summary"));
+  }
+
+  function convertDisclaimerToDetails(node) {
+    if (!node || node.dataset.compacted) return;
+    node.dataset.compacted = "1";
+    const details = document.createElement("details");
+    details.className = "disclaimer disclaimer-collapsible";
+    const summary = document.createElement("summary");
+    summary.innerHTML =
+      "<strong>Disclaimer</strong> — estimates only; verify in-game · Not affiliated with Jagex";
+    const body = document.createElement("div");
+    body.className = "disclaimer-body";
+    body.innerHTML = node.innerHTML.replace(/^<strong>Disclaimer:<\/strong>\s*/i, "");
+    details.appendChild(summary);
+    details.appendChild(body);
+    node.replaceWith(details);
+  }
+
+  function compactToolTip(tip) {
+    if (!tip || tip.dataset.compacted) return;
+    tip.dataset.compacted = "1";
+    const key = "graardor-tip-" + currentPath();
+    if (localStorage.getItem(key) === "1") {
+      tip.remove();
+      return;
+    }
+    const details = document.createElement("details");
+    details.className = "tool-tip-bar tool-tip-collapsible";
+    const summary = document.createElement("summary");
+    summary.textContent = "Tips for this page";
+    const body = document.createElement("div");
+    body.className = "tool-tip-body";
+    body.innerHTML =
+      tip.innerHTML +
+      ' <button type="button" class="tool-tip-dismiss">Don\u2019t show again</button>';
+    details.appendChild(summary);
+    details.appendChild(body);
+    tip.replaceWith(details);
+    details.querySelector(".tool-tip-dismiss")?.addEventListener("click", (e) => {
+      e.preventDefault();
+      localStorage.setItem(key, "1");
+      details.remove();
+    });
+  }
+
+  function mergeHeroAndStatus(chrome) {
+    const hero = chrome.querySelector(".page-hero");
+    const status = chrome.querySelector(".status-bar");
+    if (!hero) return;
+
+    hero.classList.add("page-hero--compact");
+    hero.querySelector("p")?.classList.add("page-hero-sub");
+
+    if (!status) return;
+
+    const head = document.createElement("div");
+    head.className = "tool-page-head";
+    hero.parentNode.insertBefore(head, hero);
+    head.appendChild(hero);
+    head.appendChild(status);
+  }
+
+  function compactToolChrome() {
+    const path = currentPath();
+    if (!path.startsWith("/tools")) return;
+
+    document.querySelectorAll("p.disclaimer").forEach(convertDisclaimerToDetails);
+    document.querySelectorAll(".tool-tip-bar:not(.tool-tip-collapsible)").forEach(compactToolTip);
+
+    const chromeEls = [...document.body.children].filter(isToolChromeEl);
+    if (!chromeEls.length) return;
+
+    const chrome = document.createElement("div");
+    chrome.className = "tool-page-chrome";
+    chromeEls[0].parentNode.insertBefore(chrome, chromeEls[0]);
+    chromeEls.forEach((el) => chrome.appendChild(el));
+
+    mergeHeroAndStatus(chrome);
+    document.body.classList.add("tool-page-compact");
+  }
+
   function unwrapLegacyLayout() {
     const layout = document.querySelector(".tool-layout");
     if (!layout) return;
@@ -322,6 +420,7 @@
     injectNavDropdowns();
     injectBreadcrumbs();
     injectSubnav();
+    compactToolChrome();
     injectProLink();
     injectThemeToggle();
     injectKofiStrip();
