@@ -312,7 +312,7 @@ body.site .content-shell {
 body.site .page-hero {
   max-width: var(--g-max);
   margin: 0 auto;
-  padding: 1.75rem 1.25rem 1rem;
+  padding: 1rem 1.25rem 0.5rem;
   background: transparent;
   border: none;
 }
@@ -340,9 +340,9 @@ body.site .page-hero p {
 }
 
 body.site .breadcrumbs {
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   color: var(--g-muted);
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
 }
 
 body.site .breadcrumbs a {
@@ -371,7 +371,7 @@ body.site .economy-subnav a {
   color: var(--g-muted);
   font-size: 0.8125rem;
   font-weight: 500;
-  padding: 0.65rem 0.85rem;
+  padding: 0.45rem 0.75rem;
   border: none;
   border-bottom: 2px solid transparent;
   border-radius: 0;
@@ -1023,5 +1023,216 @@ body.site .skip-link {
 @media (max-width: 480px) {
   .stat-row {
     grid-template-columns: 1fr;
+  }
+}
+
+/* ── Compact tool page chrome (site-chrome.js wraps /tools/*) ── */
+body.site.tool-page-compact .tool-page-chrome {
+  max-width: var(--g-max);
+  margin: 0 auto;
+  padding: 0.35rem 1.25rem 0;
+}
+
+body.site.tool-page-compact .tool-page-chrome:has(.tool-subnav) .breadcrumbs {
+  display: none;
+}
+
+body.site.tool-page-compact .tool-page-chrome .tool-subnav,
+body.site.tool-page-compact .tool-page-chrome .economy-subnav {
+  max-width: none;
+  margin: 0 0 0.3rem;
+  padding: 0;
+}
+
+body.site.tool-page-compact .tool-page-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  margin-bottom: 0.3rem;
+}
+
+body.site.tool-page-compact .page-hero--compact {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+body.site.tool-page-compact .page-hero--compact h1 {
+  font-size: 1.0625rem;
+  margin: 0;
+  line-height: 1.3;
+}
+
+body.site.tool-page-compact .page-hero--compact .page-hero-sub {
+  display: none;
+}
+
+body.site.tool-page-compact .tool-page-head .status-bar {
+  max-width: none;
+  margin: 0;
+  padding: 0.3rem 0.55rem;
+  flex: 1 1 18rem;
+  min-width: 0;
+  font-size: 0.75rem;
+  line-height: 1.35;
+  gap: 0.35rem 0.65rem;
+}
+
+body.site.tool-page-compact .tool-page-head .status-bar-tools {
+  gap: 0.35rem 0.5rem;
+}
+
+body.site.tool-page-compact .tool-page-head .status-bar-tools input[type="number"] {
+  width: 4.5rem;
+  padding: 0.2rem 0.35rem;
+  font-size: 0.75rem;
+}
+
+body.site.tool-page-compact .tool-page-head .status-bar-tools label,
+body.site.tool-page-compact .tool-page-head .status-bar-tools button {
+  font-size: 0.72rem;
+}
+
+body.site.tool-page-compact .tool-page-head .status-bar-tools button {
+  padding: 0.25rem 0.5rem;
+}
+
+body.site.tool-page-compact .disclaimer-collapsible {
+  max-width: none;
+  margin: 0 0 0.3rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  font-size: 0.72rem;
+  color: var(--g-muted);
+}
+
+body.site.tool-page-compact .disclaimer-collapsible summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.15rem 0;
+  color: var(--g-muted);
+  user-select: none;
+}
+
+body.site.tool-page-compact .disclaimer-collapsible summary::-webkit-details-marker {
+  display: none;
+}
+
+body.site.tool-page-compact .disclaimer-collapsible summary::before {
+  content: "▸ ";
+  font-size: 0.65rem;
+  color: var(--g-red);
+}
+
+body.site.tool-page-compact .disclaimer-collapsible[open] summary::before {
+  content: "▾ ";
+}
+
+body.site.tool-page-compact .disclaimer-collapsible .disclaimer-body {
+  margin-top: 0.25rem;
+  padding: 0.35rem 0.65rem;
+  background: var(--g-disclaimer-bg);
+  border: 1px solid var(--g-disclaimer-border);
+  border-left: 2px solid var(--g-red);
+  border-radius: var(--g-radius-sm);
+  line-height: 1.45;
+}
+
+body.site.tool-page-compact .tool-page-chrome > .status-bar {
+  max-width: none;
+  margin: 0 0 0.3rem;
+  padding: 0.3rem 0.55rem;
+  font-size: 0.75rem;
+  gap: 0.35rem 0.65rem;
+}
+
+body.site.tool-page-compact .tool-page-chrome .tool-summary-strip {
+  max-width: none;
+  margin: 0 0 0.3rem;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.75rem;
+}
+
+body.site.tool-page-compact .tool-page-chrome .tool-summary-inner {
+  gap: 0.35rem 0.75rem;
+}
+
+body.site.tool-page-compact .tool-page-chrome .tool-summary-value {
+  font-size: 0.9375rem;
+}
+
+body.site.tool-page-compact .tool-tip-collapsible {
+  max-width: none;
+  margin: 0 0 0.3rem;
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-size: 0.72rem;
+  color: var(--g-muted);
+}
+
+body.site.tool-page-compact .tool-tip-collapsible summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.15rem 0;
+  color: var(--g-muted);
+}
+
+body.site.tool-page-compact .tool-tip-collapsible summary::-webkit-details-marker {
+  display: none;
+}
+
+body.site.tool-page-compact .tool-tip-collapsible .tool-tip-body {
+  margin-top: 0.2rem;
+  padding: 0.3rem 0.55rem;
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: var(--g-radius-sm);
+  line-height: 1.4;
+}
+
+body.site.tool-page-compact .tool-tip-dismiss {
+  margin-left: 0.35rem;
+  padding: 0.1rem 0.4rem;
+  font-size: 0.68rem;
+  vertical-align: baseline;
+}
+
+body.site.tool-page-compact .content-shell {
+  padding-top: 0.35rem;
+}
+
+body.site.tool-page-compact .tool-page-main main,
+body.site.tool-page-compact .page-main main {
+  padding-top: 0.75rem;
+}
+
+body.site.tool-page-compact .page-main main {
+  padding: 0.75rem 1rem 1.25rem;
+}
+
+body.site.tool-page-compact .tabs {
+  margin-bottom: 0.65rem;
+}
+
+body.site.tool-page-compact .tab {
+  padding: 0.45rem 0.85rem;
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 640px) {
+  body.site.tool-page-compact .tool-page-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  body.site.tool-page-compact .tool-page-head .status-bar-tools {
+    margin-left: 0;
+    width: 100%;
   }
 }
