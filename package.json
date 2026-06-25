@@ -1,12 +1,16 @@
 {
-  "name": "osrs-ge-flip-finder",
-  "version": "1.0.0",
+  "name": "graardor",
+  "version": "2.0.0",
   "private": true,
-  "description": "OSRS Grand Exchange flip finder using live wiki prices",
+  "type": "module",
+  "description": "Graardor — OSRS companion tools with live Grand Exchange prices",
   "scripts": {
     "start": "npx --yes serve -l 3500",
     "build:recipes": "node scripts/build-recipes.mjs",
     "build:transforms": "node scripts/build-recipes.mjs"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^0.10.4"
   },
   "license": "MIT"
 }

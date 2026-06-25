@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="OSRS high alchemy profit calculator — live GE prices, nature rune cost, fire staff assumed. Graardor." />
+  <meta name="theme-color" content="#1a1410" />
+  <title>High Alch Scanner — Graardor</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body class="site ads-off">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-logo" href="/">
+        <span class="site-logo-text">Graardor</span>
+        <span class="site-logo-tag">OSRS Companion</span>
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <span class="nav-label">Tools</span>
+        <a href="/tools/flips">Flips</a>
+        <a href="/tools/recipes">Recipes</a>
+        <a href="/tools/coffer">Coffer</a>
+        <a href="/tools/alch" class="active">High Alch</a>
+        <a href="/changelog">Changelog</a>
+        <span id="authSlot"></span>
+        <a href="https://ko-fi.com/greatblue" target="_blank" rel="noopener">Ko-fi</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <h1>High Alch Scanner</h1>
+    <p>Find items where high alchemy value beats the GE buy price after nature rune cost. Fire staff assumed (no fire rune cost).</p>
+  </div>
+
+  <p class="disclaimer">
+    <strong>Disclaimer:</strong> Alch values from wiki mapping. Verify in-game before buying stacks. Not affiliated with Jagex.
+  </p>
+
+  <div class="status-bar">
+    <span id="alchStatus">Loading…</span>
+  </div>
+
+  <div class="tool-page-main">
+    <main style="padding:1rem 1.25rem 2rem;">
+      <section class="filters">
+        <h2 class="filters-title">Filters</h2>
+        <div class="filter-group wide">
+          <label for="alchSearch">Search items</label>
+          <input id="alchSearch" type="text" placeholder="e.g. rune scimitar" autocomplete="off" />
+        </div>
+        <div class="filter-group">
+          <label for="alchMembers">Members</label>
+          <select id="alchMembers">
+            <option value="all">All items</option>
+            <option value="members">Members only</option>
+            <option value="f2p">F2P only</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="alchMinProfit">Min profit / alch</label>
+          <input id="alchMinProfit" type="number" min="0" placeholder="0" />
+        </div>
+        <div class="toggles">
+          <label class="toggle">
+            <input id="alchProfitableOnly" type="checkbox" checked />
+            Profitable only
+          </label>
+        </div>
+        <div class="actions">
+          <button type="button" id="refreshAlchBtn">Refresh prices</button>
+          <button type="button" id="resetAlchBtn">Reset filters</button>
+        </div>
+      </section>
+
+      <p id="alchMeta" class="results-meta"></p>
+      <p class="table-scroll-hint">Swipe horizontally on small screens.</p>
+      <div class="table-wrap">
+        <table id="alchTable">
+          <thead>
+            <tr>
+              <th class="col-item">Item</th>
+              <th class="sortable num" data-sort="buyPrice">Buy price</th>
+              <th class="sortable num" data-sort="highalch">High alch</th>
+              <th class="sortable num">Nature cost</th>
+              <th class="sortable num" data-sort="profit">Profit</th>
+              <th class="sortable num" data-sort="roi">ROI</th>
+              <th class="sortable num" data-sort="limitProfit">Profit (limit)</th>
+            </tr>
+          </thead>
+          <tbody id="alchBody">
+            <tr><td colspan="7" class="loading">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p><a href="https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices" target="_blank" rel="noopener">Price data</a> from the OSRS Wiki · <a href="/">Graardor home</a></p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/alch.js"></script>
+  <script src="/assets/js/auth.js"></script>
+</body>
+</html>
