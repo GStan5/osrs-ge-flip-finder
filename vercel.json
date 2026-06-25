@@ -1,12 +1,6 @@
 {
   "version": 2,
   "cleanUrls": true,
-  "crons": [
-    {
-      "path": "/api/cron/check-alerts",
-      "schedule": "*/15 * * * *"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
