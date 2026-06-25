@@ -557,7 +557,7 @@
     td.num, th.num {
       text-align: right;
       white-space: nowrap;
-      font-size: 0.72rem;
+      font-size: 0.8125rem;
       overflow: visible;
       text-overflow: clip;
     }
@@ -568,37 +568,130 @@
       text-overflow: ellipsis;
       vertical-align: middle;
       min-width: 0;
-      width: 17%;
-      max-width: 17%;
       white-space: nowrap;
     }
 
-    th.num:not(.col-item), td.num:not(.col-item) {
-      width: 1%;
-      white-space: nowrap;
-    }
+    /* Flip search table — 15 cols, sums to 100% */
+    #searchTable th:nth-child(1), #searchTable td:nth-child(1) { width: 18%; }
+    #searchTable th:nth-child(2), #searchTable td:nth-child(2),
+    #searchTable th:nth-child(3), #searchTable td:nth-child(3) { width: 8%; }
+    #searchTable th:nth-child(4), #searchTable td:nth-child(4),
+    #searchTable th:nth-child(8), #searchTable td:nth-child(8) { width: 7%; }
+    #searchTable th:nth-child(5), #searchTable td:nth-child(5) { width: 5%; }
+    #searchTable th:nth-child(6), #searchTable td:nth-child(6),
+    #searchTable th:nth-child(7), #searchTable td:nth-child(7),
+    #searchTable th:nth-child(10), #searchTable td:nth-child(10) { width: 6%; }
+    #searchTable th:nth-child(9), #searchTable td:nth-child(9) { width: 6%; }
+    #searchTable th:nth-child(11), #searchTable td:nth-child(11),
+    #searchTable th:nth-child(12), #searchTable td:nth-child(12),
+    #searchTable th:nth-child(13), #searchTable td:nth-child(13),
+    #searchTable th:nth-child(14), #searchTable td:nth-child(14) { width: 5%; }
+    #searchTable th:nth-child(15), #searchTable td:nth-child(15) { width: 4%; }
 
-    th.col-price-buy, td.col-price-buy,
-    th.col-price-sell, td.col-price-sell,
-    td.price-buy, td.price-sell {
-      width: 1%;
-    }
+    /* Flip top 10 table — 17 cols, sums to 100% */
+    #top10Table th:nth-child(1), #top10Table td:nth-child(1) { width: 18%; }
+    #top10Table th:nth-child(2), #top10Table td:nth-child(2),
+    #top10Table th:nth-child(3), #top10Table td:nth-child(3) { width: 7%; }
+    #top10Table th:nth-child(4), #top10Table td:nth-child(4) { width: 8%; }
+    #top10Table th:nth-child(5), #top10Table td:nth-child(5),
+    #top10Table th:nth-child(9), #top10Table td:nth-child(9) { width: 7%; }
+    #top10Table th:nth-child(6), #top10Table td:nth-child(6) { width: 5%; }
+    #top10Table th:nth-child(7), #top10Table td:nth-child(7),
+    #top10Table th:nth-child(8), #top10Table td:nth-child(8) { width: 6%; }
+    #top10Table th:nth-child(10), #top10Table td:nth-child(10),
+    #top10Table th:nth-child(11), #top10Table td:nth-child(11) { width: 5%; }
+    #top10Table th:nth-child(12), #top10Table td:nth-child(12),
+    #top10Table th:nth-child(13), #top10Table td:nth-child(13) { width: 4%; }
+    #top10Table th:nth-child(14), #top10Table td:nth-child(14),
+    #top10Table th:nth-child(15), #top10Table td:nth-child(15),
+    #top10Table th:nth-child(16), #top10Table td:nth-child(16) { width: 4%; }
+    #top10Table th:nth-child(17), #top10Table td:nth-child(17) { width: 2%; }
+
+    /* Recipes / transforms table — 15 cols, sums to 100% */
+    #transformsTable th:nth-child(1), #transformsTable td:nth-child(1) { width: 18%; }
+    #transformsTable th:nth-child(2), #transformsTable td:nth-child(2),
+    #transformsTable th:nth-child(3), #transformsTable td:nth-child(3) { width: 11%; }
+    #transformsTable th:nth-child(4), #transformsTable td:nth-child(4),
+    #transformsTable th:nth-child(5), #transformsTable td:nth-child(5) { width: 9%; }
+    #transformsTable th:nth-child(6), #transformsTable td:nth-child(6),
+    #transformsTable th:nth-child(8), #transformsTable td:nth-child(8) { width: 8%; }
+    #transformsTable th:nth-child(7), #transformsTable td:nth-child(7) { width: 5%; }
+    #transformsTable th:nth-child(9), #transformsTable td:nth-child(9),
+    #transformsTable th:nth-child(10), #transformsTable td:nth-child(10),
+    #transformsTable th:nth-child(11), #transformsTable td:nth-child(11),
+    #transformsTable th:nth-child(12), #transformsTable td:nth-child(12),
+    #transformsTable th:nth-child(13), #transformsTable td:nth-child(13),
+    #transformsTable th:nth-child(14), #transformsTable td:nth-child(14),
+    #transformsTable th:nth-child(15), #transformsTable td:nth-child(15) { width: 3%; }
+
+    /* Alch table — 11 cols, sums to 100% */
+    #alchTable th:nth-child(1), #alchTable td:nth-child(1) { width: 21%; }
+    #alchTable th:nth-child(2), #alchTable td:nth-child(2) { width: 10%; }
+    #alchTable th:nth-child(3), #alchTable td:nth-child(3),
+    #alchTable th:nth-child(4), #alchTable td:nth-child(4) { width: 8%; }
+    #alchTable th:nth-child(5), #alchTable td:nth-child(5),
+    #alchTable th:nth-child(11), #alchTable td:nth-child(11) { width: 10%; }
+    #alchTable th:nth-child(6), #alchTable td:nth-child(6) { width: 6%; }
+    #alchTable th:nth-child(7), #alchTable td:nth-child(7),
+    #alchTable th:nth-child(8), #alchTable td:nth-child(8),
+    #alchTable th:nth-child(9), #alchTable td:nth-child(9) { width: 6%; }
+    #alchTable th:nth-child(10), #alchTable td:nth-child(10) { width: 9%; }
+
+    /* Coffer table — 8 cols, sums to 100% */
+    #cofferTable th:nth-child(1), #cofferTable td:nth-child(1) { width: 24%; }
+    #cofferTable th:nth-child(2), #cofferTable td:nth-child(2) { width: 12%; }
+    #cofferTable th:nth-child(3), #cofferTable td:nth-child(3) { width: 10%; }
+    #cofferTable th:nth-child(4), #cofferTable td:nth-child(4),
+    #cofferTable th:nth-child(5), #cofferTable td:nth-child(5) { width: 14%; }
+    #cofferTable th:nth-child(6), #cofferTable td:nth-child(6) { width: 8%; }
+    #cofferTable th:nth-child(7), #cofferTable td:nth-child(7),
+    #cofferTable th:nth-child(8), #cofferTable td:nth-child(8) { width: 9%; }
 
     @media (max-width: 767px) {
       .col-hide-narrow {
         display: none;
       }
 
-      th.col-item, td.col-item {
-        width: 28%;
-        max-width: 28%;
-      }
+      /* Flip tables @768 — 6 visible cols (item, buy, sell, margin, margin%, profit) */
+      #searchTable th:nth-child(1), #searchTable td:nth-child(1) { width: 22%; }
+      #searchTable th:nth-child(2), #searchTable td:nth-child(2),
+      #searchTable th:nth-child(3), #searchTable td:nth-child(3) { width: 14%; }
+      #searchTable th:nth-child(4), #searchTable td:nth-child(4),
+      #searchTable th:nth-child(8), #searchTable td:nth-child(8) { width: 16%; }
+      #searchTable th:nth-child(5), #searchTable td:nth-child(5) { width: 18%; }
 
-      #transformsTable th.col-recipe,
-      #transformsTable td.col-recipe {
-        width: 32%;
-        max-width: 32%;
-      }
+      #top10Table th:nth-child(1), #top10Table td:nth-child(1) { width: 18%; }
+      #top10Table th:nth-child(2), #top10Table td:nth-child(2),
+      #top10Table th:nth-child(3), #top10Table td:nth-child(3) { width: 14%; }
+      #top10Table th:nth-child(4), #top10Table td:nth-child(4),
+      #top10Table th:nth-child(9), #top10Table td:nth-child(9) { width: 18%; }
+      #top10Table th:nth-child(5), #top10Table td:nth-child(5) { width: 14%; }
+      #top10Table th:nth-child(6), #top10Table td:nth-child(6) { width: 18%; }
+
+      /* Transforms @768 — 6 visible (recipe, input cost, revenue, profit, ROI, GP/hr) */
+      #transformsTable th:nth-child(1), #transformsTable td:nth-child(1) { width: 26%; }
+      #transformsTable th:nth-child(4), #transformsTable td:nth-child(4),
+      #transformsTable th:nth-child(5), #transformsTable td:nth-child(5) { width: 16%; }
+      #transformsTable th:nth-child(6), #transformsTable td:nth-child(6),
+      #transformsTable th:nth-child(8), #transformsTable td:nth-child(8) { width: 15%; }
+      #transformsTable th:nth-child(7), #transformsTable td:nth-child(7) { width: 12%; }
+
+      /* Alch @768 — 7 visible */
+      #alchTable th:nth-child(1), #alchTable td:nth-child(1) { width: 24%; }
+      #alchTable th:nth-child(2), #alchTable td:nth-child(2) { width: 14%; }
+      #alchTable th:nth-child(3), #alchTable td:nth-child(3),
+      #alchTable th:nth-child(4), #alchTable td:nth-child(4) { width: 12%; }
+      #alchTable th:nth-child(5), #alchTable td:nth-child(5),
+      #alchTable th:nth-child(10), #alchTable td:nth-child(10) { width: 13%; }
+      #alchTable th:nth-child(6), #alchTable td:nth-child(6) { width: 12%; }
+
+      /* Coffer @768 — 6 visible */
+      #cofferTable th:nth-child(1), #cofferTable td:nth-child(1) { width: 26%; }
+      #cofferTable th:nth-child(2), #cofferTable td:nth-child(2),
+      #cofferTable th:nth-child(4), #cofferTable td:nth-child(4),
+      #cofferTable th:nth-child(5), #cofferTable td:nth-child(5) { width: 16%; }
+      #cofferTable th:nth-child(3), #cofferTable td:nth-child(3),
+      #cofferTable th:nth-child(6), #cofferTable td:nth-child(6) { width: 13%; }
     }
 
     @media (max-width: 480px) {
@@ -606,10 +699,38 @@
         display: none;
       }
 
-      th.col-item, td.col-item {
-        width: 34%;
-        max-width: 34%;
-      }
+      /* Flip tables @375 — 5 core cols (item, buy, sell, margin, profit) */
+      #searchTable th:nth-child(1), #searchTable td:nth-child(1) { width: 22%; }
+      #searchTable th:nth-child(2), #searchTable td:nth-child(2),
+      #searchTable th:nth-child(3), #searchTable td:nth-child(3) { width: 20%; }
+      #searchTable th:nth-child(4), #searchTable td:nth-child(4),
+      #searchTable th:nth-child(8), #searchTable td:nth-child(8) { width: 19%; }
+
+      #top10Table th:nth-child(1), #top10Table td:nth-child(1) { width: 24%; }
+      #top10Table th:nth-child(2), #top10Table td:nth-child(2),
+      #top10Table th:nth-child(3), #top10Table td:nth-child(3) { width: 19%; }
+      #top10Table th:nth-child(4), #top10Table td:nth-child(4),
+      #top10Table th:nth-child(9), #top10Table td:nth-child(9) { width: 19%; }
+      #top10Table th:nth-child(5), #top10Table td:nth-child(5) { width: 19%; }
+
+      /* Transforms @375 — 5 visible (recipe, input cost, revenue, profit, GP/hr) */
+      #transformsTable th:nth-child(1), #transformsTable td:nth-child(1) { width: 24%; }
+      #transformsTable th:nth-child(4), #transformsTable td:nth-child(4),
+      #transformsTable th:nth-child(5), #transformsTable td:nth-child(5) { width: 16%; }
+      #transformsTable th:nth-child(6), #transformsTable td:nth-child(6),
+      #transformsTable th:nth-child(8), #transformsTable td:nth-child(8) { width: 14%; }
+
+      /* Alch @375 — 4 visible (item, buy, profit, GP/hr) */
+      #alchTable th:nth-child(1), #alchTable td:nth-child(1) { width: 28%; }
+      #alchTable th:nth-child(2), #alchTable td:nth-child(2),
+      #alchTable th:nth-child(5), #alchTable td:nth-child(5),
+      #alchTable th:nth-child(10), #alchTable td:nth-child(10) { width: 24%; }
+
+      /* Coffer @375 — 4 visible (item, buy, credit, profit) */
+      #cofferTable th:nth-child(1), #cofferTable td:nth-child(1) { width: 28%; }
+      #cofferTable th:nth-child(2), #cofferTable td:nth-child(2),
+      #cofferTable th:nth-child(4), #cofferTable td:nth-child(4),
+      #cofferTable th:nth-child(5), #cofferTable td:nth-child(5) { width: 24%; }
 
       .item-cell .item-wiki-link,
       .item-cell .badge {
@@ -675,15 +796,11 @@
 
     #transformsTable th.col-recipe,
     #transformsTable td.col-recipe {
-      width: 15%;
-      max-width: 15%;
       min-width: 0;
     }
 
     #transformsTable th.col-io,
     #transformsTable td.recipe-io {
-      width: 12%;
-      max-width: 12%;
       min-width: 0;
       vertical-align: top;
       overflow: hidden;
@@ -1002,7 +1119,7 @@
 
     #transformsTable th.col-io,
     #transformsTable td.recipe-io {
-      width: 18%;
+      white-space: normal;
     }
 
     @media (max-width: 700px) {
