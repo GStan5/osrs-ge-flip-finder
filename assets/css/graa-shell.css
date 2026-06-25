@@ -1296,30 +1296,151 @@ body.site .skip-link {
   }
 }
 
+/* ── Pre-JS tool page chrome (body.tool-page on /tools/* HTML) ── */
+body.site.tool-page > .page-hero {
+  display: none;
+}
+
+body.site.tool-page > p.disclaimer {
+  display: none;
+}
+
+body.site.tool-page > .tool-tip-bar:not(.tool-tip-collapsible) {
+  display: none;
+}
+
+body.site.tool-page > details.disclaimer-collapsible,
+body.site.tool-page > details.tool-tip-collapsible {
+  max-width: var(--g-max);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  font-size: 0.72rem;
+  color: var(--g-muted);
+}
+
+body.site.tool-page > details.disclaimer-collapsible summary,
+body.site.tool-page > details.tool-tip-collapsible summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 0.15rem 0;
+}
+
+body.site.tool-page > details.disclaimer-collapsible summary::-webkit-details-marker,
+body.site.tool-page > details.tool-tip-collapsible summary::-webkit-details-marker {
+  display: none;
+}
+
+body.site.tool-page > .status-bar {
+  max-width: var(--g-max);
+  margin: 0 auto;
+  padding: 0.25rem 1.25rem;
+  font-size: 0.75rem;
+}
+
+body.site.tool-page > .tool-summary-strip {
+  max-width: var(--g-max);
+  margin: 0 auto;
+  padding: 0.25rem 1.25rem;
+  font-size: 0.75rem;
+}
+
+/* ── Header-merged tool subnav ── */
+body.site .header-tool-subnav {
+  max-width: var(--g-max);
+  margin: 0 auto;
+  padding: 0 1.25rem;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0;
+  min-height: 32px;
+  border-top: 1px solid var(--g-border);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  background: var(--g-surface);
+}
+
+body.site .header-tool-subnav::-webkit-scrollbar {
+  display: none;
+}
+
+body.site .header-tool-subnav a {
+  color: var(--g-muted);
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.35rem 0.65rem;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
+  border: none;
+  border-bottom: 2px solid transparent;
+  border-radius: 0;
+  margin: 0;
+  background: transparent;
+  text-decoration: none;
+}
+
+body.site .header-tool-subnav a:hover {
+  color: var(--g-text);
+}
+
+body.site .header-tool-subnav a.active {
+  color: var(--g-gold);
+  border-bottom-color: var(--g-gold);
+}
+
+body.site.has-header-subnav .site-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
 /* ── Compact tool page chrome (site-chrome.js wraps /tools/*) ── */
 body.site.tool-page-compact .tool-page-chrome {
   max-width: var(--g-max);
   margin: 0 auto;
-  padding: 0.35rem 1.25rem 0;
+  padding: 0.15rem 1.25rem 0;
 }
 
-body.site.tool-page-compact .tool-page-chrome:has(.tool-subnav) .breadcrumbs {
+body.site.tool-page-compact .tool-page-chrome:has(.tool-subnav) .breadcrumbs,
+body.site.tool-page-compact .tool-page-chrome .page-hero {
   display: none;
 }
 
-body.site.tool-page-compact .tool-page-chrome .tool-subnav,
+body.site.tool-page-compact.has-header-subnav .tool-page-chrome .page-hero {
+  display: none;
+}
+
+body.site.tool-page-compact .tool-page-chrome .tool-subnav:not(.header-tool-subnav),
 body.site.tool-page-compact .tool-page-chrome .economy-subnav {
   max-width: none;
-  margin: 0 0 0.3rem;
+  margin: 0 0 0.15rem;
   padding: 0;
 }
 
-body.site.tool-page-compact .tool-page-head {
+body.site.tool-page-compact .tool-page-head,
+body.site.tool-page-compact .tool-page-chrome > .status-bar--solo,
+body.site.tool-page-compact .tool-page-chrome > .status-bar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.35rem 0.75rem;
-  margin-bottom: 0.3rem;
+  gap: 0.25rem 0.65rem;
+  margin-bottom: 0.15rem;
+}
+
+body.site.tool-page-compact .tool-page-chrome > .status-bar--solo,
+body.site.tool-page-compact .tool-page-chrome > .status-bar {
+  max-width: none;
+  margin: 0 0 0.15rem;
+  padding: 0.2rem 0;
+  font-size: 0.75rem;
+  line-height: 1.3;
+  background: transparent;
+  border: none;
+  flex-direction: row;
 }
 
 body.site.tool-page-compact .page-hero--compact {
@@ -1343,16 +1464,22 @@ body.site.tool-page-compact .page-hero--compact .page-hero-sub {
 body.site.tool-page-compact .tool-page-head .status-bar {
   max-width: none;
   margin: 0;
-  padding: 0.3rem 0.55rem;
-  flex: 1 1 18rem;
+  padding: 0.2rem 0;
+  flex: 1 1 auto;
   min-width: 0;
   font-size: 0.75rem;
-  line-height: 1.35;
-  gap: 0.35rem 0.65rem;
+  line-height: 1.3;
+  gap: 0.25rem 0.65rem;
+  background: transparent;
+  border: none;
+  flex-direction: row;
+  align-items: center;
 }
 
 body.site.tool-page-compact .tool-page-head .status-bar-tools {
-  gap: 0.35rem 0.5rem;
+  gap: 0.25rem 0.5rem;
+  margin-left: auto;
+  flex-wrap: wrap;
 }
 
 body.site.tool-page-compact .tool-page-head .status-bar-tools input[type="number"] {
@@ -1372,12 +1499,12 @@ body.site.tool-page-compact .tool-page-head .status-bar-tools button {
 
 body.site.tool-page-compact .disclaimer-collapsible {
   max-width: none;
-  margin: 0 0 0.3rem;
+  margin: 0 0 0.15rem;
   padding: 0;
   background: transparent;
   border: none;
   border-radius: 0;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--g-muted);
 }
 
@@ -1415,17 +1542,20 @@ body.site.tool-page-compact .disclaimer-collapsible .disclaimer-body {
 
 body.site.tool-page-compact .tool-page-chrome > .status-bar {
   max-width: none;
-  margin: 0 0 0.3rem;
-  padding: 0.3rem 0.55rem;
+  margin: 0 0 0.15rem;
+  padding: 0.2rem 0;
   font-size: 0.75rem;
-  gap: 0.35rem 0.65rem;
+  gap: 0.25rem 0.65rem;
+  flex-direction: row;
 }
 
 body.site.tool-page-compact .tool-page-chrome .tool-summary-strip {
   max-width: none;
-  margin: 0 0 0.3rem;
-  padding: 0.35rem 0.55rem;
+  margin: 0 0 0.15rem;
+  padding: 0.25rem 0;
   font-size: 0.75rem;
+  background: transparent;
+  border: none;
 }
 
 body.site.tool-page-compact .tool-page-chrome .tool-summary-inner {
@@ -1438,11 +1568,11 @@ body.site.tool-page-compact .tool-page-chrome .tool-summary-value {
 
 body.site.tool-page-compact .tool-tip-collapsible {
   max-width: none;
-  margin: 0 0 0.3rem;
+  margin: 0 0 0.15rem;
   padding: 0;
   background: transparent;
   border: none;
-  font-size: 0.72rem;
+  font-size: 0.68rem;
   color: var(--g-muted);
 }
 
@@ -1474,25 +1604,40 @@ body.site.tool-page-compact .tool-tip-dismiss {
 }
 
 body.site.tool-page-compact .content-shell {
-  padding-top: 0.35rem;
+  padding-top: 0.15rem;
 }
 
 body.site.tool-page-compact .tool-page-main main,
 body.site.tool-page-compact .page-main main {
-  padding-top: 0.75rem;
+  padding-top: 0.5rem;
 }
 
 body.site.tool-page-compact .page-main main {
-  padding: 0.75rem 1rem 1.25rem;
+  padding: 0.5rem 1rem 1rem;
 }
 
 body.site.tool-page-compact .tabs {
-  margin-bottom: 0.65rem;
+  margin-bottom: 0.5rem;
 }
 
 body.site.tool-page-compact .tab {
-  padding: 0.45rem 0.85rem;
+  padding: 0.4rem 0.75rem;
   font-size: 0.8125rem;
+}
+
+body.site.tool-page-compact .status-bar-tools {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+body.site.tool-page-compact .status-bar-tools label,
+body.site.tool-page-compact .status-bar-tools button {
+  width: auto;
+}
+
+body.site.tool-page-compact .status-bar-tools input[type="number"] {
+  width: 4.5rem;
 }
 
 @media (max-width: 640px) {
@@ -1501,31 +1646,39 @@ body.site.tool-page-compact .tab {
     padding-right: max(0.75rem, env(safe-area-inset-right));
   }
 
-  body.site.tool-page-compact .tool-page-head {
-    flex-direction: column;
-    align-items: stretch;
+  body.site .header-tool-subnav {
+    padding-left: max(0.75rem, env(safe-area-inset-left));
+    padding-right: max(0.75rem, env(safe-area-inset-right));
   }
 
-  body.site.tool-page-compact .tool-page-head .status-bar {
-    flex-direction: column;
-    align-items: stretch;
+  body.site.tool-page-compact .tool-page-head {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  body.site.tool-page-compact .tool-page-head .status-bar,
+  body.site.tool-page-compact .tool-page-chrome > .status-bar--solo,
+  body.site.tool-page-compact .tool-page-chrome > .status-bar {
+    flex-direction: row;
+    align-items: center;
   }
 
   body.site.tool-page-compact .tool-page-head .status-bar-tools {
-    margin-left: 0;
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
+    margin-left: auto;
+    width: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
   }
 
   body.site.tool-page-compact .tool-page-head .status-bar-tools label,
   body.site.tool-page-compact .tool-page-head .status-bar-tools button {
-    width: 100%;
-    justify-content: center;
+    width: auto;
+    justify-content: flex-start;
   }
 
   body.site.tool-page-compact .tool-page-head .status-bar-tools input[type="number"] {
-    width: 100%;
+    width: 4.5rem;
   }
 
   body.site.tool-page-compact .tool-summary-inner {

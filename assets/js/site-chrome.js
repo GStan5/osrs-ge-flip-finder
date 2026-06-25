@@ -211,16 +211,20 @@
     });
   }
 
-  function injectSubnav() {
-    const path = currentPath();
-    const section = NAV_SECTIONS.find((s) => s.paths.some((p) => path === p || path.startsWith(p + "/")));
-    if (!section || document.querySelector(".tool-subnav")) return;
+  function toolSectionForPath(path) {
+    return NAV_SECTIONS.find((s) => s.paths.some((p) => path === p || path.startsWith(p + "/")));
+  }
 
-    const anchor = document.querySelector(".page-hero") || document.querySelector(".status-bar");
-    if (!anchor) return;
+  function injectHeaderSubnav() {
+    const path = currentPath();
+    const section = toolSectionForPath(path);
+    if (!section || document.querySelector(".header-tool-subnav")) return;
+
+    const header = document.querySelector(".site-header");
+    if (!header) return;
 
     const nav = document.createElement("nav");
-    nav.className = "tool-subnav";
+    nav.className = "tool-subnav header-tool-subnav";
     nav.setAttribute("aria-label", `${section.label} tools`);
     nav.innerHTML = section.tools
       .map((t) => {
@@ -229,17 +233,19 @@
         return `<a href="${t.href}" class="${active ? "active" : ""}">${t.label}${badge}</a>`;
       })
       .join("");
-    anchor.insertAdjacentElement("afterend", nav);
+    header.appendChild(nav);
+    document.body.classList.add("has-header-subnav");
   }
 
   function injectBreadcrumbs() {
     const path = currentPath();
     if (path === "/" || document.querySelector(".breadcrumbs")) return;
+    if (toolSectionForPath(path)) return;
 
     const crumbs = [{ href: "/", label: "Home" }];
     if (path.startsWith("/tools")) {
       crumbs.push({ href: "/tools", label: "Tools" });
-      const section = NAV_SECTIONS.find((s) => s.paths.some((p) => path === p || path.startsWith(p + "/")));
+      const section = toolSectionForPath(path);
       if (section) crumbs.push({ href: section.href, label: section.label });
       const label = PATH_LABELS[path] || document.querySelector(".page-hero h1")?.textContent?.trim();
       if (label && path !== section?.href) crumbs.push({ href: path, label, current: true });
@@ -387,7 +393,7 @@
   }
 
   function convertDisclaimerToDetails(node) {
-    if (!node || node.dataset.compacted) return;
+    if (!node || node.dataset.compacted || node.tagName === "DETAILS") return;
     node.dataset.compacted = "1";
     const details = document.createElement("details");
     details.className = "disclaimer disclaimer-collapsible";
@@ -408,6 +414,24 @@
     const key = "graardor-tip-" + currentPath();
     if (localStorage.getItem(key) === "1") {
       tip.remove();
+      return;
+    }
+    if (tip.tagName === "DETAILS") {
+      tip.classList.add("tool-tip-collapsible");
+      if (!tip.querySelector(".tool-tip-dismiss")) {
+        const body = tip.querySelector(".tool-tip-body") || tip;
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "tool-tip-dismiss";
+        btn.textContent = "Don\u2019t show again";
+        btn.addEventListener("click", (e) => {
+          e.preventDefault();
+          localStorage.setItem(key, "1");
+          tip.remove();
+        });
+        body.appendChild(document.createTextNode(" "));
+        body.appendChild(btn);
+      }
       return;
     }
     const details = document.createElement("details");
@@ -432,26 +456,34 @@
   function mergeHeroAndStatus(chrome) {
     const hero = chrome.querySelector(".page-hero");
     const status = chrome.querySelector(".status-bar");
-    if (!hero) return;
+    const hideHero = document.body.classList.contains("has-header-subnav");
 
-    hero.classList.add("page-hero--compact");
-    hero.querySelector("p")?.classList.add("page-hero-sub");
+    if (hero && hideHero) {
+      hero.remove();
+    } else if (hero) {
+      hero.classList.add("page-hero--compact");
+      hero.querySelector("p")?.classList.add("page-hero-sub");
+    }
 
     if (!status) return;
 
-    const head = document.createElement("div");
-    head.className = "tool-page-head";
-    hero.parentNode.insertBefore(head, hero);
-    head.appendChild(hero);
-    head.appendChild(status);
+    if (hero && chrome.contains(hero)) {
+      const head = document.createElement("div");
+      head.className = "tool-page-head";
+      hero.parentNode.insertBefore(head, hero);
+      head.appendChild(hero);
+      head.appendChild(status);
+    } else {
+      status.classList.add("status-bar--solo");
+    }
   }
 
   function compactToolChrome() {
     const path = currentPath();
     if (!path.startsWith("/tools")) return;
 
-    document.querySelectorAll("p.disclaimer").forEach(convertDisclaimerToDetails);
-    document.querySelectorAll(".tool-tip-bar:not(.tool-tip-collapsible)").forEach(compactToolTip);
+    document.querySelectorAll("p.disclaimer, .disclaimer:not(.disclaimer-collapsible)").forEach(convertDisclaimerToDetails);
+    document.querySelectorAll(".tool-tip-bar").forEach(compactToolTip);
 
     const chromeEls = [...document.body.children].filter(isToolChromeEl);
     if (!chromeEls.length) return;
@@ -487,8 +519,8 @@
     injectHeaderSearch();
     injectNavDropdowns();
     ensureHeaderActions();
+    injectHeaderSubnav();
     injectBreadcrumbs();
-    injectSubnav();
     compactToolChrome();
     injectProLink();
     injectThemeToggle();

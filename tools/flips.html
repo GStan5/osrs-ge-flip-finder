@@ -9,7 +9,7 @@
   <script src="/assets/js/theme-init.js"></script>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   </head>
-<body class="site ads-off">
+<body class="site ads-off tool-page">
   <header class="site-header">
     <div class="site-header-inner">
       <a class="site-logo" href="/">
@@ -33,10 +33,13 @@
     <p>Graardor live GE prices — ranked flips, full search, favorites, and shareable filter links.</p>
   </div>
 
-  <p class="disclaimer">
-    <strong>Disclaimer:</strong> Recommended prices and margins are estimates only — not trading or financial advice.
-    Verify every offer in-game before buying or selling. Not affiliated with Jagex. Use <strong>Refresh prices</strong> when you want new data; prices stay fixed until you refresh.
-  </p>
+  <details class="disclaimer disclaimer-collapsible">
+    <summary><strong>Disclaimer</strong> — estimates only; verify in-game · Not affiliated with Jagex</summary>
+    <div class="disclaimer-body">
+      Recommended prices and margins are estimates only — not trading or financial advice.
+      Verify every offer in-game before buying or selling. Not affiliated with Jagex. Use <strong>Refresh prices</strong> when you want new data; prices stay fixed until you refresh.
+    </div>
+  </details>
 
   <div class="status-bar">
     <span id="status">Loading price data…</span>
@@ -54,7 +57,10 @@
 
   <div id="flipSummary" class="tool-summary-strip" hidden></div>
 
-  <div class="tool-tip-bar">Tip: hover truncated names for the full item name · click prices to copy · use <kbd>Refresh prices</kbd> when your offers fill</div>
+  <details class="tool-tip-bar tool-tip-collapsible">
+    <summary>Tips for this page</summary>
+    <div class="tool-tip-body">Tip: hover truncated names for the full item name · click prices to copy · use <kbd>Refresh prices</kbd> when your offers fill</div>
+  </details>
 
   <div class="content-shell">
     <!--
