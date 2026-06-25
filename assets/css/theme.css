@@ -1,29 +1,27 @@
-@import url("graa-shell.css");
+@import url("graa-shell.css?v=5");
 
     :root {
-      --bg: #0c0a08;
-      --surface: #3e3529;
-      --surface2: #4a4034;
-      --surface-dark: #2a2218;
-      --border: #5c4d38;
-      --border-light: #7a684c;
-      --border-dark: #1a1510;
-      --text: #e8dcc8;
-      --text-bright: #ffffff;
-      --muted: #9a8b72;
-      --title: #ff981f;
-      --title-shadow: #000000;
-      --accent: #ff981f;
-      --accent-dim: #b86810;
-      --link: #ffff00;
-      --green: #00ff00;
-      --green-dim: #6b8f6b;
-      --red: #ff0000;
+      --bg: #0d0f12;
+      --surface: #15181e;
+      --surface2: #1c2028;
+      --surface-dark: #0d0f12;
+      --border: #2e3440;
+      --border-light: #3d4452;
+      --border-dark: #1c2028;
+      --text: #e6eaf0;
+      --text-bright: #f4f5f7;
+      --muted: #8b939f;
+      --title: #c9a84c;
+      --title-shadow: transparent;
+      --accent: #c9a84c;
+      --accent-dim: #9a7b32;
+      --link: #d4b85a;
+      --green: #4ade80;
+      --green-dim: #3a9d5c;
+      --red: #f87171;
       --red-dim: #c04040;
-      --blue: #6699cc;
-      --bevel-out: inset 1px 1px 0 var(--border-light), inset -1px -1px 0 var(--border-dark);
-      --bevel-in: inset 1px 1px 0 var(--border-dark), inset -1px -1px 0 var(--border-light);
-      --font-ui: Tahoma, "Segoe UI", Geneva, Verdana, sans-serif;
+      --blue: #60a5fa;
+      --font-ui: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
     }
 
     * { box-sizing: border-box; }
@@ -810,20 +808,11 @@
 
     body.site {
       font-family: var(--font-ui);
-      font-size: 13px;
+      font-size: 14px;
       display: flex;
       flex-direction: column;
       min-height: 100vh;
-      background-color: var(--bg);
-      background-image:
-        linear-gradient(180deg, rgba(255, 152, 31, 0.03) 0%, transparent 120px),
-        repeating-linear-gradient(
-          90deg,
-          transparent,
-          transparent 3px,
-          rgba(0, 0, 0, 0.04) 3px,
-          rgba(0, 0, 0, 0.04) 4px
-        );
+      background: var(--bg);
     }
 
     .osrs-title {

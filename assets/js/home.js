@@ -28,26 +28,34 @@
         ? G.pricesLoadedAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })
         : "—";
 
-      const bestHtml = best
-        ? `<span class="val highlight"><img src="${G.iconUrl(best.icon)}" alt="" width="24" height="24" onerror="this.style.display='none'" />${G.formatGp(bestProfit)}</span><span class="lbl">${best.name.length > 22 ? best.name.slice(0, 22) + "…" : best.name}</span>`
-        : `<span class="val">—</span><span class="lbl">Best margin</span>`;
+      const bestVal = best
+        ? `<img src="${G.iconUrl(best.icon)}" alt="" width="22" height="22" onerror="this.style.display='none'" />${G.formatGp(bestProfit)}`
+        : "—";
+      const bestLbl = best
+        ? best.name.length > 20
+          ? best.name.slice(0, 20) + "…"
+          : best.name
+        : "Best margin";
 
       root.innerHTML = `
-        <div class="hub-ticker-card">
+        <div class="stat-card">
           <span class="val">${mapping.length.toLocaleString()}</span>
-          <span class="lbl">Items on GE</span>
+          <span class="lbl">Items tracked</span>
         </div>
-        <div class="hub-ticker-card">
+        <div class="stat-card">
           <span class="val">${refreshed}</span>
-          <span class="lbl">Wiki sample time</span>
+          <span class="lbl">Last sample</span>
         </div>
-        <div class="hub-ticker-card highlight">${bestHtml}</div>
-        <div class="hub-ticker-card">
+        <div class="stat-card">
+          <span class="val green">${bestVal}</span>
+          <span class="lbl">${bestLbl}</span>
+        </div>
+        <div class="stat-card">
           <span class="val">${totalVolume > 0 ? G.formatGp(totalVolume) : "—"}</span>
-          <span class="lbl">5m volume (sample)</span>
+          <span class="lbl">5m volume</span>
         </div>`;
     } catch {
-      root.innerHTML = `<div class="hub-ticker-card"><span class="val">—</span><span class="lbl">GE data unavailable</span></div>`;
+      root.innerHTML = `<div class="stat-card"><span class="val">—</span><span class="lbl">Prices unavailable</span></div>`;
     }
   }
 

@@ -51,156 +51,6 @@
     return location.pathname.replace(/\/$/, "") || "/";
   }
 
-  function injectShellStyles() {
-    if (document.querySelector('link[href*="graa-shell"]')) return;
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "/assets/css/graa-shell.css?v=2";
-    document.head.appendChild(link);
-  }
-
-  function applyShellBodyClass() {
-    document.body.classList.add("graardor-v2");
-    if (currentPath() === "/") document.body.classList.add("hub-home");
-  }
-
-  function injectTopBar() {
-    const header = document.querySelector(".site-header");
-    if (!header || header.querySelector(".chrome-topbar")) return;
-
-    const bar = document.createElement("div");
-    bar.className = "chrome-topbar";
-    bar.innerHTML = `<span class="chrome-live"><span class="chrome-live-dot" aria-hidden="true"></span> Live GE prices · OSRS Wiki API</span><span class="chrome-topbar-right">Fan-made · Not affiliated with Jagex</span>`;
-    header.prepend(bar);
-  }
-
-  function injectSectionBar() {
-    const header = document.querySelector(".site-header");
-    if (!header || header.querySelector(".chrome-section-bar")) return;
-
-    const path = currentPath();
-    let section = "home";
-    if (path === "/") section = "home";
-    else if (path.startsWith("/guides")) section = "plan";
-    else if (path === "/upgrade" || path === "/changelog" || path === "/tools") section = "home";
-    else {
-      const sec = NAV_SECTIONS.find((s) => s.paths.some((p) => path === p || path.startsWith(p + "/")));
-      if (sec) section = sec.id;
-    }
-
-    const bar = document.createElement("div");
-    bar.className = `chrome-section-bar ${section}`;
-    header.appendChild(bar);
-  }
-
-  function enhanceLogo() {
-    const logo = document.querySelector(".site-logo");
-    if (!logo || logo.querySelector(".site-logo-icon")) return;
-    const icon = document.createElement("span");
-    icon.className = "site-logo-icon";
-    icon.setAttribute("aria-hidden", "true");
-    icon.textContent = "G";
-    logo.insertBefore(icon, logo.firstChild);
-  }
-
-  function getPageSection(path) {
-    const sec = NAV_SECTIONS.find((s) => s.paths.some((p) => path === p || path.startsWith(p + "/")));
-    if (sec) return sec;
-    if (path.startsWith("/guides")) return NAV_SECTIONS.find((s) => s.id === "plan");
-    return null;
-  }
-
-  function buildToolSidebar(section, path) {
-    const aside = document.createElement("aside");
-    aside.className = "tool-sidebar";
-
-    const head = section ? section.label : "Quick links";
-    const links = section
-      ? section.tools
-      : [
-          { href: "/tools/flips", label: "Flip finder" },
-          { href: "/tools/item", label: "Item lookup" },
-          { href: "/tools/alch", label: "High alch" },
-          { href: "/tools", label: "All tools" },
-        ];
-
-    aside.innerHTML = `<nav class="gra-panel tool-sidebar-panel" aria-label="Section navigation">
-      <div class="gra-panel-head">${head}</div>
-      <div class="tool-sidebar-links">
-        <a href="/" class="tool-sidebar-home">← Home</a>
-        ${links
-          .map((t) => {
-            const active =
-              path === t.href || (t.href === "/tools/item" && path.startsWith("/tools/item"));
-            const badge = t.pro ? '<span class="nav-badge">Pro</span>' : "";
-            return `<a href="${t.href}" class="${active ? "active" : ""}">${t.label}${badge}</a>`;
-          })
-          .join("")}
-        ${section ? `<a class="tool-sidebar-all" href="/tools#${section.id}">All ${section.label.toLowerCase()}</a>` : ""}
-      </div>
-    </nav>`;
-    return aside;
-  }
-
-  function wrapToolPageLayout() {
-    const path = currentPath();
-    if (path === "/" || document.querySelector(".tool-layout")) return;
-
-    const header = document.querySelector(".site-header");
-    const footer = document.querySelector(".site-footer");
-    if (!header || !footer) return;
-
-    const section = getPageSection(path);
-    const layout = document.createElement("div");
-    layout.className = "tool-layout";
-    layout.appendChild(buildToolSidebar(section, path));
-
-    const body = document.createElement("div");
-    body.className = "tool-body";
-
-    const stop = document.querySelector(".kofi-strip") || footer;
-    const toMove = [];
-    let node = header.nextSibling;
-    while (node && node !== stop) {
-      const next = node.nextSibling;
-      if (node.nodeType === 1) toMove.push(node);
-      node = next;
-    }
-    toMove.forEach((el) => body.appendChild(el));
-    layout.appendChild(body);
-    header.insertAdjacentElement("afterend", layout);
-  }
-
-  function panelizeFilters() {
-    document.querySelectorAll(".filters:not(.gra-panelized)").forEach((filters) => {
-      filters.classList.add("gra-panelized", "gra-panel");
-      const title = filters.querySelector(".filters-title");
-      if (title && !filters.querySelector(".gra-panel-head")) {
-        const head = document.createElement("div");
-        head.className = "gra-panel-head";
-        head.textContent = title.textContent;
-        title.replaceWith(head);
-      }
-    });
-  }
-
-  function enhancePageHero() {
-    const hero = document.querySelector(".page-hero");
-    if (!hero || hero.dataset.enhanced) return;
-    hero.dataset.enhanced = "1";
-
-    const path = currentPath();
-    const sec = getPageSection(path);
-    let sectionClass = sec ? sec.id : "economy";
-    if (path === "/upgrade" || path === "/changelog" || path === "/tools") sectionClass = "home";
-    if (path.startsWith("/guides") && !sec) sectionClass = "plan";
-
-    const inner = document.createElement("div");
-    inner.className = `tool-hero-inner ${sectionClass}`;
-    while (hero.firstChild) inner.appendChild(hero.firstChild);
-    hero.appendChild(inner);
-  }
-
   function injectHeadMeta() {
     if (!document.querySelector('link[rel="icon"]')) {
       const icon = document.createElement("link");
@@ -273,7 +123,7 @@
     form.className = "header-search";
     form.setAttribute("role", "search");
     form.innerHTML = `<label class="visually-hidden" for="headerItemSearch">Search items</label>
-      <input id="headerItemSearch" type="search" placeholder="Item name…" autocomplete="off" />
+      <input id="headerItemSearch" type="search" placeholder="Search items…" autocomplete="off" />
       <button type="submit" aria-label="Search">⌕</button>`;
 
     form.addEventListener("submit", (e) => {
@@ -386,7 +236,6 @@
 
     const hero = document.querySelector(".page-hero");
     if (hero) hero.prepend(bar);
-    else document.querySelector(".home-main")?.prepend(bar);
   }
 
   function injectProLink() {
@@ -405,7 +254,7 @@
     if (!footer) return;
     const strip = document.createElement("section");
     strip.className = "kofi-strip";
-    strip.innerHTML = `<div class="kofi-strip-inner"><div class="kofi-strip-text">Hosting isn't free. Tips on Ko-fi help keep Graardor running.</div><a class="kofi-strip-btn" href="https://ko-fi.com/greatblue" target="_blank" rel="noopener">Ko-fi</a></div>`;
+    strip.innerHTML = `<div class="kofi-strip-inner"><div class="kofi-strip-text">Tips on Ko-fi help keep Graardor running.</div><a class="kofi-strip-btn" href="https://ko-fi.com/greatblue" target="_blank" rel="noopener">Ko-fi</a></div>`;
     footer.parentNode.insertBefore(strip, footer);
   }
 
@@ -419,36 +268,28 @@
       const trigger = document.querySelector(`.nav-dropdown-trigger[href="${sec.href}"]`);
       if (trigger && sec.paths.some((p) => path.startsWith(p))) trigger.classList.add("active");
     });
+  }
 
-    const bar = document.querySelector(".chrome-section-bar");
-    if (bar) {
-      if (path === "/") bar.className = "chrome-section-bar home";
-      else if (path.startsWith("/guides")) bar.className = "chrome-section-bar plan";
-      else if (path === "/upgrade" || path === "/changelog" || path === "/tools") bar.className = "chrome-section-bar home";
-      else {
-        const sec = NAV_SECTIONS.find((s) => s.paths.some((p) => path === p || path.startsWith(p + "/")));
-        bar.className = `chrome-section-bar ${sec ? sec.id : "economy"}`;
-      }
+  function unwrapLegacyLayout() {
+    const layout = document.querySelector(".tool-layout");
+    if (!layout) return;
+    const body = layout.querySelector(".tool-body");
+    if (body) {
+      while (body.firstChild) layout.parentNode.insertBefore(body.firstChild, layout);
     }
+    layout.remove();
   }
 
   function init() {
-    injectShellStyles();
-    applyShellBodyClass();
     injectHeadMeta();
     injectSkipLink();
-    injectTopBar();
-    enhanceLogo();
+    unwrapLegacyLayout();
     ensureMainId();
     setupMobileNav();
     injectHeaderSearch();
     injectNavDropdowns();
-    injectSectionBar();
-    enhancePageHero();
     injectBreadcrumbs();
     injectSubnav();
-    wrapToolPageLayout();
-    panelizeFilters();
     injectProLink();
     injectKofiStrip();
     markActiveNav();

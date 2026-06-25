@@ -1,6 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Graardor">
-  <rect width="32" height="32" fill="#0c0a08"/>
-  <rect x="1" y="1" width="30" height="30" fill="#3e3529" stroke="#5c4d38" stroke-width="2"/>
-  <rect x="4" y="4" width="24" height="24" fill="#2a2218" stroke="#7a684c" stroke-width="1"/>
-  <text x="16" y="21" text-anchor="middle" font-family="Tahoma, sans-serif" font-size="14" font-weight="700" fill="#ff981f">G</text>
+  <rect width="32" height="32" rx="6" fill="#0d0f12"/>
+  <rect x="4" y="4" width="24" height="24" rx="4" fill="#15181e" stroke="#2e3440"/>
+  <text x="16" y="21" text-anchor="middle" font-family="system-ui,sans-serif" font-size="14" font-weight="700" fill="#c9a84c">G</text>
 </svg>

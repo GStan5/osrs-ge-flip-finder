@@ -3,30 +3,21 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Graardor — OSRS GE tools with live prices. Flips, alch, coffer, transforms, boss tracking, and more." />
-  <meta name="theme-color" content="#080604" />
-  <meta property="og:title" content="Graardor — OSRS Tools" />
-  <meta property="og:description" content="Live GE prices, flip finder, transforms, coffer, alch — your OSRS tools hub." />
+  <meta name="description" content="Graardor — OSRS GE tools with live prices. Flips, alch, coffer, transforms, and more." />
+  <meta name="theme-color" content="#0d0f12" />
+  <meta property="og:title" content="Graardor — OSRS GE tools" />
+  <meta property="og:description" content="Live GE prices, flip finder, transforms, coffer, and alch — OSRS economy tools." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://www.graardor.com/" />
   <link rel="canonical" href="https://www.graardor.com/" />
   <link rel="manifest" href="/manifest.webmanifest" />
-  <title>Graardor — OSRS Tools</title>
+  <title>Graardor — OSRS GE tools</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
-  <link rel="stylesheet" href="/assets/css/graa-shell.css" />
 </head>
-<body class="site ads-off hub-home graardor-v2">
+<body class="site ads-off">
   <header class="site-header">
-    <div class="chrome-topbar">
-      <span class="chrome-live"><span class="chrome-live-dot" aria-hidden="true"></span> Live GE prices · OSRS Wiki API</span>
-      <span class="chrome-topbar-right">Fan-made · Not affiliated with Jagex</span>
-    </div>
     <div class="site-header-inner">
-      <a class="site-logo" href="/">
-        <span class="site-logo-icon" aria-hidden="true">G</span>
-        <span class="site-logo-text">Graardor</span>
-        <span class="site-logo-tag">OSRS tools</span>
-      </a>
+      <a class="site-logo" href="/"><span class="site-logo-text">Graardor</span></a>
       <nav class="site-nav" aria-label="Main">
         <a href="/tools/flips">Economy</a>
         <a href="/tools/dashboard">Track</a>
@@ -37,171 +28,87 @@
         <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
       </nav>
     </div>
-    <div class="chrome-section-bar home"></div>
   </header>
 
   <main class="home-main" id="main-content">
-    <div class="hub-layout">
-      <aside class="hub-sidebar" aria-label="Tool categories">
-        <nav class="gra-panel hub-nav-panel">
-          <div class="gra-panel-head">Jump to <span class="gra-panel-tag">15+ tools</span></div>
-          <div class="hub-nav-section-label">Economy</div>
-          <a class="hub-nav-link" href="#economy"><span class="hub-nav-dot economy"></span> GE &amp; profit</a>
-          <a class="hub-nav-link" href="/tools/flips">Flip finder</a>
-          <a class="hub-nav-link" href="/tools/item">Item lookup</a>
-          <div class="hub-nav-section-label">Track</div>
-          <a class="hub-nav-link" href="#track"><span class="hub-nav-dot track"></span> Sessions</a>
-          <a class="hub-nav-link" href="/tools/boss">Boss GP/hr</a>
-          <a class="hub-nav-link" href="/tools/herbs">Herb runs</a>
-          <div class="hub-nav-section-label">Plan</div>
-          <a class="hub-nav-link" href="#plan"><span class="hub-nav-dot plan"></span> Prep</a>
-          <a class="hub-nav-link" href="/guides">Guides</a>
-          <a class="hub-nav-link" href="/tools">All tools</a>
-        </nav>
-      </aside>
-
-      <div class="hub-main">
-        <section class="hub-banner gra-panel">
-          <div class="gra-panel-head">Grand Exchange hub</div>
-          <div class="gra-panel-body">
-            <div class="hub-banner-text">
-              <h1>Live prices. Real margins.</h1>
-              <p>Flips, alch, Death's coffer, transforms — one place instead of ten tabs. Prices freeze until you refresh, so your buy/sell targets stay put while offers fill.</p>
-            </div>
-            <div class="hub-banner-actions">
-              <a class="gra-btn gra-btn-gold" href="/tools/flips">Start flipping</a>
-              <a class="gra-btn gra-btn-stone" href="/tools/item">Look up item</a>
-            </div>
-          </div>
-        </section>
-
-        <div id="homeLiveStats" class="hub-ticker" aria-live="polite">
-          <div class="hub-ticker-card"><span class="val">…</span><span class="lbl">Loading GE data</span></div>
-        </div>
-
-        <section class="hub-featured" aria-label="Popular tools">
-          <a class="hub-feature" href="/tools/flips">
-            <img src="https://oldschool.runescape.wiki/images/Dragon_scimitar.png" alt="" width="48" height="48" loading="lazy" />
-            <strong>Flip finder</strong>
-            <span>Top GP/hr + search</span>
-          </a>
-          <a class="hub-feature" href="/tools/item">
-            <img src="https://oldschool.runescape.wiki/images/Grand_Exchange.png" alt="" width="48" height="48" loading="lazy" />
-            <strong>Item lookup</strong>
-            <span>Prices &amp; charts</span>
-          </a>
-          <a class="hub-feature" href="/tools/alch">
-            <img src="https://oldschool.runescape.wiki/images/Nature_rune.png" alt="" width="48" height="48" loading="lazy" />
-            <strong>High alch</strong>
-            <span>Profit after natures</span>
-          </a>
-        </section>
-
-        <section id="economy" class="hub-section">
-          <div class="hub-section-head">
-            <h2>Economy</h2>
-            <a href="/tools#economy">All economy tools</a>
-          </div>
-          <div class="hub-tiles">
-            <a class="hub-tile economy" href="/tools/flips">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Dragon_scimitar.png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Flip finder</span><span class="hub-tile-desc">Top 10 GP/hr, presets, favourites, shareable links</span></span>
-            </a>
-            <a class="hub-tile economy" href="/tools/recipes">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Saradomin_brew(4).png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Transforms</span><span class="hub-tile-desc">Decants, sets, uncharges — instant GE only</span></span>
-            </a>
-            <a class="hub-tile economy" href="/tools/coffer">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Bones.png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Death's coffer</span><span class="hub-tile-desc">105% sacrifice profit finder</span></span>
-            </a>
-            <a class="hub-tile economy" href="/tools/alch">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Nature_rune.png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">High alch</span><span class="hub-tile-desc">Buy time, volume, GP/hr after runes</span></span>
-            </a>
-            <a class="hub-tile economy" href="/tools/item">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Ring_of_wealth_(i).png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Item lookup</span><span class="hub-tile-desc">Buy, sell, margin, sparkline</span></span>
-            </a>
-            <a class="hub-tile economy" href="/tools/flip-log">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Coins_10000.png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Flip log</span><span class="hub-tile-desc">Track profit — syncs with Discord login</span></span>
-            </a>
-          </div>
-        </section>
-
-        <section id="track" class="hub-section">
-          <div class="hub-section-head">
-            <h2>Track</h2>
-            <a href="/tools#track">All track tools</a>
-          </div>
-          <div class="hub-tiles">
-            <a class="hub-tile track" href="/tools/dashboard">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Collection_log.png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Dashboard <span class="hub-tile-badge">Pro</span></span><span class="hub-tile-desc">Flip P&amp;L and trends</span></span>
-            </a>
-            <a class="hub-tile track" href="/tools/boss">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Vorkath%27s_head.png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Boss GP/hr</span><span class="hub-tile-desc">Supplies vs loot</span></span>
-            </a>
-            <a class="hub-tile track" href="/tools/herbs">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Ranarr_weed.png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Herb runs</span><span class="hub-tile-desc">Seed + compost profit</span></span>
-            </a>
-            <a class="hub-tile track" href="/tools/loot">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Clue_scroll_(elite).png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Loot import</span><span class="hub-tile-desc">Paste CSV, value at sell</span></span>
-            </a>
-            <a class="hub-tile track" href="/tools/community">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Coins_10000.png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Community</span><span class="hub-tile-desc">Top flipped items this week</span></span>
-            </a>
-            <a class="hub-tile track" href="/tools/alerts">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Ring_of_suffering.png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Price alerts <span class="hub-tile-badge">Pro</span></span><span class="hub-tile-desc">Discord webhook pings</span></span>
-            </a>
-          </div>
-        </section>
-
-        <section id="plan" class="hub-section">
-          <div class="hub-section-head">
-            <h2>Plan</h2>
-            <a href="/guides">Guides</a>
-          </div>
-          <div class="hub-tiles">
-            <a class="hub-tile plan" href="/tools/prep">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Armadyl_chestplate.png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Boss prep</span><span class="hub-tile-desc">Gear &amp; inventory checklists</span></span>
-            </a>
-            <a class="hub-tile plan" href="/guides">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Book_of_law_page_set.png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Guides</span><span class="hub-tile-desc">Flipping, coffer, Pro how-tos</span></span>
-            </a>
-            <a class="hub-tile plan" href="https://gearscape.net" target="_blank" rel="noopener">
-              <span class="hub-tile-icon"><img src="https://oldschool.runescape.wiki/images/Dragon_defender.png" alt="" width="28" height="28" loading="lazy" /></span>
-              <span class="hub-tile-body"><span class="hub-tile-name">Gearscape ↗</span><span class="hub-tile-desc">DPS &amp; gear upgrades (external)</span></span>
-            </a>
-          </div>
-        </section>
-
-        <section class="gra-panel">
-          <div class="gra-panel-head">Patch notes</div>
-          <div class="gra-panel-body">
-            <ul style="margin:0;padding-left:1.2rem;color:var(--gra-muted);line-height:1.6;">
-              <li>Cloud sync, Discord alerts, boss &amp; herb tools</li>
-              <li>Flip log, community stats, Pro dashboard</li>
-              <li>Item charts, PWA install, RuneLite plugin skeleton</li>
-            </ul>
-            <p style="margin:0.75rem 0 0;"><a href="/changelog">Full changelog</a></p>
-          </div>
-        </section>
-
-        <p style="margin:1.5rem 0 0;font-size:0.82rem;color:var(--gra-muted);">
-          <a href="https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices" target="_blank" rel="noopener">Prices from the OSRS Wiki</a>.
-          Not affiliated with Jagex — verify every offer in-game.
-        </p>
+    <section class="home-intro">
+      <h1>OSRS Grand Exchange tools</h1>
+      <p>Live prices for flipping, alching, Death's Coffer, and transforms. Numbers stay fixed until you refresh — useful while GE offers are filling.</p>
+      <div class="home-intro-actions">
+        <a class="btn-primary" href="/tools/flips">Flip finder</a>
+        <a class="btn-secondary" href="/tools/item">Item lookup</a>
+        <a class="btn-secondary" href="/tools">All tools</a>
       </div>
+    </section>
+
+    <div id="homeLiveStats" class="stat-row" aria-live="polite">
+      <div class="stat-card"><span class="val">…</span><span class="lbl">Loading prices</span></div>
     </div>
+
+    <section class="home-featured" aria-label="Popular tools">
+      <a class="feature-card" href="/tools/flips">
+        <img src="https://oldschool.runescape.wiki/images/Dragon_scimitar.png" alt="" width="40" height="40" loading="lazy" />
+        <strong>Flip finder</strong>
+        <span>Top GP/hr + search</span>
+      </a>
+      <a class="feature-card" href="/tools/item">
+        <img src="https://oldschool.runescape.wiki/images/Grand_Exchange.png" alt="" width="40" height="40" loading="lazy" />
+        <strong>Item lookup</strong>
+        <span>Prices &amp; charts</span>
+      </a>
+      <a class="feature-card" href="/tools/alch">
+        <img src="https://oldschool.runescape.wiki/images/Nature_rune.png" alt="" width="40" height="40" loading="lazy" />
+        <strong>High alch</strong>
+        <span>Profit after natures</span>
+      </a>
+    </section>
+
+    <section id="economy" class="page-section">
+      <div class="page-section-head"><h2>Economy</h2><a href="/tools#economy">View all</a></div>
+      <div class="tool-grid">
+        <a class="tool-card economy" href="/tools/flips"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Dragon_scimitar.png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">Flip finder</span><span class="tool-card-desc">Top GP/hr, presets, favourites, shareable links</span></span></a>
+        <a class="tool-card economy" href="/tools/recipes"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Saradomin_brew(4).png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">Transforms</span><span class="tool-card-desc">Decants, sets, uncharges</span></span></a>
+        <a class="tool-card economy" href="/tools/coffer"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Bones.png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">Death's coffer</span><span class="tool-card-desc">105% sacrifice profit</span></span></a>
+        <a class="tool-card economy" href="/tools/alch"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Nature_rune.png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">High alch</span><span class="tool-card-desc">Buy time, volume, GP/hr</span></span></a>
+        <a class="tool-card economy" href="/tools/item"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Ring_of_wealth_(i).png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">Item lookup</span><span class="tool-card-desc">Buy, sell, margin, chart</span></span></a>
+        <a class="tool-card economy" href="/tools/flip-log"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Coins_10000.png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">Flip log</span><span class="tool-card-desc">Track profit · Discord sync</span></span></a>
+      </div>
+    </section>
+
+    <section id="track" class="page-section">
+      <div class="page-section-head"><h2>Track</h2><a href="/tools#track">View all</a></div>
+      <div class="tool-grid">
+        <a class="tool-card track" href="/tools/dashboard"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Collection_log.png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">Dashboard <span class="tool-card-badge">Pro</span></span><span class="tool-card-desc">Flip P&amp;L overview</span></span></a>
+        <a class="tool-card track" href="/tools/boss"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Vorkath%27s_head.png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">Boss GP/hr</span><span class="tool-card-desc">Supplies vs loot</span></span></a>
+        <a class="tool-card track" href="/tools/herbs"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Ranarr_weed.png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">Herb runs</span><span class="tool-card-desc">Seed profit planner</span></span></a>
+        <a class="tool-card track" href="/tools/loot"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Clue_scroll_(elite).png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">Loot import</span><span class="tool-card-desc">Value CSV drops</span></span></a>
+        <a class="tool-card track" href="/tools/community"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Coins_10000.png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">Community</span><span class="tool-card-desc">Top flipped items</span></span></a>
+        <a class="tool-card track" href="/tools/alerts"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Ring_of_suffering.png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">Price alerts <span class="tool-card-badge">Pro</span></span><span class="tool-card-desc">Discord webhooks</span></span></a>
+      </div>
+    </section>
+
+    <section id="plan" class="page-section">
+      <div class="page-section-head"><h2>Plan</h2><a href="/guides">Guides</a></div>
+      <div class="tool-grid">
+        <a class="tool-card plan" href="/tools/prep"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Armadyl_chestplate.png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">Boss prep</span><span class="tool-card-desc">Gear &amp; inventory lists</span></span></a>
+        <a class="tool-card plan" href="/guides"><span class="tool-card-icon"><img src="https://oldschool.runescape.wiki/images/Book_of_law_page_set.png" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">Guides</span><span class="tool-card-desc">Flipping, coffer, Pro</span></span></a>
+      </div>
+    </section>
+
+    <section class="home-notes">
+      <h3>Recent updates</h3>
+      <ul>
+        <li>Cloud sync, Discord alerts, boss &amp; herb tools</li>
+        <li>Flip log, community stats, Pro dashboard</li>
+        <li>Item charts and installable PWA</li>
+      </ul>
+      <p style="margin:0.75rem 0 0;"><a href="/changelog">Full changelog</a></p>
+    </section>
+
+    <p class="home-footnote">
+      <a href="https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices" target="_blank" rel="noopener">Prices from the OSRS Wiki</a>.
+      Not affiliated with Jagex — verify every offer in-game.
+    </p>
   </main>
 
   <footer class="site-footer">
