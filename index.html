@@ -1,0 +1,1451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Find OSRS Grand Exchange flips with live prices, margins, tax, and GP/hour estimates." />
+  <title>OSRS GE Flip Finder</title>
+  <style>
+    :root {
+      --bg: #1a1410;
+      --surface: #2a2218;
+      --surface2: #352b1f;
+      --border: #4a3c28;
+      --text: #f0e6d2;
+      --muted: #a89878;
+      --accent: #c9a227;
+      --accent-dim: #8a7018;
+      --green: #5cb85c;
+      --red: #c75050;
+      --blue: #6ba3c7;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: linear-gradient(180deg, #3d3020 0%, var(--surface) 100%);
+      border-bottom: 2px solid var(--accent-dim);
+      padding: 1rem 1.5rem;
+    }
+
+    header h1 {
+      margin: 0 0 0.25rem;
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    header p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    header a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    header a:hover {
+      color: var(--text);
+      text-decoration: underline;
+    }
+
+    .status-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      padding: 0.75rem 1.5rem;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+
+    .status-bar .error { color: var(--red); }
+    .status-bar .ok { color: var(--green); }
+
+    html, body {
+      overflow-x: hidden;
+      max-width: 100%;
+    }
+
+    main {
+      padding: 1rem 1.5rem 2rem;
+      max-width: 1600px;
+      margin: 0 auto;
+      overflow-x: hidden;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 0.75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+
+    .filter-group.wide { grid-column: span 2; }
+
+    label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    input, select {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.45rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.9rem;
+    }
+
+    input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .toggles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      align-items: center;
+      grid-column: 1 / -1;
+      padding-top: 0.25rem;
+    }
+
+    .toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.9rem;
+      color: var(--text);
+      cursor: pointer;
+    }
+
+    .toggle input { width: auto; }
+
+    .actions {
+      grid-column: 1 / -1;
+      display: flex;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    .preset-filters {
+      grid-column: 1 / -1;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+
+    .preset-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-right: 0.25rem;
+    }
+
+    .preset-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 0.4rem 0.75rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.82rem;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--accent);
+      background: var(--accent-dim);
+      color: var(--text);
+    }
+
+    .preset-btn.active {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: var(--text);
+    }
+
+    .preset-btn.active:hover {
+      background: var(--accent);
+      color: #1a1410;
+    }
+
+    button {
+      background: var(--accent-dim);
+      color: var(--text);
+      border: 1px solid var(--accent);
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+
+    button:hover { background: var(--accent); color: #1a1410; }
+
+    .results-meta {
+      margin-bottom: 0.75rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .table-wrap {
+      overflow-x: hidden;
+      max-width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+    }
+
+    table {
+      width: 100%;
+      max-width: 100%;
+      table-layout: fixed;
+      border-collapse: collapse;
+      font-size: 0.78rem;
+    }
+
+    th, td {
+      padding: 0.4rem 0.35rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      vertical-align: middle;
+    }
+
+    th {
+      white-space: normal;
+      line-height: 1.2;
+      font-size: 0.72rem;
+      background: var(--surface2);
+      color: var(--accent);
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    td.price-buy, td.price-sell,
+    th.col-price-buy, th.col-price-sell {
+      white-space: nowrap;
+      text-align: right;
+      font-size: 0.72rem;
+    }
+
+    td.num, th.num {
+      text-align: right;
+      white-space: nowrap;
+      font-size: 0.72rem;
+      overflow: visible;
+      text-overflow: clip;
+    }
+
+    th.col-item, td.col-item {
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    #top10Table th.col-price-buy,
+    #top10Table td.price-col-buy {
+      background: rgba(107, 163, 199, 0.14);
+      box-shadow: inset 0 0 0 1px rgba(107, 163, 199, 0.35);
+      color: #9fd4ff;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    #top10Table th.col-price-sell,
+    #top10Table td.price-col-sell {
+      background: rgba(92, 184, 92, 0.14);
+      box-shadow: inset 0 0 0 1px rgba(92, 184, 92, 0.35);
+      color: #8fdf8f;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    th.sortable {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    th.sortable:hover { color: var(--text); }
+
+    th.sortable.sorted-desc::after { content: " ▼"; font-size: 0.7rem; }
+    th.sortable.sorted-asc::after { content: " ▲"; font-size: 0.7rem; }
+
+    .price-buy { color: var(--blue); font-weight: 600; }
+    .price-sell { color: var(--green); font-weight: 600; }
+
+    .filters-title {
+      grid-column: 1 / -1;
+      margin: 0;
+      font-size: 0.95rem;
+      color: var(--accent);
+    }
+
+    .filters-subtitle {
+      grid-column: 1 / -1;
+      margin: -0.25rem 0 0;
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+
+    .item-cell {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      min-width: 0;
+      overflow: hidden;
+    }
+
+    .item-cell img {
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      image-rendering: pixelated;
+    }
+
+    .item-name {
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      min-width: 0;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.65rem;
+      padding: 0.1rem 0.35rem;
+      border-radius: 3px;
+      margin-left: 0.35rem;
+      vertical-align: middle;
+    }
+
+    .badge-members { background: #2a4a2a; color: var(--green); }
+    .badge-f2p { background: #2a3a4a; color: var(--blue); }
+
+    .positive { color: var(--green); }
+    .negative { color: var(--red); }
+    .tax-lost { color: var(--red); }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: var(--muted);
+    }
+
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .tab {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 0.6rem 1.1rem;
+      border-radius: 6px 6px 0 0;
+      border-bottom: none;
+    }
+
+    .tab.active {
+      background: var(--surface2);
+      color: var(--accent);
+      border-color: var(--accent-dim);
+    }
+
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    .top10-note {
+      margin: 0 0 0.75rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+
+    .rank-cell {
+      font-weight: 700;
+      color: var(--accent);
+      width: 1.75rem;
+      text-align: center;
+      padding-left: 0.25rem;
+      padding-right: 0.25rem;
+    }
+
+    .highlight-gp { color: var(--green); font-weight: 700; }
+
+    tr:hover td { background: rgba(201, 162, 39, 0.06); }
+
+    @media (max-width: 700px) {
+      main { padding: 1rem; }
+      table { font-size: 0.7rem; }
+      th { font-size: 0.65rem; }
+      th, td { padding: 0.3rem 0.2rem; }
+      .item-cell img { width: 24px; height: 24px; }
+      .filter-group.wide { grid-column: span 1; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>OSRS GE Flip Finder</h1>
+    <p>Live GE prices via <a href="https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices" target="_blank" rel="noopener">OSRS Wiki / RuneLite</a> · Estimates only, not trading advice</p>
+  </header>
+
+  <div class="status-bar">
+    <span id="status">Loading price data…</span>
+    <span id="lastUpdated"></span>
+  </div>
+
+  <main>
+    <nav class="tabs">
+      <button type="button" class="tab active" data-tab="top10">Top 10 Flips</button>
+      <button type="button" class="tab" data-tab="search">Search</button>
+    </nav>
+
+    <div id="searchPanel" class="tab-panel">
+    <section class="filters">
+      <div class="filter-group wide">
+        <label for="searchText">Item name</label>
+        <input id="searchText" type="text" placeholder="e.g. dragon, rune scimitar" autocomplete="off" />
+      </div>
+
+      <div class="filter-group">
+        <label for="minPrice">Min buy price (gp)</label>
+        <input id="minPrice" type="number" min="0" placeholder="0" />
+      </div>
+
+      <div class="filter-group">
+        <label for="maxPrice">Max buy price (gp)</label>
+        <input id="maxPrice" type="number" min="0" placeholder="Any" />
+      </div>
+
+      <div class="filter-group">
+        <label for="minMargin">Min margin %</label>
+        <input id="minMargin" type="number" step="0.1" placeholder="0" />
+      </div>
+
+      <div class="filter-group">
+        <label for="minDailyVol">Min daily volume</label>
+        <input id="minDailyVol" type="number" min="0" placeholder="0" />
+      </div>
+
+      <div class="filter-group">
+        <label for="minLimit">Min buy limit</label>
+        <input id="minLimit" type="number" min="0" placeholder="0" />
+      </div>
+
+      <div class="filter-group">
+        <label for="minCycleMin">Min cycle (min)</label>
+        <input id="minCycleMin" type="number" min="0" placeholder="Any" />
+      </div>
+
+      <div class="filter-group">
+        <label for="maxCycleMin">Max cycle (min)</label>
+        <input id="maxCycleMin" type="number" min="0" placeholder="Any" />
+      </div>
+
+      <div class="filter-group">
+        <label for="membersFilter">Members</label>
+        <select id="membersFilter">
+          <option value="all">All items</option>
+          <option value="members">Members only</option>
+          <option value="f2p">F2P only</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="sortBy">Sort by</label>
+        <select id="sortBy">
+          <option value="profitAfterTax">Potential profit (after tax)</option>
+          <option value="marginPct">Margin %</option>
+          <option value="marginGp">Margin (gp/item)</option>
+          <option value="volume5m">5m volume</option>
+          <option value="dailyVolume">Daily volume</option>
+          <option value="gpNeeded">GP needed (full limit)</option>
+          <option value="buyTime">Est. time to buy</option>
+          <option value="sellTime">Est. time to sell</option>
+          <option value="buyPrice">Buy price</option>
+          <option value="name">Name</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="sortDir">Order</label>
+        <select id="sortDir">
+          <option value="desc">High → low</option>
+          <option value="asc">Low → high</option>
+        </select>
+      </div>
+
+      <div class="toggles">
+        <label class="toggle">
+          <input id="includeTax" type="checkbox" checked />
+          Include 2% GE tax on sells (max 5M/item; bonds exempt)
+        </label>
+        <label class="toggle">
+          <input id="profitableOnly" type="checkbox" checked />
+          Profitable flips only (name search always shows matches)
+        </label>
+      </div>
+
+      <div class="actions">
+        <button type="button" id="refreshBtn">Refresh prices</button>
+        <button type="button" id="resetBtn">Reset filters</button>
+      </div>
+    </section>
+
+    <div class="results-meta" id="resultsMeta"></div>
+
+    <div class="table-wrap">
+      <table id="searchTable">
+        <colgroup>
+          <col style="width: 14%" />
+          <col style="width: 8%" />
+          <col style="width: 8%" />
+          <col span="11" />
+        </colgroup>
+        <thead>
+          <tr>
+            <th class="sortable col-item" data-sort="name">Item</th>
+            <th class="sortable num col-price-buy" data-sort="buy">Rec. buy</th>
+            <th class="sortable num col-price-sell" data-sort="sell">Rec. sell</th>
+            <th class="sortable num" data-sort="marginGp">Margin / item</th>
+            <th class="sortable num" data-sort="marginPct">Margin %</th>
+            <th class="sortable num" data-sort="taxPerItem">Tax / item</th>
+            <th class="sortable num" data-sort="taxLostLimit">Tax (limit)</th>
+            <th class="sortable num" data-sort="profitAfterTax">Profit (limit)</th>
+            <th class="sortable num" data-sort="gpNeeded">GP needed</th>
+            <th class="sortable num" data-sort="volume5m">5m vol.</th>
+            <th class="sortable num" data-sort="dailyVolume">Daily vol.</th>
+            <th class="sortable num" data-sort="buyTimeHours">Est. buy</th>
+            <th class="sortable num" data-sort="sellTimeHours">Est. sell</th>
+            <th class="sortable num" data-sort="limit">Limit</th>
+          </tr>
+        </thead>
+        <tbody id="resultsBody">
+          <tr><td colspan="14" class="loading">Loading…</td></tr>
+        </tbody>
+      </table>
+    </div>
+    </div>
+
+    <div id="top10Panel" class="tab-panel active">
+      <section class="filters">
+        <h2 class="filters-title">Top 10 recommendation filters</h2>
+        <p class="filters-subtitle">Independent from Search — set your GP budget, volume minimums, and flip constraints here.</p>
+
+        <div class="preset-filters">
+          <span class="preset-label">Timeframe</span>
+          <button type="button" class="preset-btn" data-t10-preset="quickFlips">Quick flips</button>
+        </div>
+
+        <div class="preset-filters">
+          <span class="preset-label">Budget</span>
+          <button type="button" class="preset-btn" data-t10-preset="budget1m">1M GP</button>
+          <button type="button" class="preset-btn" data-t10-preset="budget10m">10M GP</button>
+          <button type="button" class="preset-btn" data-t10-preset="budget50m">50M GP</button>
+          <button type="button" class="preset-btn" data-t10-preset="budget100m">100M GP</button>
+        </div>
+
+        <div class="preset-filters">
+          <span class="preset-label">Style</span>
+          <button type="button" class="preset-btn" data-t10-preset="highVolume">High volume</button>
+          <button type="button" class="preset-btn" data-t10-preset="safeMargin">Safe margin</button>
+          <button type="button" class="preset-btn" data-t10-preset="highGpHour">High GP / hour</button>
+          <button type="button" class="preset-btn" data-t10-preset="bigProfit">Big profit</button>
+          <button type="button" class="preset-btn" data-t10-preset="f2pFlips">F2P</button>
+        </div>
+
+        <div class="filter-group wide">
+          <label for="t10Search">Item name</label>
+          <input id="t10Search" type="text" placeholder="Optional name filter" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MaxGp">Max GP budget</label>
+          <input id="t10MaxGp" type="number" min="0" placeholder="e.g. 5000000" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MinPrice">Min rec. buy (gp)</label>
+          <input id="t10MinPrice" type="number" min="0" placeholder="0" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MaxPrice">Max rec. buy (gp)</label>
+          <input id="t10MaxPrice" type="number" min="0" placeholder="Any" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MinMargin">Min margin %</label>
+          <input id="t10MinMargin" type="number" step="0.1" placeholder="0" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MinProfit">Min profit (limit)</label>
+          <input id="t10MinProfit" type="number" min="0" placeholder="0" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MinGpHour">Min GP / hour</label>
+          <input id="t10MinGpHour" type="number" min="0" placeholder="0" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10Min5mVol">Min 5m volume</label>
+          <input id="t10Min5mVol" type="number" min="0" placeholder="0" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MinDailyVol">Min daily volume</label>
+          <input id="t10MinDailyVol" type="number" min="0" placeholder="0" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MinLimit">Min buy limit</label>
+          <input id="t10MinLimit" type="number" min="0" placeholder="0" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MaxLimit">Max buy limit</label>
+          <input id="t10MaxLimit" type="number" min="0" placeholder="Any" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MinCycleMin">Min cycle (min)</label>
+          <input id="t10MinCycleMin" type="number" min="0" placeholder="Any" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MaxCycleMin">Max cycle (min)</label>
+          <input id="t10MaxCycleMin" type="number" min="0" placeholder="Any" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MinBuyMin">Min est. buy (min)</label>
+          <input id="t10MinBuyMin" type="number" min="0" placeholder="Any" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MaxBuyMin">Max est. buy (min)</label>
+          <input id="t10MaxBuyMin" type="number" min="0" placeholder="Any" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MinSellMin">Min est. sell (min)</label>
+          <input id="t10MinSellMin" type="number" min="0" placeholder="Any" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MaxSellMin">Max est. sell (min)</label>
+          <input id="t10MaxSellMin" type="number" min="0" placeholder="Any" />
+        </div>
+
+        <div class="filter-group">
+          <label for="t10MembersFilter">Members</label>
+          <select id="t10MembersFilter">
+            <option value="all">All items</option>
+            <option value="members">Members only</option>
+            <option value="f2p">F2P only</option>
+          </select>
+        </div>
+
+        <div class="toggles">
+          <label class="toggle">
+            <input id="t10IncludeTax" type="checkbox" checked />
+            Include 2% GE tax on sells (max 5M/item; bonds exempt)
+          </label>
+        </div>
+
+        <div class="actions">
+          <button type="button" id="refreshTop10Btn">Refresh prices</button>
+          <button type="button" id="resetTop10Btn">Reset top 10 filters</button>
+        </div>
+      </section>
+
+      <p class="top10-note">
+        Ranked by estimated GP/hour (click column headers to sort). <strong>Rec. buy</strong> (blue) and <strong>Rec. sell</strong> (green) are right after the item name.
+        Est. buy/sell/cycle use a 65% recent 5m + 35% 1h volume blend at each price side.
+      </p>
+      <div class="results-meta" id="top10Meta"></div>
+      <div class="table-wrap">
+        <table id="top10Table">
+          <colgroup>
+            <col style="width: 2.5%" />
+            <col style="width: 11%" />
+            <col style="width: 8%" />
+            <col style="width: 8%" />
+            <col style="width: 7%" />
+            <col span="12" />
+          </colgroup>
+          <thead>
+            <tr>
+              <th class="num">#</th>
+              <th class="sortable col-item" data-sort="name">Item</th>
+              <th class="sortable num col-price-buy" data-sort="buy">Rec. buy</th>
+              <th class="sortable num col-price-sell" data-sort="sell">Rec. sell</th>
+              <th class="sortable num" data-sort="gpPerHour">GP / hour</th>
+              <th class="sortable num" data-sort="marginGp">Margin / item</th>
+              <th class="sortable num" data-sort="marginPct">Margin %</th>
+              <th class="sortable num" data-sort="taxPerItem">Tax / item</th>
+              <th class="sortable num" data-sort="taxLostLimit">Tax (limit)</th>
+              <th class="sortable num" data-sort="profitAfterTax">Profit (limit)</th>
+              <th class="sortable num" data-sort="gpNeeded">GP needed</th>
+              <th class="sortable num" data-sort="volume5m">5m vol.</th>
+              <th class="sortable num" data-sort="dailyVolume">Daily vol.</th>
+              <th class="sortable num" data-sort="buyTimeHours">Est. buy</th>
+              <th class="sortable num" data-sort="sellTimeHours">Est. sell</th>
+              <th class="sortable num" data-sort="flipCycleHours">Cycle</th>
+              <th class="sortable num" data-sort="limit">Limit</th>
+            </tr>
+          </thead>
+          <tbody id="top10Body">
+            <tr><td colspan="17" class="loading">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const API_BASE = "https://prices.runescape.wiki/api/v1/osrs";
+    const USER_AGENT = "OSRS-GE-Flipper - local flip finder tool";
+    const GE_TAX_RATE = 0.02;
+    const GE_TAX_CAP = 5_000_000;
+    const GE_TAX_EXEMPT_BELOW = 100;
+    const BOND_ID = 13190;
+    const WIKI_IMG = "https://oldschool.runescape.wiki/images/";
+
+    let items = [];
+    let cachedApiData = null;
+    let debounceTimer = null;
+    let activeTab = "top10";
+    let top10Sort = { key: "gpPerHour", dir: "desc" };
+
+    const SORT_KEY_TO_DROPDOWN = {
+      buy: "buyPrice",
+      buyTimeHours: "buyTime",
+      sellTimeHours: "sellTime",
+    };
+
+    const DROPDOWN_TO_SORT_KEY = {
+      buyPrice: "buy",
+      buyTime: "buyTimeHours",
+      sellTime: "sellTimeHours",
+    };
+
+    const el = (id) => document.getElementById(id);
+
+    async function fetchJson(path) {
+      const res = await fetch(`${API_BASE}${path}`, { headers: { "User-Agent": USER_AGENT } });
+      if (!res.ok) throw new Error(`API error ${res.status} on ${path}`);
+      return res.json();
+    }
+
+    function iconUrl(filename) {
+      if (!filename) return "";
+      return WIKI_IMG + encodeURIComponent(filename.replace(/ /g, "_"));
+    }
+
+    function formatGp(n) {
+      if (n == null || !Number.isFinite(n)) return "—";
+      if (Math.abs(n) >= 1_000_000) return (n / 1_000_000).toFixed(2) + "M";
+      if (Math.abs(n) >= 1_000) return (n / 1_000).toFixed(1) + "K";
+      return Math.round(n).toLocaleString();
+    }
+
+    function formatPrice(n) {
+      if (n == null || !Number.isFinite(n)) return "—";
+      return Math.round(n).toLocaleString();
+    }
+
+    function formatDuration(hours) {
+      if (hours == null || !Number.isFinite(hours) || hours <= 0) return "—";
+      if (hours < 1 / 60) return "< 1m";
+      const totalMinutes = Math.round(hours * 60);
+      if (totalMinutes < 60) return `${totalMinutes}m`;
+      const h = Math.floor(totalMinutes / 60);
+      const m = totalMinutes % 60;
+      return m ? `${h}h ${m}m` : `${h}h`;
+    }
+
+    function parseNum(id) {
+      const input = el(id);
+      if (!input) return null;
+      const v = input.value.trim();
+      if (v === "") return null;
+      const n = Number(v);
+      return Number.isFinite(n) ? n : null;
+    }
+
+    function getInputValue(id) {
+      const input = el(id);
+      return input ? input.value : "";
+    }
+
+    function isChecked(id) {
+      const input = el(id);
+      return input ? input.checked : false;
+    }
+
+    function effectiveHourlyRate(vol5m, volHour) {
+      const rate5m = vol5m > 0 ? vol5m * 12 : 0;
+      if (rate5m > 0 && volHour > 0) return rate5m * 0.65 + volHour * 0.35;
+      if (rate5m > 0) return rate5m;
+      return volHour;
+    }
+
+    function hoursToFillLimit(limit, itemsPerHour) {
+      if (!limit || !itemsPerHour || itemsPerHour <= 0) return null;
+      return limit / itemsPerHour;
+    }
+
+    function buildRawItem(mapping, latest, hourly, fiveMin) {
+      const buy = latest.low;
+      const sell = latest.high;
+      if (buy == null || sell == null || buy <= 0) return null;
+
+      const limit = mapping.limit ?? 0;
+      const buyVolHour = hourly?.lowPriceVolume ?? 0;
+      const sellVolHour = hourly?.highPriceVolume ?? 0;
+      const buyVol5m = fiveMin?.lowPriceVolume ?? 0;
+      const sellVol5m = fiveMin?.highPriceVolume ?? 0;
+      const volume5m = buyVol5m + sellVol5m;
+
+      const buyRateHour = effectiveHourlyRate(buyVol5m, buyVolHour);
+      const sellRateHour = effectiveHourlyRate(sellVol5m, sellVolHour);
+      const dailyVolume = (buyRateHour + sellRateHour) * 24;
+      const buyTimeHours = hoursToFillLimit(limit, buyRateHour);
+      const sellTimeHours = hoursToFillLimit(limit, sellRateHour);
+      const flipCycleHours =
+        buyTimeHours != null && sellTimeHours != null ? buyTimeHours + sellTimeHours : null;
+
+      return {
+        id: mapping.id,
+        name: mapping.name,
+        icon: mapping.icon,
+        members: mapping.members,
+        buy,
+        sell,
+        limit,
+        gpNeeded: buy * limit,
+        volume5m,
+        dailyVolume,
+        buyTimeHours,
+        sellTimeHours,
+        flipCycleHours,
+        buyVolHour,
+        sellVolHour,
+        buyRateHour,
+        sellRateHour,
+      };
+    }
+
+    function isBond(item) {
+      return item.id === BOND_ID;
+    }
+
+    function calcGeTaxPerItem(sellPrice, itemId, includeTax) {
+      if (!includeTax || sellPrice == null || !Number.isFinite(sellPrice)) return 0;
+      if (itemId === BOND_ID) return 0;
+      if (sellPrice < GE_TAX_EXEMPT_BELOW) return 0;
+      return Math.min(Math.floor(sellPrice * GE_TAX_RATE), GE_TAX_CAP);
+    }
+
+    function enrichItem(item, includeTax) {
+      const taxPerItem = calcGeTaxPerItem(item.sell, item.id, includeTax);
+      const taxCapped =
+        includeTax &&
+        item.id !== BOND_ID &&
+        item.sell >= GE_TAX_EXEMPT_BELOW &&
+        Math.floor(item.sell * GE_TAX_RATE) > GE_TAX_CAP;
+      const sellAfterTax = item.sell - taxPerItem;
+      const marginGp = sellAfterTax - item.buy;
+      const marginPct = (marginGp / item.buy) * 100;
+      const taxLostLimit = taxPerItem * item.limit;
+      const profitAfterTax = marginGp * item.limit;
+      const gpPerHour =
+        item.flipCycleHours != null && item.flipCycleHours > 0
+          ? profitAfterTax / item.flipCycleHours
+          : null;
+
+      return {
+        ...item,
+        taxPerItem,
+        taxLostLimit,
+        taxCapped,
+        sellAfterTax,
+        marginGp,
+        marginPct,
+        profitAfterTax,
+        gpPerHour,
+      };
+    }
+
+    function buildItems() {
+      if (!cachedApiData) return [];
+      const { mapping, latest, hourly, fiveMin } = cachedApiData;
+      return mapping
+        .map((m) => {
+          const l = latest[m.id];
+          if (!l) return null;
+          return buildRawItem(m, l, hourly?.[m.id], fiveMin?.[m.id]);
+        })
+        .filter(Boolean);
+    }
+
+    function getSortValue(item, key) {
+      if (key === "name") return item.name;
+      if (key === "buy") return item.buy;
+      if (key === "sell") return item.sell;
+      return item[key];
+    }
+
+    function sortItemList(list, key, dir) {
+      const multiplier = dir === "asc" ? 1 : -1;
+      return [...list].sort((a, b) => {
+        if (key === "name") return multiplier * a.name.localeCompare(b.name);
+        const av = getSortValue(a, key);
+        const bv = getSortValue(b, key);
+        if (av == null && bv == null) return a.name.localeCompare(b.name);
+        if (av == null) return 1;
+        if (bv == null) return -1;
+        if (av < bv) return -1 * multiplier;
+        if (av > bv) return 1 * multiplier;
+        return a.name.localeCompare(b.name);
+      });
+    }
+
+    function updateSortHeaders(tableId, key, dir) {
+      const table = el(tableId);
+      if (!table) return;
+      table.querySelectorAll("th.sortable").forEach((th) => {
+        const active = th.dataset.sort === key;
+        th.classList.toggle("sorted-asc", active && dir === "asc");
+        th.classList.toggle("sorted-desc", active && dir === "desc");
+      });
+    }
+
+    function dropdownKeyToSortKey(dropdownKey) {
+      return DROPDOWN_TO_SORT_KEY[dropdownKey] || dropdownKey;
+    }
+
+    function sortKeyToDropdownKey(sortKey) {
+      return SORT_KEY_TO_DROPDOWN[sortKey] || sortKey;
+    }
+
+    function handleSearchHeaderSort(key) {
+      const currentKey = dropdownKeyToSortKey(getInputValue("sortBy"));
+      const currentDir = getInputValue("sortDir");
+      const dir = key === currentKey ? (currentDir === "desc" ? "asc" : "desc") : "desc";
+      el("sortBy").value = sortKeyToDropdownKey(key);
+      el("sortDir").value = dir;
+      updateSortHeaders("searchTable", key, dir);
+      renderResults();
+    }
+
+    function handleTop10HeaderSort(key) {
+      const dir =
+        key === top10Sort.key ? (top10Sort.dir === "desc" ? "asc" : "desc") : "desc";
+      top10Sort = { key, dir };
+      updateSortHeaders("top10Table", key, dir);
+      renderTop10();
+    }
+
+    function bindSortableHeaders(tableId, handler) {
+      const table = el(tableId);
+      if (!table) return;
+      table.querySelectorAll("th.sortable").forEach((th) => {
+        th.addEventListener("click", () => handler(th.dataset.sort));
+      });
+    }
+
+    function taxCells(item, includeTax) {
+      if (!includeTax) return '<td class="num">—</td><td class="num">—</td>';
+      const capNote = item.taxCapped ? " (5M cap)" : "";
+      const exemptNote =
+        item.id === BOND_ID
+          ? "Bond — GE tax exempt"
+          : item.sell < GE_TAX_EXEMPT_BELOW
+            ? "Sell price under 100 gp — no tax"
+            : `2% of rec. sell${capNote}`;
+      return `<td class="num tax-lost" title="${exemptNote}">${formatGp(item.taxPerItem)}</td>
+        <td class="num tax-lost" title="Total tax on full buy limit">${formatGp(item.taxLostLimit)}</td>`;
+    }
+
+    function durationCell(hours, title) {
+      const text = formatDuration(hours);
+      return title
+        ? `<td class="num" title="${escapeHtml(title)}">${text}</td>`
+        : `<td class="num">${text}</td>`;
+    }
+
+    function numCell(value, className = "num") {
+      return `<td class="${className}">${value}</td>`;
+    }
+
+    function timingTooltip(item, side) {
+      const rate = side === "buy" ? item.buyRateHour : item.sellRateHour;
+      if (!rate || rate <= 0) return "No recent volume at this price side";
+      const perMin = rate / 60;
+      return `~${Math.round(rate).toLocaleString()} items/hour at rec. ${side} (65% 5m + 35% 1h) · ~${perMin >= 1 ? perMin.toFixed(1) : perMin.toFixed(2)}/min`;
+    }
+
+    function cycleTooltip(item) {
+      if (item.flipCycleHours == null) return "Need buy and sell volume to estimate full cycle";
+      return `Est. buy + est. sell (${formatDuration(item.buyTimeHours)} + ${formatDuration(item.sellTimeHours)})`;
+    }
+
+    function itemRowHtml(item, { rank = null, showGpPerHour = false, includeTax = false } = {}) {
+      const memberBadge = item.members
+        ? '<span class="badge badge-members">P2P</span>'
+        : '<span class="badge badge-f2p">F2P</span>';
+      const marginClass = item.marginGp >= 0 ? "positive" : "negative";
+      const rankCell = rank != null ? `<td class="rank-cell num">${rank}</td>` : "";
+      const gpPerHourCell = showGpPerHour
+        ? numCell(formatGp(item.gpPerHour), "num highlight-gp")
+        : "";
+      const priceHighlight = showGpPerHour;
+      const buyClass = priceHighlight ? "num price-buy price-col-buy" : "num price-buy";
+      const sellClass = priceHighlight ? "num price-sell price-col-sell" : "num price-sell";
+      const priceHtml = `<td class="${buyClass}" title="Place buy order at this price">${formatPrice(item.buy)}</td>
+        <td class="${sellClass}" title="Place sell order at this price">${formatPrice(item.sell)}</td>`;
+
+      if (showGpPerHour) {
+        return `<tr>
+          ${rankCell}
+          <td class="col-item">
+            <div class="item-cell">
+              <img src="${iconUrl(item.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
+              <span class="item-name">${escapeHtml(item.name)}${memberBadge}</span>
+            </div>
+          </td>
+          ${priceHtml}
+          ${gpPerHourCell}
+          ${numCell(formatGp(item.marginGp), `num ${marginClass}`)}
+          ${numCell(`${item.marginPct.toFixed(2)}%`, `num ${marginClass}`)}
+          ${taxCells(item, includeTax)}
+          ${numCell(formatGp(item.profitAfterTax), `num ${marginClass}`)}
+          ${numCell(formatGp(item.gpNeeded))}
+          ${numCell(formatGp(item.volume5m))}
+          ${numCell(formatGp(item.dailyVolume))}
+          ${durationCell(item.buyTimeHours, timingTooltip(item, "buy"))}
+          ${durationCell(item.sellTimeHours, timingTooltip(item, "sell"))}
+          ${durationCell(item.flipCycleHours, cycleTooltip(item))}
+          ${numCell(item.limit.toLocaleString())}
+        </tr>`;
+      }
+
+      return `<tr>
+        <td class="col-item">
+          <div class="item-cell">
+            <img src="${iconUrl(item.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
+            <span class="item-name">${escapeHtml(item.name)}${memberBadge}</span>
+          </div>
+        </td>
+        ${priceHtml}
+        ${numCell(formatGp(item.marginGp), `num ${marginClass}`)}
+        ${numCell(`${item.marginPct.toFixed(2)}%`, `num ${marginClass}`)}
+        ${taxCells(item, includeTax)}
+        ${numCell(formatGp(item.profitAfterTax), `num ${marginClass}`)}
+        ${numCell(formatGp(item.gpNeeded))}
+        ${numCell(formatGp(item.volume5m))}
+        ${numCell(formatGp(item.dailyVolume))}
+        ${durationCell(item.buyTimeHours, timingTooltip(item, "buy"))}
+        ${durationCell(item.sellTimeHours, timingTooltip(item, "sell"))}
+        ${numCell(item.limit.toLocaleString())}
+      </tr>`;
+    }
+
+    function passesSearchFilters(item) {
+      const search = getInputValue("searchText").trim().toLowerCase();
+      const nameMatch = search && item.name.toLowerCase().includes(search);
+      if (search && !nameMatch) return false;
+
+      const minPrice = parseNum("minPrice");
+      const maxPrice = parseNum("maxPrice");
+      const minMargin = parseNum("minMargin");
+      const minDailyVol = parseNum("minDailyVol");
+      const minLimit = parseNum("minLimit");
+      const minCycleMin = parseNum("minCycleMin");
+      const maxCycleMin = parseNum("maxCycleMin");
+      const membersFilter = getInputValue("membersFilter");
+
+      if (minPrice != null && item.buy < minPrice) return false;
+      if (maxPrice != null && item.buy > maxPrice) return false;
+      if (minMargin != null && item.marginPct < minMargin) return false;
+      if (minDailyVol != null && item.dailyVolume < minDailyVol) return false;
+      if (minLimit != null && item.limit < minLimit) return false;
+      if (!withinMinuteRange(item.flipCycleHours, minCycleMin, maxCycleMin)) return false;
+      if (membersFilter === "members" && !item.members) return false;
+      if (membersFilter === "f2p" && item.members) return false;
+      if (item.marginGp <= 0 && !nameMatch && isChecked("profitableOnly")) return false;
+      return true;
+    }
+
+    function withinMinuteRange(hours, minMinutes, maxMinutes) {
+      if (minMinutes == null && maxMinutes == null) return true;
+      if (hours == null || !Number.isFinite(hours) || hours <= 0) return false;
+      const minutes = hours * 60;
+      if (minMinutes != null && minutes < minMinutes) return false;
+      if (maxMinutes != null && minutes > maxMinutes) return false;
+      return true;
+    }
+
+    function passesTop10Filters(item) {
+      const search = getInputValue("t10Search").trim().toLowerCase();
+      const nameMatch = search && item.name.toLowerCase().includes(search);
+      if (search && !nameMatch) return false;
+
+      const maxGp = parseNum("t10MaxGp");
+      const minPrice = parseNum("t10MinPrice");
+      const maxPrice = parseNum("t10MaxPrice");
+      const minMargin = parseNum("t10MinMargin");
+      const minProfit = parseNum("t10MinProfit");
+      const minGpHour = parseNum("t10MinGpHour");
+      const min5mVol = parseNum("t10Min5mVol");
+      const minDailyVol = parseNum("t10MinDailyVol");
+      const minLimit = parseNum("t10MinLimit");
+      const maxLimit = parseNum("t10MaxLimit");
+      const minCycleMin = parseNum("t10MinCycleMin");
+      const maxCycleMin = parseNum("t10MaxCycleMin");
+      const minBuyMin = parseNum("t10MinBuyMin");
+      const maxBuyMin = parseNum("t10MaxBuyMin");
+      const minSellMin = parseNum("t10MinSellMin");
+      const maxSellMin = parseNum("t10MaxSellMin");
+      const membersFilter = getInputValue("t10MembersFilter");
+
+      if (maxGp != null && item.gpNeeded > maxGp) return false;
+      if (minPrice != null && item.buy < minPrice) return false;
+      if (maxPrice != null && item.buy > maxPrice) return false;
+      if (minMargin != null && item.marginPct < minMargin) return false;
+      if (minProfit != null && item.profitAfterTax < minProfit) return false;
+      if (minGpHour != null && (item.gpPerHour == null || item.gpPerHour < minGpHour)) return false;
+      if (min5mVol != null && item.volume5m < min5mVol) return false;
+      if (minDailyVol != null && item.dailyVolume < minDailyVol) return false;
+      if (minLimit != null && item.limit < minLimit) return false;
+      if (maxLimit != null && item.limit > maxLimit) return false;
+      if (!withinMinuteRange(item.flipCycleHours, minCycleMin, maxCycleMin)) return false;
+      if (!withinMinuteRange(item.buyTimeHours, minBuyMin, maxBuyMin)) return false;
+      if (!withinMinuteRange(item.sellTimeHours, minSellMin, maxSellMin)) return false;
+      if (membersFilter === "members" && !item.members) return false;
+      if (membersFilter === "f2p" && item.members) return false;
+      if (item.marginGp <= 0 && !nameMatch) return false;
+      return true;
+    }
+
+    function sortItems(list) {
+      const key = dropdownKeyToSortKey(getInputValue("sortBy"));
+      const dir = getInputValue("sortDir");
+      updateSortHeaders("searchTable", key, dir);
+      return sortItemList(list, key, dir);
+    }
+
+    function renderTop10() {
+      if (!items.length) {
+        el("top10Meta").textContent = "Load price data first, then use Refresh if needed.";
+        el("top10Body").innerHTML = '<tr><td colspan="17" class="loading">No price data loaded yet.</td></tr>';
+        return;
+      }
+
+      const includeTax = isChecked("t10IncludeTax");
+      const enriched = items.map((item) => enrichItem(item, includeTax));
+      const matching = enriched.filter(passesTop10Filters);
+      const pool = matching.filter(
+        (item) => !isBond(item) && item.gpPerHour != null && item.gpPerHour > 0
+      );
+      const candidates = sortItemList(pool, top10Sort.key, top10Sort.dir).slice(0, 10);
+      updateSortHeaders("top10Table", top10Sort.key, top10Sort.dir);
+
+      const budgetNote =
+        parseNum("t10MaxGp") != null ? ` · GP budget cap: ${formatGp(parseNum("t10MaxGp"))}` : "";
+
+      el("top10Meta").textContent = candidates.length
+        ? `Top ${candidates.length} flips by ${top10Sort.key === "gpPerHour" ? "GP/hour" : "selected column"} (from ${pool.length} eligible items${budgetNote})`
+        : `No flips match your top 10 filters (${matching.filter((i) => !isBond(i)).length} non-bond items passed filters). Try loosening restrictions.${budgetNote}`;
+
+      if (!candidates.length) {
+        el("top10Body").innerHTML =
+          '<tr><td colspan="17" class="loading">No recommendations available with current filters.</td></tr>';
+        return;
+      }
+
+      el("top10Body").innerHTML = candidates
+        .map((item, i) => itemRowHtml(item, { rank: i + 1, showGpPerHour: true, includeTax }))
+        .join("");
+    }
+
+    function renderAll() {
+      renderResults();
+      renderTop10();
+    }
+
+    function renderResults() {
+      if (!items.length) {
+        el("resultsMeta").textContent =
+          "Load price data first — click Refresh prices. (Locally: run start.bat for http://localhost:3500)";
+        el("resultsBody").innerHTML = '<tr><td colspan="14" class="loading">No price data loaded yet.</td></tr>';
+        return;
+      }
+
+      const includeTax = isChecked("includeTax");
+      const enriched = items.map((item) => enrichItem(item, includeTax));
+      const filtered = sortItems(enriched.filter(passesSearchFilters));
+      const searchActive = getInputValue("searchText").trim().length > 0;
+
+      el("resultsMeta").textContent =
+        filtered.length === items.length
+          ? `${filtered.length} of ${items.length} items with prices`
+          : `${filtered.length} of ${items.length} items match your filters`;
+
+      if (!filtered.length) {
+        el("resultsBody").innerHTML =
+          '<tr><td colspan="14" class="loading">No items match your filters. Try loosening them, turn off "Profitable flips only", or search by exact item name.</td></tr>';
+        return;
+      }
+
+      const maxRows = searchActive ? filtered.length : 500;
+      const shown = filtered.slice(0, maxRows);
+      el("resultsBody").innerHTML = shown
+        .map((item) => itemRowHtml(item, { includeTax }))
+        .join("");
+
+      if (filtered.length > maxRows) {
+        el("resultsMeta").textContent += ` (showing top ${maxRows})`;
+      }
+    }
+
+    function scheduleTop10Render() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(renderTop10, 100);
+    }
+
+    function escapeHtml(str) {
+      return str
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function scheduleRender() {
+      clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(renderAll, 100);
+    }
+
+    function switchTab(tabId) {
+      activeTab = tabId;
+      document.querySelectorAll(".tab").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.tab === tabId);
+      });
+      document.querySelectorAll(".tab-panel").forEach((panel) => {
+        panel.classList.toggle("active", panel.id === `${tabId}Panel`);
+      });
+    }
+
+    async function loadData() {
+      el("status").textContent = "Loading price data…";
+      el("status").className = "";
+      el("resultsBody").innerHTML = '<tr><td colspan="14" class="loading">Loading…</td></tr>';
+      el("top10Body").innerHTML = '<tr><td colspan="17" class="loading">Loading…</td></tr>';
+
+      try {
+        const [mapping, latestRes, hourlyRes, fiveMinRes] = await Promise.all([
+          fetchJson("/mapping"),
+          fetchJson("/latest"),
+          fetchJson("/1h"),
+          fetchJson("/5m"),
+        ]);
+
+        cachedApiData = {
+          mapping,
+          latest: latestRes.data,
+          hourly: hourlyRes.data,
+          fiveMin: fiveMinRes.data,
+        };
+
+        items = buildItems();
+
+        const tsHour = hourlyRes.timestamp ? new Date(hourlyRes.timestamp * 1000) : null;
+        const ts5m = fiveMinRes.timestamp ? new Date(fiveMinRes.timestamp * 1000) : null;
+
+        el("status").textContent = `Loaded ${items.length.toLocaleString()} of ${mapping.length.toLocaleString()} items (latest prices; volume optional)`;
+        el("status").className = "ok";
+        el("lastUpdated").textContent = [
+          ts5m ? `5m vol.: ${ts5m.toLocaleString()}` : null,
+          tsHour ? `Daily est. from 1h: ${tsHour.toLocaleString()}` : null,
+        ]
+          .filter(Boolean)
+          .join(" · ");
+        renderAll();
+      } catch (err) {
+        items = [];
+        el("status").textContent = `Failed to load data: ${err.message}`;
+        el("status").className = "error";
+        const errHtml = `Could not load price data. Check your connection and click <strong>Refresh prices</strong>.<br><small>${escapeHtml(err.message)}</small>`;
+        el("resultsBody").innerHTML = `<tr><td colspan="14" class="loading">${errHtml}</td></tr>`;
+        el("top10Body").innerHTML = `<tr><td colspan="17" class="loading">${errHtml}</td></tr>`;
+        el("resultsMeta").textContent = "Price data not loaded — filters will apply once data loads.";
+        el("top10Meta").textContent = "Price data not loaded — filters will apply once data loads.";
+      }
+    }
+
+    function setTop10Filters(values = {}) {
+      el("t10Search").value = values.search ?? "";
+      el("t10MaxGp").value = values.maxGp ?? "";
+      el("t10MinPrice").value = values.minPrice ?? "";
+      el("t10MaxPrice").value = values.maxPrice ?? "";
+      el("t10MinMargin").value = values.minMargin ?? "";
+      el("t10MinProfit").value = values.minProfit ?? "";
+      el("t10MinGpHour").value = values.minGpHour ?? "";
+      el("t10Min5mVol").value = values.min5mVol ?? "";
+      el("t10MinDailyVol").value = values.minDailyVol ?? "";
+      el("t10MinLimit").value = values.minLimit ?? "";
+      el("t10MaxLimit").value = values.maxLimit ?? "";
+      el("t10MinCycleMin").value = values.minCycleMin ?? "";
+      el("t10MaxCycleMin").value = values.maxCycleMin ?? "";
+      el("t10MinBuyMin").value = values.minBuyMin ?? "";
+      el("t10MaxBuyMin").value = values.maxBuyMin ?? "";
+      el("t10MinSellMin").value = values.minSellMin ?? "";
+      el("t10MaxSellMin").value = values.maxSellMin ?? "";
+      el("t10MembersFilter").value = values.membersFilter ?? "all";
+      el("t10IncludeTax").checked = values.includeTax ?? true;
+    }
+
+    const T10_PRESETS = {
+      quickFlips: { minDailyVol: 5000, minProfit: 100000, maxCycleMin: 30, maxBuyMin: 15, maxSellMin: 15 },
+      highVolume: { minDailyVol: 5000 },
+      safeMargin: { minDailyVol: 5000, minMargin: 2, minProfit: 50000 },
+      highGpHour: { minDailyVol: 5000, minGpHour: 300000 },
+      bigProfit: { minDailyVol: 5000, minProfit: 1000000 },
+      f2pFlips: { minDailyVol: 3000, membersFilter: "f2p" },
+      budget1m: { maxGp: 1000000, minDailyVol: 5000, minMargin: 1 },
+      budget10m: { maxGp: 10000000, minDailyVol: 5000, minMargin: 0.5 },
+      budget50m: { maxGp: 50000000, minDailyVol: 5000, minMargin: 0.5 },
+      budget100m: { maxGp: 100000000, minDailyVol: 5000, minMargin: 0.5 },
+    };
+
+    function setActiveTop10Preset(presetId) {
+      document.querySelectorAll("[data-t10-preset]").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.t10Preset === presetId);
+      });
+    }
+
+    function applyTop10Preset(presetId) {
+      const preset = T10_PRESETS[presetId];
+      if (!preset) return;
+      setTop10Filters(preset);
+      top10Sort = { key: "gpPerHour", dir: "desc" };
+      setActiveTop10Preset(presetId);
+      renderTop10();
+    }
+
+    function resetTop10Filters() {
+      setTop10Filters({});
+      top10Sort = { key: "gpPerHour", dir: "desc" };
+      setActiveTop10Preset(null);
+      renderTop10();
+    }
+
+    function resetFilters() {
+      el("searchText").value = "";
+      el("minPrice").value = "";
+      el("maxPrice").value = "";
+      el("minMargin").value = "";
+      el("minDailyVol").value = "";
+      el("minLimit").value = "";
+      el("minCycleMin").value = "";
+      el("maxCycleMin").value = "";
+      el("membersFilter").value = "all";
+      el("sortBy").value = "profitAfterTax";
+      el("sortDir").value = "desc";
+      el("includeTax").checked = true;
+      el("profitableOnly").checked = true;
+      updateSortHeaders("searchTable", "profitAfterTax", "desc");
+      renderAll();
+    }
+
+    function bindFilterEvents() {
+      const searchPanel = el("searchPanel");
+      const top10Panel = el("top10Panel");
+
+      searchPanel.addEventListener("input", (e) => {
+        if (e.target.closest(".filters")) scheduleRender();
+      });
+      searchPanel.addEventListener("change", (e) => {
+        if (e.target.closest(".filters")) {
+          if (e.target.id === "sortBy" || e.target.id === "sortDir") {
+            const key = dropdownKeyToSortKey(getInputValue("sortBy"));
+            updateSortHeaders("searchTable", key, getInputValue("sortDir"));
+          }
+          renderAll();
+        }
+      });
+
+      top10Panel.addEventListener("input", (e) => {
+        if (e.target.closest(".filters")) {
+          setActiveTop10Preset(null);
+          scheduleTop10Render();
+        }
+      });
+      top10Panel.addEventListener("change", (e) => {
+        if (e.target.closest(".filters")) {
+          setActiveTop10Preset(null);
+          renderTop10();
+        }
+      });
+    }
+
+    document.querySelectorAll("[data-t10-preset]").forEach((btn) => {
+      btn.addEventListener("click", () => applyTop10Preset(btn.dataset.t10Preset));
+    });
+
+    el("refreshBtn").addEventListener("click", loadData);
+    el("refreshTop10Btn").addEventListener("click", loadData);
+    el("resetBtn").addEventListener("click", resetFilters);
+    el("resetTop10Btn").addEventListener("click", resetTop10Filters);
+
+    bindFilterEvents();
+    bindSortableHeaders("searchTable", handleSearchHeaderSort);
+    bindSortableHeaders("top10Table", handleTop10HeaderSort);
+
+    document.querySelectorAll(".tab").forEach((btn) => {
+      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+    });
+
+    loadData();
+  </script>
+
+
+</body>
+</html>

@@ -1,0 +1,10 @@
+{
+  "name": "osrs-ge-flip-finder",
+  "version": "1.0.0",
+  "private": true,
+  "description": "OSRS Grand Exchange flip finder using live wiki prices",
+  "scripts": {
+    "start": "npx --yes serve -l 3500"
+  },
+  "license": "MIT"
+}
