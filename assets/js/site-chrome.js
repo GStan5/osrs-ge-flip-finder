@@ -453,48 +453,127 @@
     });
   }
 
-  function mergeHeroAndStatus(chrome) {
-    const hero = chrome.querySelector(".page-hero");
-    const status = chrome.querySelector(".status-bar");
-    const hideHero = document.body.classList.contains("has-header-subnav");
-
-    if (hero && hideHero) {
-      hero.remove();
-    } else if (hero) {
-      hero.classList.add("page-hero--compact");
-      hero.querySelector("p")?.classList.add("page-hero-sub");
-    }
-
-    if (!status) return;
-
-    if (hero && chrome.contains(hero)) {
-      const head = document.createElement("div");
-      head.className = "tool-page-head";
-      hero.parentNode.insertBefore(head, hero);
-      head.appendChild(hero);
-      head.appendChild(status);
-    } else {
-      status.classList.add("status-bar--solo");
-    }
+  function isMainContentEl(el) {
+    if (!el || el.nodeType !== 1 || isToolChromeEl(el)) return false;
+    const cls = el.classList;
+    return (
+      cls.contains("content-shell") ||
+      cls.contains("tool-page-main") ||
+      cls.contains("page-main") ||
+      cls.contains("item-lookup-bar") ||
+      el.id === "itemLookupResults" ||
+      el.id === "itemDetailRoot"
+    );
   }
 
-  function compactToolChrome() {
+  function isLayoutSiblingEl(el) {
+    if (!el || el.nodeType !== 1) return false;
+    if (el.tagName === "SCRIPT") return false;
+    if (el.id === "toast" || el.classList.contains("skip-link") || el.classList.contains("kofi-strip")) return false;
+    if (el.classList.contains("site-header") || el.classList.contains("site-footer")) return false;
+    if (el.classList.contains("tool-layout-grid")) return false;
+    return true;
+  }
+
+  function layoutToolPage() {
     const path = currentPath();
-    if (!path.startsWith("/tools")) return;
+    if (!path.startsWith("/tools") || path === "/tools") return;
+    if (document.querySelector(".tool-layout-grid")) return;
 
     document.querySelectorAll("p.disclaimer, .disclaimer:not(.disclaimer-collapsible)").forEach(convertDisclaimerToDetails);
-    document.querySelectorAll(".tool-tip-bar").forEach(compactToolTip);
+    document.querySelectorAll(".tool-tip-bar:not(.tool-tip-collapsible)").forEach(compactToolTip);
 
-    const chromeEls = [...document.body.children].filter(isToolChromeEl);
-    if (!chromeEls.length) return;
+    const header = document.querySelector(".site-header");
+    const bodyKids = [...document.body.children].filter(isLayoutSiblingEl);
+    const chromeEls = bodyKids.filter(isToolChromeEl);
+    const mainEls = bodyKids.filter(isMainContentEl);
 
-    const chrome = document.createElement("div");
-    chrome.className = "tool-page-chrome";
-    chromeEls[0].parentNode.insertBefore(chrome, chromeEls[0]);
-    chromeEls.forEach((el) => chrome.appendChild(el));
+    if (!mainEls.length) return;
 
-    mergeHeroAndStatus(chrome);
-    document.body.classList.add("tool-page-compact");
+    document.body.classList.add("tool-layout-ready", "tool-page-side-rail");
+
+    const grid = document.createElement("div");
+    grid.className = "tool-layout-grid";
+
+    const rail = document.createElement("aside");
+    rail.className = "tool-side-rail";
+    rail.setAttribute("aria-label", "Tool controls and info");
+
+    const topBar = document.createElement("div");
+    topBar.className = "tool-rail-top";
+
+    const hero = chromeEls.find((e) => e.classList.contains("page-hero"));
+    const statusBar = chromeEls.find((e) => e.classList.contains("status-bar"));
+
+    if (hero) {
+      hero.classList.add("tool-rail-hero");
+      hero.querySelector("p")?.classList.add("tool-rail-desc");
+      topBar.appendChild(hero);
+    }
+
+    if (statusBar) {
+      statusBar.classList.add("tool-rail-status");
+      const tools = statusBar.querySelector(".status-bar-tools");
+      if (tools) {
+        const statusText = document.createElement("div");
+        statusText.className = "tool-rail-status-text";
+        [...statusBar.childNodes].forEach((node) => {
+          if (node !== tools) statusText.appendChild(node);
+        });
+        statusBar.appendChild(statusText);
+      }
+      topBar.appendChild(statusBar);
+    }
+
+    rail.appendChild(topBar);
+
+    const more = document.createElement("details");
+    more.className = "tool-rail-more";
+    more.open = window.matchMedia("(min-width: 1024px)").matches;
+    const moreSummary = document.createElement("summary");
+    moreSummary.textContent = "Options & info";
+    more.appendChild(moreSummary);
+
+    const panel = document.createElement("div");
+    panel.className = "tool-rail-panel";
+
+    if (statusBar) {
+      const tools = statusBar.querySelector(".status-bar-tools");
+      if (tools) {
+        tools.classList.add("tool-rail-tools");
+        panel.appendChild(tools);
+      }
+    }
+
+    chromeEls.forEach((el) => {
+      if (el === hero || el === statusBar) return;
+      if (el.classList.contains("tool-subnav") || el.classList.contains("economy-subnav")) {
+        el.hidden = true;
+        return;
+      }
+      if (el.classList.contains("tool-summary-strip") || (el.id && el.id.endsWith("Summary"))) {
+        el.classList.add("tool-rail-summary");
+      }
+      panel.appendChild(el);
+    });
+
+    more.appendChild(panel);
+    rail.appendChild(more);
+
+    const mainCol = document.createElement("div");
+    mainCol.className = "tool-main-column";
+    mainEls.forEach((el) => mainCol.appendChild(el));
+
+    grid.appendChild(rail);
+    grid.appendChild(mainCol);
+
+    if (header) header.insertAdjacentElement("afterend", grid);
+    else document.body.insertBefore(grid, document.querySelector(".site-footer"));
+
+    const mq = window.matchMedia("(min-width: 1024px)");
+    mq.addEventListener("change", (ev) => {
+      more.open = ev.matches;
+    });
   }
 
   function unwrapLegacyLayout() {
@@ -521,7 +600,7 @@
     ensureHeaderActions();
     injectHeaderSubnav();
     injectBreadcrumbs();
-    compactToolChrome();
+    layoutToolPage();
     injectProLink();
     injectThemeToggle();
     injectKofiStrip();

@@ -1946,10 +1946,16 @@
     }
 
     async function loadData(forceRefresh = false) {
-      el("status").textContent = forceRefresh ? "Refreshing price data…" : "Loading price data…";
-      el("status").className = "";
-      el("resultsBody").innerHTML = '<tr><td colspan="15" class="loading">Loading…</td></tr>';
-      el("top10Body").innerHTML = '<tr><td colspan="18" class="loading">Loading…</td></tr>';
+      const hasCache = Boolean(Graardor.cachedApiData);
+      if (!hasCache || forceRefresh) {
+        el("status").textContent = forceRefresh ? "Refreshing price data…" : "Loading price data…";
+        el("status").className = "";
+        Graardor.applyTableSkeleton("resultsBody", 15, 10);
+        Graardor.applyTableSkeleton("top10Body", 18, 10);
+      } else {
+        el("status").textContent = "Updating…";
+        el("status").className = "";
+      }
 
       try {
         cachedApiData = await Graardor.loadPrices({ useCache: true, force: forceRefresh });

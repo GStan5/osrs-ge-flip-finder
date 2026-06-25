@@ -177,8 +177,11 @@
   }
 
   async function load(forceRefresh = false) {
-    G.updateStatus("alchStatus", forceRefresh ? "Refreshing price data…" : "Loading price data…", "");
-    G.el("alchBody").innerHTML = '<tr><td colspan="11" class="loading">Loading…</td></tr>';
+    const hasCache = Boolean(G.cachedApiData);
+    if (!hasCache || forceRefresh) {
+      G.updateStatus("alchStatus", forceRefresh ? "Refreshing price data…" : "Loading price data…", "");
+      G.applyTableSkeleton("alchBody", 11, 10);
+    }
     try {
       await G.loadPrices({ useCache: true, force: forceRefresh });
       const nature = G.getItemPrice(G.NATURE_RUNE_ID);

@@ -164,8 +164,11 @@
   }
 
   async function load(forceRefresh = false) {
-    G.updateStatus("cofferStatus", forceRefresh ? "Refreshing price data…" : "Loading price data…", "");
-    G.el("cofferBody").innerHTML = '<tr><td colspan="8" class="loading">Loading…</td></tr>';
+    const hasCache = Boolean(G.cachedApiData);
+    if (!hasCache || forceRefresh) {
+      G.updateStatus("cofferStatus", forceRefresh ? "Refreshing price data…" : "Loading price data…", "");
+      G.applyTableSkeleton("cofferBody", 8, 10);
+    }
     try {
       await G.loadPrices({ useCache: true, force: forceRefresh });
       G.updateStatus(

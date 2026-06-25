@@ -3,6 +3,8 @@
     const root = document.getElementById("homeLiveStats");
     if (!root) return;
 
+    root.classList.add("is-loading");
+
     try {
       await G.loadPrices();
       const { mapping, latest } = G.cachedApiData;
@@ -54,7 +56,9 @@
           <span class="val">${totalVolume > 0 ? G.formatGp(totalVolume) : "—"}</span>
           <span class="lbl">5m volume</span>
         </div>`;
+      root.classList.remove("is-loading");
     } catch {
+      root.classList.remove("is-loading");
       root.innerHTML = `<div class="stat-card"><span class="val">—</span><span class="lbl">Prices unavailable</span></div>`;
     }
   }

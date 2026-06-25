@@ -401,4 +401,61 @@ window.Graardor = window.Graardor || {};
     node.textContent = message;
     node.className = type || "";
   };
+
+  G.tableSkeletonRows = function tableSkeletonRows(cols, rows) {
+    const n = Math.max(1, rows || 8);
+    const c = Math.max(1, cols || 6);
+    let html = "";
+    for (let r = 0; r < n; r++) {
+      html += '<tr class="skeleton-row">';
+      for (let i = 0; i < c; i++) {
+        const w = i === 0 ? "85%" : i === c - 1 ? "45%" : "65%";
+        html += `<td><span class="loading-skeleton" style="width:${w}"></span></td>`;
+      }
+      html += "</tr>";
+    }
+    return html;
+  };
+
+  G.applyTableSkeleton = function applyTableSkeleton(tbodyId, cols, rows) {
+    const tb = G.el(tbodyId);
+    if (tb) tb.innerHTML = G.tableSkeletonRows(cols, rows);
+  };
+
+  G.onCacheReady = function onCacheReady(fn) {
+    if (typeof fn !== "function") return;
+    if (G.cachedApiData) {
+      fn(G.cachedApiData);
+      return;
+    }
+    G._cacheReadyQueue = G._cacheReadyQueue || [];
+    G._cacheReadyQueue.push(fn);
+  };
+
+  function dispatchCacheReady() {
+    const queue = G._cacheReadyQueue || [];
+    G._cacheReadyQueue = [];
+    queue.forEach((fn) => {
+      try {
+        fn(G.cachedApiData);
+      } catch {
+        /* optional hook */
+      }
+    });
+  }
+
+  G.warmPriceCache = function warmPriceCache() {
+    if (G.cachedApiData || G._cacheWarmStarted) return;
+    G._cacheWarmStarted = true;
+    readPriceCache()
+      .then((cached) => {
+        if (cached?.bundle && !G.cachedApiData) {
+          applyBundle(cached.bundle, { ...cached, fromCache: true });
+          dispatchCacheReady();
+        }
+      })
+      .catch(() => {});
+  };
+
+  G.warmPriceCache();
 })(window.Graardor);

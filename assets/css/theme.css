@@ -264,6 +264,25 @@
       padding: 0 1.5rem;
     }
 
+    body.tool-page-side-rail .tool-main-column .content-shell {
+      grid-template-columns: minmax(0, 1fr);
+      max-width: none;
+      padding: 0;
+    }
+
+    body.tool-page-side-rail .tool-main-column .page-main main,
+    body.tool-page-side-rail .tool-main-column .tool-page-main main {
+      padding: 0.75rem 1rem 1.25rem;
+    }
+
+    body.tool-page-side-rail .tool-main-column .tabs {
+      margin-bottom: 0.75rem;
+    }
+
+    body.tool-page-side-rail .tool-main-column .filters {
+      margin-bottom: 0.75rem;
+    }
+
     body.ads-off .ad-rail {
       display: none;
     }
