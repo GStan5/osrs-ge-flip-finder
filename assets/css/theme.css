@@ -1,4 +1,4 @@
-@import url("graa-shell.css?v=8");
+@import url("graa-shell.css?v=9");
 
     /* Color tokens: graa-shell.css (data-theme on html) */
 
@@ -1799,6 +1799,165 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+    }
+
+    @media (max-width: 768px) {
+      .filters,
+      .flip-log-form {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-group.wide {
+        grid-column: span 1;
+      }
+
+      .filters input,
+      .filters select,
+      .flip-log-form input,
+      .flip-log-form select {
+        width: 100%;
+      }
+
+      .toggles {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.65rem;
+      }
+
+      .preset-filters {
+        gap: 0.35rem;
+      }
+
+      .preset-btn {
+        min-height: 2.75rem;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .actions button {
+        width: 100%;
+      }
+
+      .status-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.65rem;
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+      }
+
+      .status-bar-tools {
+        margin-left: 0;
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .status-bar-tools label,
+      .status-bar-tools button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .status-bar-tools input[type="number"] {
+        width: 100%;
+      }
+
+      .table-wrap table {
+        min-width: 36rem;
+      }
+
+      .stat-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .home-live-stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .quick-start-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .tool-summary-inner {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .flip-log-summary {
+        flex-direction: column;
+        gap: 0.65rem;
+      }
+
+      .item-detail-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .item-detail-actions {
+        width: 100%;
+      }
+
+      .item-detail-actions a {
+        flex: 1 1 auto;
+        text-align: center;
+        min-height: 2.75rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .item-lookup-bar,
+      .item-lookup-results,
+      .item-detail-card {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+      }
+
+      .guide-article {
+        padding: 1.25rem max(1rem, env(safe-area-inset-left)) 2rem max(1rem, env(safe-area-inset-right));
+      }
+
+      .upgrade-grid {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+      }
+
+      .content-shell {
+        padding-left: max(0.75rem, env(safe-area-inset-left));
+        padding-right: max(0.75rem, env(safe-area-inset-right));
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stat-grid,
+      .home-live-stats,
+      .tool-summary-inner {
+        grid-template-columns: 1fr;
+      }
+
+      .tabs {
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+      }
+
+      .tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab {
+        flex-shrink: 0;
+        white-space: nowrap;
+      }
+
+      th.col-item,
+      td.col-item {
+        min-width: 8.5rem;
+        width: 32%;
+      }
     }
 
     .tool-page-shell {

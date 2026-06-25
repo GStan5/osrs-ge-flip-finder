@@ -94,22 +94,54 @@
     const nav = document.querySelector(".site-nav");
     if (!header || !nav || document.querySelector(".nav-toggle")) return;
 
+    const mq = window.matchMedia("(max-width: 860px)");
+
     const btn = document.createElement("button");
     btn.type = "button";
     btn.className = "nav-toggle";
     btn.setAttribute("aria-label", "Open menu");
     btn.setAttribute("aria-expanded", "false");
+    btn.setAttribute("aria-controls", "site-nav");
     btn.innerHTML = '<span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>';
     header.insertBefore(btn, nav);
 
-    btn.addEventListener("click", () => {
-      const open = document.body.classList.toggle("nav-open");
+    if (!nav.id) nav.id = "site-nav";
+
+    function setNavOpen(open) {
+      document.body.classList.toggle("nav-open", open);
       btn.setAttribute("aria-expanded", open ? "true" : "false");
+      btn.setAttribute("aria-label", open ? "Close menu" : "Open menu");
+    }
+
+    btn.addEventListener("click", () => {
+      setNavOpen(!document.body.classList.contains("nav-open"));
+    });
+
+    nav.addEventListener("click", (e) => {
+      if (!mq.matches) return;
+      const link = e.target.closest("a");
+      if (!link) return;
+      if (link.classList.contains("nav-dropdown-trigger")) return;
+      setNavOpen(false);
+      document.querySelectorAll(".nav-dropdown.open").forEach((d) => d.classList.remove("open"));
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!mq.matches || !document.body.classList.contains("nav-open")) return;
+      if (e.target.closest(".site-header-inner")) return;
+      setNavOpen(false);
+    });
+
+    mq.addEventListener("change", (ev) => {
+      if (!ev.matches) {
+        setNavOpen(false);
+        document.querySelectorAll(".nav-dropdown.open").forEach((d) => d.classList.remove("open"));
+      }
     });
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
-        document.body.classList.remove("nav-open");
+        setNavOpen(false);
         document.querySelectorAll(".nav-dropdown.open").forEach((d) => d.classList.remove("open"));
       }
     });
