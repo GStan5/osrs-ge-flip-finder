@@ -4,13 +4,17 @@ function parseKofiPayload(req) {
   const body = req.body;
 
   if (typeof body === "string") {
-    try {
-      return JSON.parse(body);
-    } catch {
-      const params = new URLSearchParams(body);
-      const data = params.get("data");
-      if (data) return JSON.parse(data);
+    const trimmed = body.trim();
+    if (trimmed.startsWith("{")) {
+      try {
+        return JSON.parse(trimmed);
+      } catch {
+        /* fall through */
+      }
     }
+    const params = new URLSearchParams(body);
+    const data = params.get("data");
+    if (data) return JSON.parse(data);
   }
 
   if (body && typeof body === "object") {
@@ -27,6 +31,7 @@ module.exports = async function handler(req, res) {
     res.status(200).json({
       ok: true,
       message: "Graardor Ko-fi webhook is reachable. POST payment events here.",
+      checkStatus: "https://www.graardor.com/api/kofi-status",
     });
     return;
   }
@@ -40,20 +45,24 @@ module.exports = async function handler(req, res) {
   try {
     payload = parseKofiPayload(req);
   } catch (err) {
-    console.error("Ko-fi parse error:", err);
+    console.error("Ko-fi parse error:", err, "body type:", typeof req.body);
     res.status(400).json({ error: "Invalid payload" });
     return;
   }
 
   if (!payload) {
+    console.error("Ko-fi missing payload. body type:", typeof req.body, "keys:", req.body && typeof req.body === "object" ? Object.keys(req.body) : "n/a");
     res.status(400).json({ error: "Missing data" });
     return;
   }
 
   const verificationToken = process.env.KO_FI_VERIFICATION_TOKEN;
   if (verificationToken && payload.verification_token !== verificationToken) {
-    console.warn("Ko-fi webhook rejected: bad verification token");
-    res.status(401).json({ error: "Invalid verification token" });
+    console.warn("Ko-fi webhook rejected: verification token mismatch");
+    res.status(401).json({
+      error: "Invalid verification token",
+      hint: "KO_FI_VERIFICATION_TOKEN in Vercel must exactly match ko-fi.com/manage/webhooks",
+    });
     return;
   }
 
