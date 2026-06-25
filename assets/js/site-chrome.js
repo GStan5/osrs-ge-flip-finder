@@ -51,6 +51,71 @@
     return location.pathname.replace(/\/$/, "") || "/";
   }
 
+  function injectShellStyles() {
+    if (document.querySelector('link[href*="graa-shell"]')) return;
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/assets/css/graa-shell.css";
+    document.head.appendChild(link);
+  }
+
+  function applyShellBodyClass() {
+    document.body.classList.add("graardor-v2");
+    if (currentPath() === "/") document.body.classList.add("hub-home");
+  }
+
+  function injectTopBar() {
+    const header = document.querySelector(".site-header");
+    if (!header || header.querySelector(".chrome-topbar")) return;
+
+    const bar = document.createElement("div");
+    bar.className = "chrome-topbar";
+    bar.innerHTML = `<span class="chrome-live"><span class="chrome-live-dot" aria-hidden="true"></span> Live GE prices · OSRS Wiki API</span><span class="chrome-topbar-right">Fan-made · Not affiliated with Jagex</span>`;
+    header.prepend(bar);
+  }
+
+  function injectSectionBar() {
+    const header = document.querySelector(".site-header");
+    if (!header || header.querySelector(".chrome-section-bar")) return;
+
+    const path = currentPath();
+    let section = "home";
+    if (path === "/") section = "home";
+    else {
+      const sec = NAV_SECTIONS.find((s) => s.paths.some((p) => path === p || path.startsWith(p + "/")));
+      if (sec) section = sec.id;
+    }
+
+    const bar = document.createElement("div");
+    bar.className = `chrome-section-bar ${section}`;
+    header.appendChild(bar);
+  }
+
+  function enhanceLogo() {
+    const logo = document.querySelector(".site-logo");
+    if (!logo || logo.querySelector(".site-logo-icon")) return;
+    const icon = document.createElement("span");
+    icon.className = "site-logo-icon";
+    icon.setAttribute("aria-hidden", "true");
+    icon.textContent = "G";
+    logo.insertBefore(icon, logo.firstChild);
+  }
+
+  function enhancePageHero() {
+    const hero = document.querySelector(".page-hero");
+    if (!hero || hero.dataset.enhanced) return;
+    hero.dataset.enhanced = "1";
+
+    const path = currentPath();
+    const sec = NAV_SECTIONS.find((s) => s.paths.some((p) => path === p || path.startsWith(p + "/")));
+    const sectionClass = sec ? sec.id : "economy";
+
+    const inner = document.createElement("div");
+    inner.className = `tool-hero-inner ${sectionClass}`;
+    while (hero.firstChild) inner.appendChild(hero.firstChild);
+    hero.appendChild(inner);
+  }
+
   function injectHeadMeta() {
     if (!document.querySelector('link[rel="icon"]')) {
       const icon = document.createElement("link");
@@ -123,7 +188,7 @@
     form.className = "header-search";
     form.setAttribute("role", "search");
     form.innerHTML = `<label class="visually-hidden" for="headerItemSearch">Search items</label>
-      <input id="headerItemSearch" type="search" placeholder="Search any item…" autocomplete="off" />
+      <input id="headerItemSearch" type="search" placeholder="Item name…" autocomplete="off" />
       <button type="submit" aria-label="Search">⌕</button>`;
 
     form.addEventListener("submit", (e) => {
@@ -148,7 +213,7 @@
       const wrap = document.createElement("div");
       wrap.className = "nav-dropdown";
       wrap.innerHTML = `
-        <a class="nav-dropdown-trigger" href="${sec.href}">${sec.label}<span class="nav-chevron" aria-hidden="true">▾</span></a>
+        <a class="nav-dropdown-trigger" href="${sec.href}" data-section="${sec.id}">${sec.label}<span class="nav-chevron" aria-hidden="true">▾</span></a>
         <div class="nav-dropdown-panel" role="menu">
           ${sec.tools
             .map(
@@ -158,7 +223,7 @@
             </a>`
             )
             .join("")}
-          <a class="nav-dropdown-footer" href="/tools#${sec.id}">Browse all ${sec.label.toLowerCase()} tools →</a>
+          <a class="nav-dropdown-footer" href="/tools#${sec.id}">All ${sec.label.toLowerCase()} tools</a>
         </div>`;
 
       oldLink.replaceWith(wrap);
@@ -255,7 +320,7 @@
     if (!footer) return;
     const strip = document.createElement("section");
     strip.className = "kofi-strip";
-    strip.innerHTML = `<div class="kofi-strip-inner"><div class="kofi-strip-text"><strong>Graardor is free.</strong> Tips on Ko-fi help cover hosting.</div><a class="kofi-strip-btn" href="https://ko-fi.com/greatblue" target="_blank" rel="noopener">Support on Ko-fi</a></div>`;
+    strip.innerHTML = `<div class="kofi-strip-inner"><div class="kofi-strip-text">Hosting isn't free. Tips on Ko-fi help keep Graardor running.</div><a class="kofi-strip-btn" href="https://ko-fi.com/greatblue" target="_blank" rel="noopener">Ko-fi</a></div>`;
     footer.parentNode.insertBefore(strip, footer);
   }
 
@@ -269,15 +334,30 @@
       const trigger = document.querySelector(`.nav-dropdown-trigger[href="${sec.href}"]`);
       if (trigger && sec.paths.some((p) => path.startsWith(p))) trigger.classList.add("active");
     });
+
+    const bar = document.querySelector(".chrome-section-bar");
+    if (bar) {
+      if (path === "/") bar.className = "chrome-section-bar home";
+      else {
+        const sec = NAV_SECTIONS.find((s) => s.paths.some((p) => path === p || path.startsWith(p + "/")));
+        bar.className = `chrome-section-bar ${sec ? sec.id : "economy"}`;
+      }
+    }
   }
 
   function init() {
+    injectShellStyles();
+    applyShellBodyClass();
     injectHeadMeta();
     injectSkipLink();
+    injectTopBar();
+    enhanceLogo();
     ensureMainId();
     setupMobileNav();
     injectHeaderSearch();
     injectNavDropdowns();
+    injectSectionBar();
+    enhancePageHero();
     injectBreadcrumbs();
     injectSubnav();
     injectProLink();

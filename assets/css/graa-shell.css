@@ -1,0 +1,711 @@
+/* Graardor shell v2 — OSRS interface + Garmoth-style hub clarity */
+
+:root {
+  --gra-stone: #3e3529;
+  --gra-stone-light: #5c4d38;
+  --gra-stone-dark: #1e1812;
+  --gra-black: #080604;
+  --gra-orange: #ff981f;
+  --gra-yellow: #ffff00;
+  --gra-white: #ffffff;
+  --gra-cream: #e8dcc8;
+  --gra-muted: #9a8b72;
+  --gra-green: #00ff00;
+  --gra-blue: #6699cc;
+  --gra-red: #ff3333;
+  --gra-economy: #ff981f;
+  --gra-track: #6699cc;
+  --gra-plan: #6b8f6b;
+  --gra-bevel-up: #7a684c #1a1510 #1a1510 #7a684c;
+  --gra-bevel-down: #1a1510 #7a684c #7a684c #1a1510;
+  --gra-font: Tahoma, "Segoe UI", Geneva, Verdana, sans-serif;
+}
+
+/* ── App backdrop ── */
+body.site.graardor-v2 {
+  font-family: var(--gra-font);
+  font-size: 13px;
+  background-color: var(--gra-black);
+  background-image:
+    radial-gradient(ellipse 120% 80% at 50% -20%, rgba(255, 152, 31, 0.07), transparent 55%),
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.15) 2px,
+      rgba(0, 0, 0, 0.15) 4px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(62, 53, 41, 0.25),
+      rgba(62, 53, 41, 0.25) 48px,
+      rgba(30, 24, 18, 0.35) 48px,
+      rgba(30, 24, 18, 0.35) 96px
+    );
+  min-height: 100vh;
+}
+
+/* ── Top chrome bar ── */
+.chrome-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.3rem 1.25rem;
+  background: var(--gra-black);
+  border-bottom: 1px solid #2a2218;
+  font-size: 0.72rem;
+  color: var(--gra-muted);
+}
+
+.chrome-topbar-right {
+  opacity: 0.85;
+}
+
+.chrome-live {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--gra-cream);
+}
+
+.chrome-live-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gra-green);
+  box-shadow: 0 0 6px var(--gra-green);
+  animation: gra-pulse 2s ease-in-out infinite;
+}
+
+@keyframes gra-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}
+
+/* ── Main header ── */
+body.graardor-v2 .site-header {
+  background: var(--gra-stone);
+  border-bottom: 3px solid var(--gra-stone-dark);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
+  position: sticky;
+  top: 0;
+  z-index: 200;
+}
+
+body.graardor-v2 .site-header-inner {
+  max-width: 1320px;
+  padding: 0.65rem 1.25rem;
+  gap: 0.75rem 1rem;
+}
+
+body.graardor-v2 .site-logo {
+  align-items: center;
+  gap: 0.65rem;
+}
+
+body.graardor-v2 .site-logo-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: var(--gra-stone-dark);
+  border: 2px solid;
+  border-color: var(--gra-bevel-up);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: var(--gra-orange);
+  text-shadow: 1px 1px 0 #000;
+  background-image: linear-gradient(135deg, #4a4034 0%, #2a2218 100%);
+}
+
+body.graardor-v2 .site-logo-text {
+  font-size: 1.35rem;
+  color: var(--gra-orange);
+  text-shadow: 2px 2px 0 #000, -1px -1px 0 rgba(255, 255, 255, 0.08);
+  letter-spacing: 0.03em;
+}
+
+body.graardor-v2 .site-logo-tag {
+  display: none;
+}
+
+body.graardor-v2 .header-search {
+  flex: 1;
+  max-width: 320px;
+  background: var(--gra-stone-dark);
+  border: 2px solid;
+  border-color: var(--gra-bevel-down);
+  padding: 0.35rem 0.5rem;
+}
+
+body.graardor-v2 .header-search input {
+  color: var(--gra-white);
+  font-size: 0.88rem;
+}
+
+body.graardor-v2 .header-search input::placeholder {
+  color: var(--gra-muted);
+}
+
+body.graardor-v2 .header-search button {
+  color: var(--gra-yellow);
+  font-size: 1.1rem;
+}
+
+body.graardor-v2 .site-nav .nav-label {
+  display: none;
+}
+
+body.graardor-v2 .site-nav a,
+body.graardor-v2 .site-nav .nav-dropdown-trigger {
+  padding: 0.45rem 0.75rem;
+  border: 2px solid transparent;
+  color: var(--gra-cream);
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 0.85rem;
+}
+
+body.graardor-v2 .site-nav a:hover,
+body.graardor-v2 .nav-dropdown-trigger:hover {
+  color: var(--gra-yellow);
+}
+
+body.graardor-v2 .nav-dropdown-trigger.active,
+body.graardor-v2 .site-nav a.active {
+  color: var(--gra-yellow);
+  background: var(--gra-stone-dark);
+  border-color: #5c4d38;
+}
+
+body.graardor-v2 .nav-dropdown-trigger[data-section="economy"].active,
+body.graardor-v2 .chrome-section-bar.economy {
+  border-bottom-color: var(--gra-economy);
+}
+
+body.graardor-v2 .nav-dropdown-trigger[data-section="track"].active,
+body.graardor-v2 .chrome-section-bar.track {
+  border-bottom-color: var(--gra-track);
+}
+
+body.graardor-v2 .nav-dropdown-trigger[data-section="plan"].active,
+body.graardor-v2 .chrome-section-bar.plan {
+  border-bottom-color: var(--gra-plan);
+}
+
+/* Section accent strip under header */
+.chrome-section-bar {
+  height: 3px;
+  background: var(--gra-stone-dark);
+  border-bottom: 3px solid var(--gra-economy);
+  transition: border-color 0.15s;
+}
+
+.chrome-section-bar.home {
+  border-bottom-color: var(--gra-orange);
+}
+
+/* ── OSRS interface panel ── */
+.gra-panel {
+  background: var(--gra-stone);
+  border: 2px solid;
+  border-color: var(--gra-bevel-up);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.gra-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.4rem 0.65rem;
+  background: linear-gradient(180deg, #2a2218 0%, #1e1812 100%);
+  border-bottom: 2px solid var(--gra-stone-dark);
+  color: var(--gra-orange);
+  font-weight: bold;
+  text-shadow: 1px 1px 0 #000;
+  font-size: 0.88rem;
+}
+
+.gra-panel-head .gra-panel-tag {
+  font-size: 0.65rem;
+  color: var(--gra-muted);
+  font-weight: normal;
+  text-shadow: none;
+}
+
+.gra-panel-body {
+  padding: 1rem;
+}
+
+/* ── Hub homepage layout ── */
+.hub-layout {
+  display: grid;
+  grid-template-columns: 220px minmax(0, 1fr);
+  gap: 1rem;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2.5rem;
+  align-items: start;
+}
+
+.hub-sidebar {
+  position: sticky;
+  top: 5.5rem;
+}
+
+.hub-nav-panel .hub-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.65rem;
+  color: var(--gra-cream);
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+  font-weight: bold;
+  font-size: 0.82rem;
+}
+
+.hub-nav-panel .hub-nav-link:hover {
+  background: rgba(255, 255, 0, 0.06);
+  color: var(--gra-yellow);
+}
+
+.hub-nav-panel .hub-nav-link.active {
+  background: var(--gra-stone-dark);
+  color: var(--gra-yellow);
+  box-shadow: inset 3px 0 0 var(--gra-orange);
+}
+
+.hub-nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.hub-nav-dot.economy { background: var(--gra-economy); }
+.hub-nav-dot.track { background: var(--gra-track); }
+.hub-nav-dot.plan { background: var(--gra-plan); }
+
+.hub-nav-section-label {
+  padding: 0.5rem 0.65rem 0.25rem;
+  font-size: 0.65rem;
+  font-weight: bold;
+  color: var(--gra-orange);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-shadow: 1px 1px 0 #000;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* Hero banner */
+.hub-banner {
+  margin-bottom: 1rem;
+}
+
+.hub-banner .gra-panel-body {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 1rem 1.5rem;
+  align-items: center;
+}
+
+.hub-banner-text h1 {
+  margin: 0 0 0.4rem;
+  font-size: 1.5rem;
+  color: var(--gra-orange);
+  text-shadow: 2px 2px 0 #000;
+}
+
+.hub-banner-text p {
+  margin: 0;
+  color: var(--gra-cream);
+  line-height: 1.55;
+  max-width: 36rem;
+  font-size: 0.92rem;
+}
+
+.hub-banner-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 10rem;
+}
+
+.gra-btn {
+  display: block;
+  text-align: center;
+  padding: 0.55rem 1rem;
+  font-weight: bold;
+  font-family: var(--gra-font);
+  font-size: 0.85rem;
+  text-decoration: none;
+  border: 2px solid;
+  cursor: pointer;
+}
+
+.gra-btn-gold {
+  background: linear-gradient(180deg, #5c4d38 0%, #3e3529 100%);
+  border-color: var(--gra-bevel-up);
+  color: var(--gra-yellow);
+  text-shadow: 1px 1px 0 #000;
+}
+
+.gra-btn-gold:hover {
+  color: var(--gra-white);
+  background: #4a4034;
+}
+
+.gra-btn-stone {
+  background: var(--gra-stone-dark);
+  border-color: var(--gra-bevel-down);
+  color: var(--gra-cream);
+}
+
+.gra-btn-stone:hover {
+  color: var(--gra-yellow);
+}
+
+/* Live ticker strip */
+.hub-ticker {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.hub-ticker-card {
+  background: var(--gra-stone-dark);
+  border: 2px solid;
+  border-color: var(--gra-bevel-up);
+  padding: 0.65rem 0.75rem;
+  text-align: center;
+}
+
+.hub-ticker-card .val {
+  display: block;
+  font-size: 1.05rem;
+  font-weight: bold;
+  color: var(--gra-yellow);
+  text-shadow: 1px 1px 0 #000;
+  margin-bottom: 0.15rem;
+}
+
+.hub-ticker-card .lbl {
+  display: block;
+  font-size: 0.68rem;
+  color: var(--gra-muted);
+}
+
+.hub-ticker-card.highlight .val {
+  color: var(--gra-green);
+}
+
+.hub-ticker-card.highlight .val {
+  color: var(--gra-green);
+}
+
+.hub-ticker-card img {
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+  vertical-align: middle;
+  margin-right: 0.25rem;
+}
+
+/* Tool tile grid — Garmoth-style cards with OSRS icons */
+.hub-section {
+  margin-bottom: 1.25rem;
+}
+
+.hub-section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  padding: 0 0.15rem;
+}
+
+.hub-section-head h2 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--gra-orange);
+  text-shadow: 1px 1px 0 #000;
+}
+
+.hub-section-head a {
+  font-size: 0.78rem;
+  color: var(--gra-yellow);
+  text-decoration: underline;
+}
+
+.hub-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 0.5rem;
+}
+
+.hub-tile {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  padding: 0.75rem;
+  background: var(--gra-stone);
+  border: 2px solid;
+  border-color: var(--gra-bevel-up);
+  text-decoration: none;
+  color: inherit;
+  transition: transform 0.1s, box-shadow 0.1s;
+  min-height: 4.5rem;
+}
+
+.hub-tile:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  border-color: #7a684c #3e3529 #3e3529 #7a684c;
+}
+
+.hub-tile:hover .hub-tile-name {
+  color: var(--gra-yellow);
+}
+
+.hub-tile.economy { border-left: 4px solid var(--gra-economy); }
+.hub-tile.track { border-left: 4px solid var(--gra-track); }
+.hub-tile.plan { border-left: 4px solid var(--gra-plan); }
+
+.hub-tile-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: var(--gra-stone-dark);
+  border: 2px solid;
+  border-color: var(--gra-bevel-down);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+}
+
+.hub-tile-icon img {
+  width: 28px;
+  height: 28px;
+  image-rendering: pixelated;
+}
+
+.hub-tile-body {
+  min-width: 0;
+}
+
+.hub-tile-name {
+  display: block;
+  font-weight: bold;
+  color: var(--gra-orange);
+  text-shadow: 1px 1px 0 #000;
+  font-size: 0.88rem;
+  margin-bottom: 0.15rem;
+}
+
+.hub-tile-desc {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--gra-muted);
+  line-height: 1.35;
+}
+
+.hub-tile-badge {
+  display: inline-block;
+  font-size: 0.58rem;
+  padding: 0.05rem 0.3rem;
+  margin-left: 0.25rem;
+  border: 1px solid var(--gra-green);
+  color: var(--gra-green);
+  vertical-align: middle;
+  font-weight: bold;
+}
+
+/* Featured row — big tiles */
+.hub-featured {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.hub-feature {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1rem 0.75rem;
+  background: linear-gradient(180deg, #4a4034 0%, var(--gra-stone) 45%, #2a2218 100%);
+  border: 2px solid;
+  border-color: var(--gra-bevel-up);
+  text-decoration: none;
+  color: inherit;
+}
+
+.hub-feature:hover {
+  border-color: var(--gra-yellow) #3e3529 #3e3529 var(--gra-yellow);
+}
+
+.hub-feature img {
+  width: 48px;
+  height: 48px;
+  image-rendering: pixelated;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(2px 2px 0 rgba(0, 0, 0, 0.5));
+}
+
+.hub-feature strong {
+  color: var(--gra-yellow);
+  text-shadow: 1px 1px 0 #000;
+  font-size: 0.95rem;
+}
+
+.hub-feature span {
+  font-size: 0.72rem;
+  color: var(--gra-muted);
+  margin-top: 0.2rem;
+}
+
+/* Tool page hero band */
+body.graardor-v2 .page-hero {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: var(--gra-stone-dark);
+  border-bottom: 2px solid var(--gra-stone-light);
+}
+
+body.graardor-v2 .tool-hero-inner {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 0.85rem;
+  border-left: 4px solid var(--gra-economy);
+}
+
+body.graardor-v2 .tool-hero-inner.track {
+  border-left-color: var(--gra-track);
+}
+
+body.graardor-v2 .tool-hero-inner.plan {
+  border-left-color: var(--gra-plan);
+}
+
+body.graardor-v2 .page-hero h1 {
+  font-size: 1.35rem;
+  color: var(--gra-orange);
+  text-shadow: 2px 2px 0 #000;
+  margin: 0 0 0.25rem;
+}
+
+body.graardor-v2 .page-hero p {
+  color: var(--gra-muted);
+  font-size: 0.88rem;
+  max-width: 40rem;
+}
+
+body.graardor-v2 .tool-subnav {
+  max-width: 1320px;
+  background: var(--gra-stone);
+  border-bottom: 2px solid var(--gra-stone-dark);
+  padding: 0 1.25rem;
+}
+
+body.graardor-v2 .tool-subnav a.active {
+  color: var(--gra-yellow);
+  background: var(--gra-stone-dark);
+  border-color: #5c4d38 #2a2218 var(--gra-stone) #5c4d38;
+}
+
+body.graardor-v2 .disclaimer {
+  max-width: 1320px;
+  margin: 0 auto;
+  background: rgba(255, 51, 51, 0.08);
+  border: 1px solid rgba(255, 51, 51, 0.25);
+  border-left: 4px solid var(--gra-red);
+  padding: 0.5rem 1.25rem;
+  color: var(--gra-muted);
+}
+
+body.graardor-v2 .status-bar {
+  max-width: 1320px;
+  margin: 0 auto;
+  background: var(--gra-stone);
+  border: 2px solid;
+  border-color: var(--gra-bevel-up);
+  border-top: none;
+  color: var(--gra-cream);
+}
+
+body.graardor-v2 .kofi-strip {
+  background: var(--gra-stone-dark);
+  border-top: 2px solid var(--gra-stone-light);
+}
+
+body.graardor-v2 .site-footer {
+  background: var(--gra-black);
+  border-top: 2px solid var(--gra-stone-dark);
+  color: var(--gra-muted);
+}
+
+body.graardor-v2 .site-footer a {
+  color: var(--gra-yellow);
+}
+
+/* Hide old homepage pieces when using hub layout */
+body.graardor-v2.hub-home .home-main > .home-hero,
+body.graardor-v2.hub-home .home-main > .home-live-stats,
+body.graardor-v2.hub-home .home-main > .quick-start,
+body.graardor-v2.hub-home .home-main > .home-section-title,
+body.graardor-v2.hub-home .home-main > .tool-grid,
+body.graardor-v2.hub-home .home-main > .home-changelog-snippet,
+body.graardor-v2.hub-home .home-main > p[style] {
+  display: none !important;
+}
+
+@media (max-width: 960px) {
+  .hub-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .hub-sidebar {
+    position: static;
+  }
+
+  .hub-nav-panel {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .hub-nav-section-label {
+    grid-column: 1 / -1;
+  }
+
+  .hub-ticker {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .hub-featured {
+    grid-template-columns: 1fr;
+  }
+
+  .hub-banner .gra-panel-body {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 600px) {
+  .hub-ticker {
+    grid-template-columns: 1fr;
+  }
+
+  .hub-nav-panel {
+    grid-template-columns: 1fr 1fr;
+  }
+}
