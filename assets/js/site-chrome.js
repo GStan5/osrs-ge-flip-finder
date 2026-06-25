@@ -238,9 +238,37 @@
     if (hero) hero.prepend(bar);
   }
 
-  function injectThemeToggle() {
+  function ensureHeaderActions() {
+    const inner = document.querySelector(".site-header-inner");
     const nav = document.querySelector(".site-nav");
-    if (!nav || document.querySelector(".theme-toggle")) return;
+    if (!inner) return null;
+
+    let actions = inner.querySelector(".header-actions");
+    if (!actions) {
+      actions = document.createElement("div");
+      actions.className = "header-actions";
+      inner.appendChild(actions);
+    }
+
+    const authSlot = document.getElementById("authSlot");
+    const kofi = nav?.querySelector(".kofi-nav-cta") || inner.querySelector(".kofi-nav-cta");
+    if (authSlot && authSlot.parentElement !== actions) actions.appendChild(authSlot);
+    if (kofi && kofi.parentElement !== actions) actions.appendChild(kofi);
+
+    document.querySelectorAll(".theme-toggle").forEach((btn, i) => {
+      if (i === 0) {
+        if (btn.parentElement !== actions) actions.insertBefore(btn, authSlot || kofi || null);
+      } else {
+        btn.remove();
+      }
+    });
+
+    return actions;
+  }
+
+  function injectThemeToggle() {
+    const actions = ensureHeaderActions();
+    if (!actions || actions.querySelector(".theme-toggle")) return;
 
     const btn = document.createElement("button");
     btn.type = "button";
@@ -266,18 +294,23 @@
 
     applyLabel();
     const authSlot = document.getElementById("authSlot");
-    if (authSlot) authSlot.insertAdjacentElement("beforebegin", btn);
-    else nav.appendChild(btn);
+    if (authSlot && authSlot.parentElement === actions) actions.insertBefore(btn, authSlot);
+    else actions.appendChild(btn);
   }
 
   function injectProLink() {
-    const authSlot = document.getElementById("authSlot");
-    const nav = document.querySelector(".site-nav");
-    if (!nav || !authSlot || nav.querySelector('a[href="/upgrade"]')) return;
+    const actions = ensureHeaderActions();
+    if (!actions || actions.querySelector('a[href="/upgrade"]')) return;
     const link = document.createElement("a");
     link.href = "/upgrade";
     link.textContent = "Pro";
-    authSlot.insertAdjacentElement("beforebegin", link);
+    const themeToggle = actions.querySelector(".theme-toggle");
+    if (themeToggle) actions.insertBefore(link, themeToggle);
+    else {
+      const authSlot = document.getElementById("authSlot");
+      if (authSlot && authSlot.parentElement === actions) actions.insertBefore(link, authSlot);
+      else actions.prepend(link);
+    }
   }
 
   function injectKofiStrip() {
@@ -411,6 +444,9 @@
   }
 
   function init() {
+    if (window.__graardorChromeInit) return;
+    window.__graardorChromeInit = true;
+
     injectHeadMeta();
     injectSkipLink();
     unwrapLegacyLayout();
@@ -418,6 +454,7 @@
     setupMobileNav();
     injectHeaderSearch();
     injectNavDropdowns();
+    ensureHeaderActions();
     injectBreadcrumbs();
     injectSubnav();
     compactToolChrome();
