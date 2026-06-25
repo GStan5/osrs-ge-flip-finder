@@ -55,7 +55,7 @@
     if (document.querySelector('link[href*="graa-shell"]')) return;
     const link = document.createElement("link");
     link.rel = "stylesheet";
-    link.href = "/assets/css/graa-shell.css";
+    link.href = "/assets/css/graa-shell.css?v=2";
     document.head.appendChild(link);
   }
 

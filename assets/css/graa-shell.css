@@ -22,7 +22,7 @@
 }
 
 /* ── App backdrop ── */
-body.site.graardor-v2 {
+body.site {
   font-family: var(--gra-font);
   font-size: 13px;
   background-color: var(--gra-black);
@@ -84,7 +84,7 @@ body.site.graardor-v2 {
 }
 
 /* ── Main header ── */
-body.graardor-v2 .site-header {
+body.site .site-header {
   background: var(--gra-stone);
   border-bottom: 3px solid var(--gra-stone-dark);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.45);
@@ -93,18 +93,18 @@ body.graardor-v2 .site-header {
   z-index: 200;
 }
 
-body.graardor-v2 .site-header-inner {
+body.site .site-header-inner {
   max-width: 1320px;
   padding: 0.65rem 1.25rem;
   gap: 0.75rem 1rem;
 }
 
-body.graardor-v2 .site-logo {
+body.site .site-logo {
   align-items: center;
   gap: 0.65rem;
 }
 
-body.graardor-v2 .site-logo-icon {
+body.site .site-logo-icon {
   width: 36px;
   height: 36px;
   flex-shrink: 0;
@@ -121,18 +121,18 @@ body.graardor-v2 .site-logo-icon {
   background-image: linear-gradient(135deg, #4a4034 0%, #2a2218 100%);
 }
 
-body.graardor-v2 .site-logo-text {
+body.site .site-logo-text {
   font-size: 1.35rem;
   color: var(--gra-orange);
   text-shadow: 2px 2px 0 #000, -1px -1px 0 rgba(255, 255, 255, 0.08);
   letter-spacing: 0.03em;
 }
 
-body.graardor-v2 .site-logo-tag {
+body.site .site-logo-tag {
   display: none;
 }
 
-body.graardor-v2 .header-search {
+body.site .header-search {
   flex: 1;
   max-width: 320px;
   background: var(--gra-stone-dark);
@@ -141,26 +141,26 @@ body.graardor-v2 .header-search {
   padding: 0.35rem 0.5rem;
 }
 
-body.graardor-v2 .header-search input {
+body.site .header-search input {
   color: var(--gra-white);
   font-size: 0.88rem;
 }
 
-body.graardor-v2 .header-search input::placeholder {
+body.site .header-search input::placeholder {
   color: var(--gra-muted);
 }
 
-body.graardor-v2 .header-search button {
+body.site .header-search button {
   color: var(--gra-yellow);
   font-size: 1.1rem;
 }
 
-body.graardor-v2 .site-nav .nav-label {
+body.site .site-nav .nav-label {
   display: none;
 }
 
-body.graardor-v2 .site-nav a,
-body.graardor-v2 .site-nav .nav-dropdown-trigger {
+body.site .site-nav a,
+body.site .site-nav .nav-dropdown-trigger {
   padding: 0.45rem 0.75rem;
   border: 2px solid transparent;
   color: var(--gra-cream);
@@ -169,30 +169,30 @@ body.graardor-v2 .site-nav .nav-dropdown-trigger {
   font-size: 0.85rem;
 }
 
-body.graardor-v2 .site-nav a:hover,
-body.graardor-v2 .nav-dropdown-trigger:hover {
+body.site .site-nav a:hover,
+body.site .nav-dropdown-trigger:hover {
   color: var(--gra-yellow);
 }
 
-body.graardor-v2 .nav-dropdown-trigger.active,
-body.graardor-v2 .site-nav a.active {
+body.site .nav-dropdown-trigger.active,
+body.site .site-nav a.active {
   color: var(--gra-yellow);
   background: var(--gra-stone-dark);
   border-color: #5c4d38;
 }
 
-body.graardor-v2 .nav-dropdown-trigger[data-section="economy"].active,
-body.graardor-v2 .chrome-section-bar.economy {
+body.site .nav-dropdown-trigger[data-section="economy"].active,
+body.site .chrome-section-bar.economy {
   border-bottom-color: var(--gra-economy);
 }
 
-body.graardor-v2 .nav-dropdown-trigger[data-section="track"].active,
-body.graardor-v2 .chrome-section-bar.track {
+body.site .nav-dropdown-trigger[data-section="track"].active,
+body.site .chrome-section-bar.track {
   border-bottom-color: var(--gra-track);
 }
 
-body.graardor-v2 .nav-dropdown-trigger[data-section="plan"].active,
-body.graardor-v2 .chrome-section-bar.plan {
+body.site .nav-dropdown-trigger[data-section="plan"].active,
+body.site .chrome-section-bar.plan {
   border-bottom-color: var(--gra-plan);
 }
 
@@ -574,7 +574,7 @@ body.graardor-v2 .chrome-section-bar.plan {
 }
 
 /* Tool page hero band */
-body.graardor-v2 .page-hero {
+body.site .page-hero {
   max-width: none;
   margin: 0;
   padding: 0;
@@ -582,48 +582,48 @@ body.graardor-v2 .page-hero {
   border-bottom: 2px solid var(--gra-stone-light);
 }
 
-body.graardor-v2 .tool-hero-inner {
+body.site .tool-hero-inner {
   max-width: 1320px;
   margin: 0 auto;
   padding: 1rem 1.25rem 0.85rem;
   border-left: 4px solid var(--gra-economy);
 }
 
-body.graardor-v2 .tool-hero-inner.track {
+body.site .tool-hero-inner.track {
   border-left-color: var(--gra-track);
 }
 
-body.graardor-v2 .tool-hero-inner.plan {
+body.site .tool-hero-inner.plan {
   border-left-color: var(--gra-plan);
 }
 
-body.graardor-v2 .page-hero h1 {
+body.site .page-hero h1 {
   font-size: 1.35rem;
   color: var(--gra-orange);
   text-shadow: 2px 2px 0 #000;
   margin: 0 0 0.25rem;
 }
 
-body.graardor-v2 .page-hero p {
+body.site .page-hero p {
   color: var(--gra-muted);
   font-size: 0.88rem;
   max-width: 40rem;
 }
 
-body.graardor-v2 .tool-subnav {
+body.site .tool-subnav {
   max-width: 1320px;
   background: var(--gra-stone);
   border-bottom: 2px solid var(--gra-stone-dark);
   padding: 0 1.25rem;
 }
 
-body.graardor-v2 .tool-subnav a.active {
+body.site .tool-subnav a.active {
   color: var(--gra-yellow);
   background: var(--gra-stone-dark);
   border-color: #5c4d38 #2a2218 var(--gra-stone) #5c4d38;
 }
 
-body.graardor-v2 .disclaimer {
+body.site .disclaimer {
   max-width: 1320px;
   margin: 0 auto;
   background: rgba(255, 51, 51, 0.08);
@@ -633,7 +633,7 @@ body.graardor-v2 .disclaimer {
   color: var(--gra-muted);
 }
 
-body.graardor-v2 .status-bar {
+body.site .status-bar {
   max-width: 1320px;
   margin: 0 auto;
   background: var(--gra-stone);
@@ -643,30 +643,67 @@ body.graardor-v2 .status-bar {
   color: var(--gra-cream);
 }
 
-body.graardor-v2 .kofi-strip {
+body.site .kofi-strip {
   background: var(--gra-stone-dark);
   border-top: 2px solid var(--gra-stone-light);
 }
 
-body.graardor-v2 .site-footer {
+body.site .site-footer {
   background: var(--gra-black);
   border-top: 2px solid var(--gra-stone-dark);
   color: var(--gra-muted);
 }
 
-body.graardor-v2 .site-footer a {
+body.site .site-footer a {
   color: var(--gra-yellow);
 }
 
 /* Hide old homepage pieces when using hub layout */
-body.graardor-v2.hub-home .home-main > .home-hero,
-body.graardor-v2.hub-home .home-main > .home-live-stats,
-body.graardor-v2.hub-home .home-main > .quick-start,
-body.graardor-v2.hub-home .home-main > .home-section-title,
-body.graardor-v2.hub-home .home-main > .tool-grid,
-body.graardor-v2.hub-home .home-main > .home-changelog-snippet,
-body.graardor-v2.hub-home .home-main > p[style] {
+body.site.hub-home .home-main > .home-hero,
+body.site.hub-home .home-main > .home-live-stats,
+body.site.hub-home .home-main > .quick-start,
+body.site.hub-home .home-main > .home-section-title,
+body.site.hub-home .home-main > .tool-grid,
+body.site.hub-home .home-main > .home-changelog-snippet,
+body.site.hub-home .home-main > p[style] {
   display: none !important;
+}
+
+body.site .content-shell {
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 0 1.25rem 2rem;
+}
+
+body.site .page-main main {
+  background: var(--gra-stone);
+  border: 2px solid;
+  border-color: var(--gra-bevel-up);
+  padding: 0.75rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+body.site .tabs {
+  margin-bottom: 0;
+  padding: 0 0.25rem;
+  background: var(--gra-stone-dark);
+  border-bottom: 2px solid var(--gra-stone-light);
+}
+
+body.site .tab.active {
+  color: var(--gra-yellow) !important;
+  background: var(--gra-stone) !important;
+}
+
+body.site .table-wrap {
+  border: 2px solid;
+  border-color: var(--gra-bevel-up);
+}
+
+body.site th {
+  color: var(--gra-orange) !important;
+  text-shadow: 1px 1px 0 #000;
+  background: var(--gra-stone-dark) !important;
 }
 
 @media (max-width: 960px) {

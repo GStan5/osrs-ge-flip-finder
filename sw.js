@@ -1,8 +1,7 @@
-const CACHE = "graardor-v1";
-const PRECACHE = ["/", "/assets/css/theme.css", "/assets/js/prices-core.js", "/assets/images/favicon.svg"];
+const CACHE = "graardor-v2";
 
 self.addEventListener("install", (event) => {
-  event.waitUntil(caches.open(CACHE).then((cache) => cache.addAll(PRECACHE)).then(() => self.skipWaiting()));
+  self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
@@ -11,23 +10,25 @@ self.addEventListener("activate", (event) => {
   );
 });
 
+function isAsset(pathname) {
+  return pathname.startsWith("/assets/") || pathname.endsWith(".css") || pathname.endsWith(".js");
+}
+
 self.addEventListener("fetch", (event) => {
   if (event.request.method !== "GET") return;
   const url = new URL(event.request.url);
   if (url.origin !== location.origin) return;
   if (url.pathname.startsWith("/api/")) return;
 
+  // HTML + CSS/JS: network first so deploys show up immediately
   event.respondWith(
-    caches.match(event.request).then((cached) => {
-      const network = fetch(event.request)
-        .then((res) => {
-          if (res.ok && (url.pathname.startsWith("/assets/") || url.pathname.endsWith(".html") || url.pathname === "/")) {
-            caches.open(CACHE).then((cache) => cache.put(event.request, res.clone()));
-          }
-          return res;
-        })
-        .catch(() => cached);
-      return cached || network;
-    })
+    fetch(event.request)
+      .then((res) => {
+        if (res.ok && (url.pathname === "/" || url.pathname.endsWith(".html") || isAsset(url.pathname))) {
+          caches.open(CACHE).then((cache) => cache.put(event.request, res.clone()));
+        }
+        return res;
+      })
+      .catch(() => caches.match(event.request))
   );
 });
