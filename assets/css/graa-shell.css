@@ -741,12 +741,15 @@ body.site .table-wrap {
   border: 1px solid var(--g-border);
   border-radius: var(--g-radius);
   background: var(--g-surface);
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
 }
 
 body.site table {
   font-size: 0.8125rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  table-layout: fixed;
 }
 
 body.site th {
@@ -1567,8 +1570,7 @@ body.site.tool-page-wide .tool-main-column main {
 }
 
 body.site.tool-page-wide .tool-main-column .table-wrap {
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
 }
 
 @media (max-width: 767px) {

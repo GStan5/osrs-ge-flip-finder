@@ -89,12 +89,12 @@
         return `<tr>
           ${G.itemNameCell(row)}
           <td class="num price-copyable price-buy" data-copy-price="${Math.round(row.buyPrice)}" title="Click to copy">${G.formatPrice(row.buyPrice)}</td>
-          <td class="num">${G.formatPrice(row.guide)}</td>
+          <td class="num col-hide-xs">${G.formatPrice(row.guide)}</td>
           <td class="num">${G.formatPrice(row.credit)}</td>
           <td class="num ${profitCls}">${G.formatGp(row.profit)}</td>
-          <td class="num ${profitCls}">${row.roi != null ? row.roi.toFixed(1) + "%" : "—"}</td>
-          <td class="num">${row.limit ? row.limit.toLocaleString() : "—"}</td>
-          <td class="num ${profitCls}">${row.limit ? G.formatGp(row.limitProfit) : "—"}</td>
+          <td class="num col-hide-xs ${profitCls}">${row.roi != null ? row.roi.toFixed(1) + "%" : "—"}</td>
+          <td class="num col-hide-narrow">${row.limit ? row.limit.toLocaleString() : "—"}</td>
+          <td class="num col-hide-narrow ${profitCls}">${row.limit ? G.formatGp(row.limitProfit) : "—"}</td>
         </tr>`;
       })
       .join("");

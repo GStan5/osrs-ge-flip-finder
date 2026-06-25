@@ -77,26 +77,21 @@
       </section>
 
       <p id="alchMeta" class="results-meta"></p>
-      <p class="table-scroll-hint">Swipe horizontally on small screens.</p>
       <div class="table-wrap">
         <table id="alchTable">
-          <colgroup>
-            <col style="width: 22%" />
-            <col span="10" />
-          </colgroup>
           <thead>
             <tr>
               <th class="col-item">Item</th>
               <th class="sortable num" data-sort="buyPrice">Buy price</th>
-              <th class="sortable num" data-sort="highalch">High alch</th>
-              <th class="sortable num">Nature cost</th>
+              <th class="sortable num col-hide-xs" data-sort="highalch">High alch</th>
+              <th class="sortable num col-hide-xs">Nature cost</th>
               <th class="sortable num" data-sort="profit">Profit</th>
-              <th class="sortable num" data-sort="roi">ROI</th>
-              <th class="sortable num" data-sort="buyTimeHours">Est. buy</th>
-              <th class="sortable num" data-sort="volume5m">5m vol.</th>
-              <th class="sortable num" data-sort="dailyVolume">Daily vol.</th>
+              <th class="sortable num col-hide-xs" data-sort="roi">ROI</th>
+              <th class="sortable num col-hide-narrow" data-sort="buyTimeHours">Est. buy</th>
+              <th class="sortable num col-hide-narrow" data-sort="volume5m">5m vol.</th>
+              <th class="sortable num col-hide-narrow" data-sort="dailyVolume">Daily vol.</th>
               <th class="sortable num" data-sort="gpPerHour">GP / hr</th>
-              <th class="sortable num" data-sort="limitProfit">Profit (limit)</th>
+              <th class="sortable num col-hide-narrow" data-sort="limitProfit">Profit (limit)</th>
             </tr>
           </thead>
           <tbody id="alchBody">

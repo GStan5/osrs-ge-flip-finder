@@ -178,33 +178,26 @@
     </section>
 
     <div class="results-meta" id="resultsMeta"></div>
-    <p class="table-scroll-hint">Swipe horizontally to see all columns on small screens.</p>
 
     <div class="table-wrap">
       <table id="searchTable">
-        <colgroup>
-          <col style="width: 22%" />
-          <col style="width: 6.5%" />
-          <col style="width: 6.5%" />
-          <col span="11" />
-        </colgroup>
         <thead>
           <tr>
             <th class="sortable col-item" data-sort="name">Item</th>
             <th class="sortable num col-price-buy" data-sort="buy">Rec. buy</th>
             <th class="sortable num col-price-sell" data-sort="sell">Rec. sell</th>
             <th class="sortable num" data-sort="marginGp">Margin / item</th>
-            <th class="sortable num" data-sort="marginPct">Margin %</th>
-            <th class="sortable num" data-sort="taxPerItem">Tax / item</th>
-            <th class="sortable num" data-sort="taxLostLimit">Tax (limit)</th>
+            <th class="sortable num col-hide-xs" data-sort="marginPct">Margin %</th>
+            <th class="sortable num col-hide-narrow" data-sort="taxPerItem">Tax / item</th>
+            <th class="sortable num col-hide-narrow" data-sort="taxLostLimit">Tax (limit)</th>
             <th class="sortable num" data-sort="profitAfterTax">Profit (limit)</th>
-            <th class="sortable num" data-sort="profitAtQty">Profit (qty)</th>
-            <th class="sortable num" data-sort="gpNeeded">GP needed</th>
-            <th class="sortable num" data-sort="volume5m">5m vol.</th>
-            <th class="sortable num" data-sort="dailyVolume">Daily vol.</th>
-            <th class="sortable num" data-sort="buyTimeHours">Est. buy</th>
-            <th class="sortable num" data-sort="sellTimeHours">Est. sell</th>
-            <th class="sortable num" data-sort="limit">Limit</th>
+            <th class="sortable num col-hide-narrow" data-sort="profitAtQty">Profit (qty)</th>
+            <th class="sortable num col-hide-narrow" data-sort="gpNeeded">GP needed</th>
+            <th class="sortable num col-hide-narrow" data-sort="volume5m">5m vol.</th>
+            <th class="sortable num col-hide-narrow" data-sort="dailyVolume">Daily vol.</th>
+            <th class="sortable num col-hide-narrow" data-sort="buyTimeHours">Est. buy</th>
+            <th class="sortable num col-hide-narrow" data-sort="sellTimeHours">Est. sell</th>
+            <th class="sortable num col-hide-narrow" data-sort="limit">Limit</th>
           </tr>
         </thead>
         <tbody id="resultsBody">
@@ -353,17 +346,8 @@
         Est. buy/sell/cycle use a 65% recent 5m + 35% 1h volume blend at each price side.
       </p>
       <div class="results-meta" id="top10Meta"></div>
-      <p class="table-scroll-hint">Swipe horizontally to see all columns on small screens.</p>
       <div class="table-wrap">
         <table id="top10Table">
-          <colgroup>
-            <col style="width: 2.5%" />
-            <col style="width: 22%" />
-            <col style="width: 6.5%" />
-            <col style="width: 6.5%" />
-            <col style="width: 6%" />
-            <col span="12" />
-          </colgroup>
           <thead>
             <tr>
               <th class="num">#</th>
@@ -372,18 +356,18 @@
               <th class="sortable num col-price-sell" data-sort="sell">Rec. sell</th>
               <th class="sortable num" data-sort="gpPerHour">GP / hour</th>
               <th class="sortable num" data-sort="marginGp">Margin / item</th>
-              <th class="sortable num" data-sort="marginPct">Margin %</th>
-              <th class="sortable num" data-sort="taxPerItem">Tax / item</th>
-              <th class="sortable num" data-sort="taxLostLimit">Tax (limit)</th>
+              <th class="sortable num col-hide-xs" data-sort="marginPct">Margin %</th>
+              <th class="sortable num col-hide-narrow" data-sort="taxPerItem">Tax / item</th>
+              <th class="sortable num col-hide-narrow" data-sort="taxLostLimit">Tax (limit)</th>
               <th class="sortable num" data-sort="profitAfterTax">Profit (limit)</th>
-              <th class="sortable num" data-sort="profitAtQty">Profit (qty)</th>
-              <th class="sortable num" data-sort="gpNeeded">GP needed</th>
-              <th class="sortable num" data-sort="volume5m">5m vol.</th>
-              <th class="sortable num" data-sort="dailyVolume">Daily vol.</th>
-              <th class="sortable num" data-sort="buyTimeHours">Est. buy</th>
-              <th class="sortable num" data-sort="sellTimeHours">Est. sell</th>
-              <th class="sortable num" data-sort="flipCycleHours">Cycle</th>
-              <th class="sortable num" data-sort="limit">Limit</th>
+              <th class="sortable num col-hide-narrow" data-sort="profitAtQty">Profit (qty)</th>
+              <th class="sortable num col-hide-narrow" data-sort="gpNeeded">GP needed</th>
+              <th class="sortable num col-hide-narrow" data-sort="volume5m">5m vol.</th>
+              <th class="sortable num col-hide-narrow" data-sort="dailyVolume">Daily vol.</th>
+              <th class="sortable num col-hide-narrow" data-sort="buyTimeHours">Est. buy</th>
+              <th class="sortable num col-hide-narrow" data-sort="sellTimeHours">Est. sell</th>
+              <th class="sortable num col-hide-narrow" data-sort="flipCycleHours">Cycle</th>
+              <th class="sortable num col-hide-narrow" data-sort="limit">Limit</th>
             </tr>
           </thead>
           <tbody id="top10Body">
@@ -462,27 +446,25 @@
 
       <div id="recipeBestBanner" class="recipe-best-banner" hidden></div>
       <p id="transformsMeta" class="results-meta"></p>
-      <p class="table-scroll-hint">Swipe horizontally to see all columns on small screens.</p>
-
       <div class="table-wrap">
         <table id="transformsTable">
           <thead>
             <tr>
               <th class="sortable col-recipe" data-xf-sort="name">Recipe</th>
-              <th class="col-io">Inputs</th>
-              <th class="col-io">Outputs</th>
+              <th class="col-io col-hide-narrow">Inputs</th>
+              <th class="col-io col-hide-narrow">Outputs</th>
               <th class="sortable num" data-xf-sort="buyCost">Input cost</th>
               <th class="sortable num" data-xf-sort="sellValue">Revenue</th>
               <th class="sortable num" data-xf-sort="profit">Profit</th>
-              <th class="sortable num" data-xf-sort="marginPct">ROI</th>
+              <th class="sortable num col-hide-xs" data-xf-sort="marginPct">ROI</th>
               <th class="sortable num" data-xf-sort="gpPerHour">GP / hr</th>
-              <th class="sortable num" data-xf-sort="buyTimeHours">Est. buy</th>
-              <th class="sortable num" data-xf-sort="sellTimeHours">Est. sell</th>
-              <th class="sortable num" data-xf-sort="cycleHours">Cycle</th>
-              <th class="sortable num" data-xf-sort="minVolume5m">5m vol.</th>
-              <th class="sortable num" data-xf-sort="minDailyVolume">Daily vol.</th>
-              <th class="sortable" data-xf-sort="category">Category</th>
-              <th class="sortable" data-xf-sort="members">Members</th>
+              <th class="sortable num col-hide-narrow" data-xf-sort="buyTimeHours">Est. buy</th>
+              <th class="sortable num col-hide-narrow" data-xf-sort="sellTimeHours">Est. sell</th>
+              <th class="sortable num col-hide-narrow" data-xf-sort="cycleHours">Cycle</th>
+              <th class="sortable num col-hide-narrow" data-xf-sort="minVolume5m">5m vol.</th>
+              <th class="sortable num col-hide-narrow" data-xf-sort="minDailyVolume">Daily vol.</th>
+              <th class="sortable col-hide-narrow" data-xf-sort="category">Category</th>
+              <th class="sortable col-hide-narrow" data-xf-sort="members">Members</th>
             </tr>
           </thead>
           <tbody id="transformsBody">
@@ -689,10 +671,10 @@
     }
 
     function profitQtyCell(item) {
-      if (item.profitAtQty == null) return numCell("—");
+      if (item.profitAtQty == null) return numCell("—", "num col-hide-narrow");
       const cls = item.profitAtQty >= 0 ? "positive" : "negative";
       const title = item.flipQtyUsed ? `Based on ${item.flipQtyUsed.toLocaleString()} items` : "";
-      return `<td class="num ${cls}" title="${escapeHtml(title)}">${formatGp(item.profitAtQty)}</td>`;
+      return `<td class="num col-hide-narrow ${cls}" title="${escapeHtml(title)}">${formatGp(item.profitAtQty)}</td>`;
     }
 
     function syncUrlFromState() {
@@ -1474,7 +1456,7 @@
     }
 
     function recipeIoCell(items, side) {
-      return `<td class="recipe-io">${items.map((item) => recipeItemChip(item, side)).join("")}</td>`;
+      return `<td class="recipe-io col-io col-hide-narrow">${items.map((item) => recipeItemChip(item, side)).join("")}</td>`;
     }
 
     function recipeDisplayName(row) {
@@ -1571,15 +1553,15 @@
             <td class="num">${formatGp(row.buyCost)}</td>
             <td class="num">${formatGp(row.sellValue)}</td>
             <td class="num ${marginClass}">${formatGp(row.profit)}</td>
-            <td class="num ${marginClass}">${row.marginPct == null ? "—" : `${row.marginPct.toFixed(2)}%`}</td>
+            <td class="num col-hide-xs ${marginClass}">${row.marginPct == null ? "—" : `${row.marginPct.toFixed(2)}%`}</td>
             <td class="num ${gpHrClass} highlight-gp">${row.gpPerHour == null ? "—" : formatGp(row.gpPerHour)}</td>
-            <td class="num">${formatDuration(row.buyTimeHours)}</td>
-            <td class="num">${formatDuration(row.sellTimeHours)}</td>
-            <td class="num">${formatDuration(row.cycleHours)}</td>
-            <td class="num">${row.minVolume5m == null ? "—" : formatGp(row.minVolume5m)}</td>
-            <td class="num">${row.minDailyVolume == null ? "—" : formatGp(row.minDailyVolume)}</td>
-            <td>${escapeHtml(row.category)}</td>
-            <td>${memberBadge}</td>
+            <td class="num col-hide-narrow">${formatDuration(row.buyTimeHours)}</td>
+            <td class="num col-hide-narrow">${formatDuration(row.sellTimeHours)}</td>
+            <td class="num col-hide-narrow">${formatDuration(row.cycleHours)}</td>
+            <td class="num col-hide-narrow">${row.minVolume5m == null ? "—" : formatGp(row.minVolume5m)}</td>
+            <td class="num col-hide-narrow">${row.minDailyVolume == null ? "—" : formatGp(row.minDailyVolume)}</td>
+            <td class="col-hide-narrow">${escapeHtml(row.category)}</td>
+            <td class="col-hide-narrow">${memberBadge}</td>
           </tr>`;
         })
         .join("");
@@ -1683,7 +1665,7 @@
     }
 
     function taxCells(item, includeTax) {
-      if (!includeTax) return '<td class="num">—</td><td class="num">—</td>';
+      if (!includeTax) return '<td class="num col-hide-narrow">—</td><td class="num col-hide-narrow">—</td>';
       const capNote = item.taxCapped ? " (5M cap)" : "";
       const exemptNote =
         item.id === BOND_ID
@@ -1691,15 +1673,15 @@
           : item.sell < GE_TAX_EXEMPT_BELOW
             ? "Sell price under 100 gp — no tax"
             : `2% of rec. sell${capNote}`;
-      return `<td class="num tax-lost" title="${exemptNote}">${formatGp(item.taxPerItem)}</td>
-        <td class="num tax-lost" title="Total tax on full buy limit">${formatGp(item.taxLostLimit)}</td>`;
+      return `<td class="num tax-lost col-hide-narrow" title="${exemptNote}">${formatGp(item.taxPerItem)}</td>
+        <td class="num tax-lost col-hide-narrow" title="Total tax on full buy limit">${formatGp(item.taxLostLimit)}</td>`;
     }
 
     function durationCell(hours, title) {
       const text = formatDuration(hours);
       return title
-        ? `<td class="num" title="${escapeHtml(title)}">${text}</td>`
-        : `<td class="num">${text}</td>`;
+        ? `<td class="num col-hide-narrow" title="${escapeHtml(title)}">${text}</td>`
+        : `<td class="num col-hide-narrow">${text}</td>`;
     }
 
     function numCell(value, className = "num") {
@@ -1737,16 +1719,16 @@
           ${priceHtml}
           ${gpPerHourCell}
           ${numCell(formatGp(item.marginGp), `num ${marginClass}`)}
-          ${numCell(`${item.marginPct.toFixed(2)}%`, `num ${marginClass}`)}
+          ${numCell(`${item.marginPct.toFixed(2)}%`, `num col-hide-xs ${marginClass}`)}
           ${taxCells(item, includeTax)}
           ${profitCells}
-          ${numCell(formatGp(item.gpNeeded))}
-          ${numCell(formatGp(item.volume5m))}
-          ${numCell(formatGp(item.dailyVolume))}
+          ${numCell(formatGp(item.gpNeeded), "num col-hide-narrow")}
+          ${numCell(formatGp(item.volume5m), "num col-hide-narrow")}
+          ${numCell(formatGp(item.dailyVolume), "num col-hide-narrow")}
           ${durationCell(item.buyTimeHours, timingTooltip(item, "buy"))}
           ${durationCell(item.sellTimeHours, timingTooltip(item, "sell"))}
           ${durationCell(item.flipCycleHours, cycleTooltip(item))}
-          ${numCell(item.limit.toLocaleString())}
+          ${numCell(item.limit.toLocaleString(), "num col-hide-narrow")}
         </tr>`;
       }
 
@@ -1754,15 +1736,15 @@
         ${itemNameCellHtml(item)}
         ${priceHtml}
         ${numCell(formatGp(item.marginGp), `num ${marginClass}`)}
-        ${numCell(`${item.marginPct.toFixed(2)}%`, `num ${marginClass}`)}
+        ${numCell(`${item.marginPct.toFixed(2)}%`, `num col-hide-xs ${marginClass}`)}
         ${taxCells(item, includeTax)}
         ${profitCells}
-        ${numCell(formatGp(item.gpNeeded))}
-        ${numCell(formatGp(item.volume5m))}
-        ${numCell(formatGp(item.dailyVolume))}
+        ${numCell(formatGp(item.gpNeeded), "num col-hide-narrow")}
+        ${numCell(formatGp(item.volume5m), "num col-hide-narrow")}
+        ${numCell(formatGp(item.dailyVolume), "num col-hide-narrow")}
         ${durationCell(item.buyTimeHours, timingTooltip(item, "buy"))}
         ${durationCell(item.sellTimeHours, timingTooltip(item, "sell"))}
-        ${numCell(item.limit.toLocaleString())}
+        ${numCell(item.limit.toLocaleString(), "num col-hide-narrow")}
       </tr>`;
     }
 

@@ -84,23 +84,18 @@
       </section>
 
       <p id="cofferMeta" class="results-meta"></p>
-      <p class="table-scroll-hint">Swipe horizontally on small screens.</p>
       <div class="table-wrap">
         <table id="cofferTable">
-          <colgroup>
-            <col style="width: 22%" />
-            <col span="7" />
-          </colgroup>
           <thead>
             <tr>
               <th class="col-item">Item</th>
               <th class="sortable num" data-sort="buyPrice">Buy price</th>
-              <th class="sortable num" data-sort="guide">GE guide</th>
+              <th class="sortable num col-hide-xs" data-sort="guide">GE guide</th>
               <th class="sortable num" data-sort="credit">Coffer credit</th>
               <th class="sortable num" data-sort="profit">Profit</th>
-              <th class="sortable num" data-sort="roi">ROI</th>
-              <th class="sortable num" data-sort="limit">Limit</th>
-              <th class="sortable num" data-sort="limitProfit">Profit (limit)</th>
+              <th class="sortable num col-hide-xs" data-sort="roi">ROI</th>
+              <th class="sortable num col-hide-narrow" data-sort="limit">Limit</th>
+              <th class="sortable num col-hide-narrow" data-sort="limitProfit">Profit (limit)</th>
             </tr>
           </thead>
           <tbody id="cofferBody">

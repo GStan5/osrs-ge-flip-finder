@@ -505,30 +505,21 @@
     }
 
     .table-wrap {
-      overflow-x: auto;
+      overflow-x: hidden;
       max-width: 100%;
       border: 1px solid var(--border);
       border-radius: 0;
       background: var(--surface);
-      -webkit-overflow-scrolling: touch;
     }
 
     .table-scroll-hint {
       display: none;
-      margin: 0 0 0.5rem;
-      font-size: 0.75rem;
-      color: var(--muted);
-    }
-
-    @media (max-width: 900px) {
-      .table-scroll-hint {
-        display: block;
-      }
     }
 
     table {
       width: 100%;
       max-width: 100%;
+      min-width: 0;
       table-layout: fixed;
       border-collapse: collapse;
       font-size: 0.78rem;
@@ -576,14 +567,54 @@
       overflow: hidden;
       text-overflow: ellipsis;
       vertical-align: middle;
-      min-width: 9rem;
-      width: 22%;
-      max-width: 22%;
+      min-width: 0;
+      width: 17%;
+      max-width: 17%;
+      white-space: nowrap;
     }
 
     th.num:not(.col-item), td.num:not(.col-item) {
       width: 1%;
       white-space: nowrap;
+    }
+
+    th.col-price-buy, td.col-price-buy,
+    th.col-price-sell, td.col-price-sell,
+    td.price-buy, td.price-sell {
+      width: 1%;
+    }
+
+    @media (max-width: 767px) {
+      .col-hide-narrow {
+        display: none;
+      }
+
+      th.col-item, td.col-item {
+        width: 28%;
+        max-width: 28%;
+      }
+
+      #transformsTable th.col-recipe,
+      #transformsTable td.col-recipe {
+        width: 32%;
+        max-width: 32%;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .col-hide-xs {
+        display: none;
+      }
+
+      th.col-item, td.col-item {
+        width: 34%;
+        max-width: 34%;
+      }
+
+      .item-cell .item-wiki-link,
+      .item-cell .badge {
+        display: none;
+      }
     }
 
     #top10Table th.col-price-buy,
@@ -644,15 +675,19 @@
 
     #transformsTable th.col-recipe,
     #transformsTable td.col-recipe {
-      width: 18%;
+      width: 15%;
+      max-width: 15%;
+      min-width: 0;
     }
 
     #transformsTable th.col-io,
     #transformsTable td.recipe-io {
-      width: 22%;
+      width: 12%;
+      max-width: 12%;
+      min-width: 0;
       vertical-align: top;
-      overflow: visible;
-      text-overflow: clip;
+      overflow: hidden;
+      text-overflow: ellipsis;
       white-space: normal;
     }
 
@@ -800,12 +835,11 @@
 
     @media (max-width: 700px) {
       main { padding: 1rem; }
-      table { font-size: 0.7rem; }
-      th { font-size: 0.65rem; }
-      th, td { padding: 0.3rem 0.2rem; }
-      .item-cell img { width: 24px; height: 24px; }
+      table { font-size: 0.68rem; }
+      th { font-size: 0.62rem; }
+      th, td { padding: 0.28rem 0.18rem; }
+      .item-cell img { width: 22px; height: 22px; }
       .filter-group.wide { grid-column: span 1; }
-      th.col-item, td.col-item { min-width: 8rem; width: 24%; max-width: 24%; }
     }
 
     /* Site chrome: see graa-shell.css */
@@ -1883,10 +1917,6 @@
         width: 100%;
       }
 
-      .table-wrap table {
-        min-width: 36rem;
-      }
-
       .stat-grid {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -1971,12 +2001,6 @@
         white-space: nowrap;
       }
 
-      th.col-item,
-      td.col-item {
-        min-width: 8rem;
-        width: 26%;
-        max-width: 26%;
-      }
     }
 
     .tool-page-shell {
