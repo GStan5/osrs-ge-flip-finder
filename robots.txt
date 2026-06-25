@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://graardor.com/sitemap.xml
+Sitemap: https://www.graardor.com/sitemap.xml

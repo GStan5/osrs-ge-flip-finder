@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Graardor — OSRS companion tools with live Grand Exchange prices. GE flips, recipes, Death's Coffer, high alch profit, and more. Not affiliated with Jagex." />
+  <meta name="description" content="Graardor — OSRS companion tools with live Grand Exchange prices. GE flips, transforms, Death's Coffer, high alch profit, and more. Not affiliated with Jagex." />
   <meta name="theme-color" content="#1a1410" />
   <meta property="og:title" content="Graardor — OSRS Companion Tools" />
-  <meta property="og:description" content="Live GE prices, flip finder, recipe profit, Death's Coffer, and high alch — your OSRS economy hub." />
+  <meta property="og:description" content="Live GE prices, flip finder, transform profit, Death's Coffer, high alch, and item lookup — your OSRS economy hub." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://graardor.com/" />
+  <meta property="og:url" content="https://www.graardor.com/" />
+  <link rel="canonical" href="https://www.graardor.com/" />
+  <link rel="manifest" href="/manifest.webmanifest" />
   <title>Graardor — OSRS Companion Tools</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
 </head>
@@ -21,10 +23,10 @@
       </a>
       <nav class="site-nav" aria-label="Main">
         <span class="nav-label">Tools</span>
-        <a href="/tools/flips">Flips</a>
-        <a href="/tools/recipes">Transforms</a>
-        <a href="/tools/coffer">Coffer</a>
-        <a href="/tools/alch">High Alch</a>
+        <a href="/tools/flips">Economy</a>
+        <a href="/tools/dashboard">Track</a>
+        <a href="/tools/prep">Plan</a>
+        <a href="/guides">Guides</a>
         <a href="/changelog">Changelog</a>
         <span id="authSlot"></span>
         <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
@@ -35,16 +37,28 @@
   <main class="home-main">
     <section class="home-hero">
       <h1>Graardor</h1>
-      <p class="lead">Graardor is your OSRS economy hub — live GE prices, flip rankings, recipe profit with GP/hour, Death's Coffer, and high alchemy. One site, not ten tabs.</p>
+      <p class="lead">Your OSRS economy hub — live GE prices, flip rankings, transform profit with GP/hour, Death's Coffer, high alchemy, and item lookup. One site, not ten tabs.</p>
       <div class="home-hero-actions">
         <a class="btn-primary" href="/tools/flips">Find flips</a>
-        <a class="btn-secondary" href="/tools/recipes">GE transforms</a>
-        <a class="btn-secondary" href="https://ko-fi.com/greatblue" target="_blank" rel="noopener">Tip on Ko-fi</a>
+        <a class="btn-secondary" href="/tools/item">Look up item</a>
+        <a class="btn-secondary" href="/upgrade">Graardor Pro</a>
       </div>
-      <div class="home-stats">
-        <span>Live wiki prices</span>
-        <span>GE tax aware</span>
-        <span>Members + F2P</span>
+    </section>
+
+    <div id="homeLiveStats" class="home-live-stats">
+      <div class="home-live-stat"><span class="num">…</span><span class="lbl">Loading live stats</span></div>
+    </div>
+
+    <section class="quick-start">
+      <h2 class="home-section-title">Quick start</h2>
+      <p class="quick-start-lead">What do you want to do right now?</p>
+      <div class="quick-start-grid">
+        <a class="quick-start-btn" href="/tools/flips"><strong>Flip for GP</strong><span>Find margins &amp; GP/hr</span></a>
+        <a class="quick-start-btn" href="/tools/coffer"><strong>Fill coffer</strong><span>105% sacrifice items</span></a>
+        <a class="quick-start-btn" href="/tools/alch"><strong>High alch</strong><span>Profit after nature runes</span></a>
+        <a class="quick-start-btn" href="/tools/item"><strong>Check an item</strong><span>Buy, sell, margin, chart</span></a>
+        <a class="quick-start-btn" href="/tools/flip-log"><strong>Log a flip</strong><span>Track session profit</span></a>
+        <a class="quick-start-btn" href="/tools"><strong>Browse all tools</strong><span>Economy · Track · Plan</span></a>
       </div>
     </section>
 
@@ -57,7 +71,7 @@
       </a>
       <a class="tool-card" href="/tools/recipes">
         <h2>GE Transforms</h2>
-        <p>Instant GE arbitrage — potion decants, item set combine/split, and uncharges. No skilling timers.</p>
+        <p>Instant GE arbitrage — potion decants, item set combine/split, and uncharges.</p>
         <span class="tool-link">Open transforms →</span>
       </a>
       <a class="tool-card" href="/tools/coffer">
@@ -67,12 +81,50 @@
       </a>
       <a class="tool-card" href="/tools/alch">
         <h2>High Alch Scanner</h2>
-        <p>Live high alchemy profit after nature rune cost — fire staff assumed, click prices to copy.</p>
+        <p>Live high alchemy profit with est. buy time, volume, and GP/hour after nature rune cost.</p>
         <span class="tool-link">Open alch →</span>
+      </a>
+      <a class="tool-card" href="/tools/item">
+        <h2>Item Lookup</h2>
+        <p>Any item's buy/sell price, margin, volume, and a recent price sparkline.</p>
+        <span class="tool-link">Search items →</span>
+      </a>
+      <a class="tool-card" href="/tools/flip-log">
+        <h2>Flip Log</h2>
+        <p>Track completed flips and running profit — cloud sync when signed in with Discord.</p>
+        <span class="tool-link">Open flip log →</span>
       </a>
     </div>
 
-    <p style="text-align:center;color:var(--muted);font-size:0.85rem;max-width:36rem;margin:0 auto;line-height:1.55;">
+    <h2 class="home-section-title">Track</h2>
+    <div class="tool-grid">
+      <a class="tool-card" href="/tools/dashboard"><h2>Pro Dashboard</h2><p>Flip P&amp;L summary and community trends — Graardor Pro.</p><span class="tool-link">Open dashboard →</span></a>
+      <a class="tool-card" href="/tools/boss"><h2>Boss GP / hr</h2><p>Supply costs vs loot for Vorkath, Zulrah, Barrows, and more.</p><span class="tool-link">Open boss calc →</span></a>
+      <a class="tool-card" href="/tools/herbs"><h2>Herb Runs</h2><p>Seed + compost cost vs herb sales for standard routes.</p><span class="tool-link">Plan herb run →</span></a>
+      <a class="tool-card" href="/tools/loot"><h2>Loot Import</h2><p>Paste CSV loot and value at instant sell prices.</p><span class="tool-link">Import loot →</span></a>
+      <a class="tool-card" href="/tools/community"><h2>Community Flips</h2><p>Anonymous top items by reported profit this week.</p><span class="tool-link">View stats →</span></a>
+      <a class="tool-card" href="/tools/alerts"><h2>Price Alerts</h2><p>Discord webhooks when items hit your target — Pro.</p><span class="tool-link">Set alerts →</span></a>
+    </div>
+
+    <h2 class="home-section-title">Plan</h2>
+    <div class="tool-grid">
+      <a class="tool-card" href="/tools/prep"><h2>Boss Prep</h2><p>Checklists for gear and inventory before a boss trip.</p><span class="tool-link">Open prep →</span></a>
+      <a class="tool-card" href="/guides"><h2>Guides</h2><p>Flipping, coffer, and Graardor Pro how-tos.</p><span class="tool-link">Read guides →</span></a>
+      <a class="tool-card" href="https://gearscape.net" target="_blank" rel="noopener"><h2>Gear planning</h2><p>DPS and gear upgrades — opens Gearscape (external).</p><span class="tool-link">Gearscape ↗</span></a>
+    </div>
+
+    <section class="home-changelog-snippet">
+      <h2>Recently updated</h2>
+      <ul>
+        <li>Phase 2–5 shipped — cloud sync, alerts, boss/herb tools, PWA, RuneLite plugin skeleton</li>
+        <li>Pro dashboard, community flip stats, and Discord price alerts</li>
+        <li>Boss GP/hr, herb runs, boss prep, loot CSV import</li>
+        <li>Guides hub and installable PWA (Add to Home Screen)</li>
+      </ul>
+      <p style="margin:0.75rem 0 0;"><a href="/changelog">Full changelog →</a></p>
+    </section>
+
+    <p style="text-align:center;color:var(--muted);font-size:0.85rem;max-width:36rem;margin:2rem auto 0;line-height:1.55;">
       Prices stay fixed until you refresh — built for active flips while your GE offers fill.
       <a href="https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices" target="_blank" rel="noopener">Data from the OSRS Wiki</a>.
       Not affiliated with Jagex.
@@ -82,8 +134,10 @@
   <footer class="site-footer">
     <p>Helpful? <a href="https://ko-fi.com/greatblue" target="_blank" rel="noopener">Support on Ko-fi</a> — tips help cover hosting.</p>
     <p><strong>Disclaimer:</strong> Estimates only. Verify every offer in-game before buying or selling.</p>
-    <p>© Graardor · <a href="/changelog">Changelog</a></p>
+    <p>© Graardor · <a href="/changelog">Changelog</a> · <a href="/upgrade">Pro</a></p>
   </footer>
+  <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/home.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/site-chrome.js"></script>
 </body>

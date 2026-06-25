@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Graardor Pro — support Graardor on Ko-fi for cloud sync, extended charts, and more OSRS tools." />
+  <meta name="theme-color" content="#1a1410" />
+  <title>Graardor Pro — Graardor</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body class="site ads-off">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-logo" href="/">
+        <span class="site-logo-text">Graardor</span>
+        <span class="site-logo-tag">OSRS Companion</span>
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <span class="nav-label">Tools</span>
+        <a href="/tools/flips">Economy</a>
+        <a href="/tools/dashboard">Track</a>
+        <a href="/tools/prep">Plan</a>
+        <a href="/guides">Guides</a>
+        <a href="/changelog">Changelog</a>
+        <span id="authSlot"></span>
+        <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <h1>Graardor Pro</h1>
+    <p>Support the site and unlock power-user features. All core economy tools stay free forever.</p>
+  </div>
+
+  <div class="upgrade-grid">
+    <div id="upgradeStatus" class="upgrade-status" hidden></div>
+
+    <div class="upgrade-card">
+      <h2>Free — always</h2>
+      <ul>
+        <li>GE flip finder, transforms, coffer, and high alch</li>
+        <li>Item lookup with live prices and sparklines</li>
+        <li>Local favorites and flip log in your browser</li>
+        <li>Shareable filter links</li>
+      </ul>
+    </div>
+
+    <div class="upgrade-card">
+      <h2>Pro — via Ko-fi</h2>
+      <p style="color:var(--muted);margin:0;line-height:1.55;">Subscribe to the <strong>Graardor Pro</strong> tier on Ko-fi. Use the same email as your Discord account so we can activate Pro automatically.</p>
+      <ul>
+        <li>Cloud sync for favorites and presets (coming soon)</li>
+        <li>Unlimited flip log history across devices</li>
+        <li>Extended price charts (30–90 day)</li>
+        <li>Discord price alerts (coming soon)</li>
+        <li>Gear planner — link to <a href="https://gearscape.net" target="_blank" rel="noopener">Gearscape</a> for DPS (Phase 4 partner embed)</li>
+      </ul>
+      <p style="margin-top:1rem;">
+        <a class="btn-primary" href="https://ko-fi.com/greatblue/tiers" target="_blank" rel="noopener">Subscribe on Ko-fi</a>
+        <a class="btn-secondary" href="/api/auth/discord" style="margin-left:0.5rem;">Sign in with Discord</a>
+      </p>
+    </div>
+
+    <div class="upgrade-card">
+      <h2>One-time tips</h2>
+      <p style="color:var(--muted);margin:0;line-height:1.55;">Tips help cover hosting — they don't unlock Pro, but every bit helps keep Graardor running.</p>
+      <p style="margin-top:1rem;">
+        <a class="btn-secondary" href="https://ko-fi.com/greatblue" target="_blank" rel="noopener">Tip on Ko-fi</a>
+      </p>
+    </div>
+  </div>
+
+  <footer class="site-footer">
+    <p><a href="/">← Back to Graardor</a></p>
+    <p>Not affiliated with Jagex Ltd.</p>
+  </footer>
+
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/site-chrome.js"></script>
+  <script>
+    (async function () {
+      const box = document.getElementById("upgradeStatus");
+      try {
+        const res = await fetch("/api/me", { credentials: "same-origin" });
+        const data = await res.json();
+        if (data.pro) {
+          box.hidden = false;
+          box.textContent = "You're Graardor Pro — thanks for supporting the site!";
+        } else if (data.user) {
+          box.hidden = false;
+          box.style.background = "rgba(201, 162, 39, 0.12)";
+          box.style.borderColor = "rgba(201, 162, 39, 0.35)";
+          box.style.color = "var(--accent)";
+          box.textContent = "Signed in as " + (data.user.username || "Player") + ". Subscribe on Ko-fi with the same email to unlock Pro.";
+        }
+      } catch { /* ignore */ }
+    })();
+  </script>
+</body>
+</html>

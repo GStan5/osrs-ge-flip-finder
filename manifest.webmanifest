@@ -1,0 +1,17 @@
+{
+  "name": "Graardor — OSRS Companion",
+  "short_name": "Graardor",
+  "description": "Live GE prices, flips, transforms, and OSRS economy tools.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#1a1410",
+  "theme_color": "#1a1410",
+  "icons": [
+    {
+      "src": "/assets/images/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}

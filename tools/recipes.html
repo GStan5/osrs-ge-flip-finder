@@ -17,10 +17,10 @@
       </a>
       <nav class="site-nav" aria-label="Main">
         <span class="nav-label">Tools</span>
-        <a href="/tools/flips">Flips</a>
-        <a href="/tools/recipes" class="active">Transforms</a>
-        <a href="/tools/coffer">Coffer</a>
-        <a href="/tools/alch">High Alch</a>
+        <a href="/tools/flips">Economy</a>
+        <a href="/tools/dashboard">Track</a>
+        <a href="/tools/prep">Plan</a>
+        <a href="/guides">Guides</a>
         <a href="/changelog">Changelog</a>
         <span id="authSlot"></span>
         <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
@@ -502,6 +502,8 @@
   </footer>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/sync.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/site-chrome.js"></script>
 
@@ -583,6 +585,10 @@
     function saveStoredFavorites() {
       localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favoriteIds]));
       localStorage.setItem(RECIPE_FAV_STORAGE_KEY, JSON.stringify([...recipeFavoriteKeys]));
+      if (window.Graardor?.pushSync) {
+        Graardor.pushSync(FAVORITES_STORAGE_KEY, [...favoriteIds]);
+        Graardor.pushSync(RECIPE_FAV_STORAGE_KEY, [...recipeFavoriteKeys]);
+      }
     }
 
     function isItemFavorite(id) {
@@ -647,15 +653,21 @@
       return `<button type="button" class="star-btn${active ? " active" : ""}" data-fav-id="${escapeHtml(String(id))}" data-fav-kind="${kind}" title="${active ? "Remove favorite" : "Add favorite"}">★</button>`;
     }
 
+    function itemTitleAttr(name) {
+      return ` title="${escapeHtml(name)}"`;
+    }
+
     function itemNameCellHtml(item) {
       const memberBadge = item.members
         ? '<span class="badge badge-members">P2P</span>'
         : '<span class="badge badge-f2p">F2P</span>';
-      return `<td class="col-item">
-        <div class="item-cell">
+      const tip = itemTitleAttr(item.name);
+      return `<td class="col-item"${tip}>
+        <div class="item-cell"${tip}>
           ${favoriteStarButton(item.id, "item", isItemFavorite(item.id))}
           <img src="${iconUrl(item.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
-          <a class="item-name" href="${wikiPageUrl(item.name)}" target="_blank" rel="noopener">${escapeHtml(item.name)}</a>${memberBadge}
+          <a class="item-name" href="/tools/item?id=${item.id}"${tip}>${escapeHtml(item.name)}</a>
+          <a class="item-wiki-link" href="${wikiPageUrl(item.name)}" target="_blank" rel="noopener" title="OSRS Wiki">↗</a>${memberBadge}
         </div>
       </td>`;
     }
@@ -1439,7 +1451,7 @@
         <div class="recipe-item-head">
           <img src="${iconUrl(item.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
           <span class="recipe-qty">${item.qty}×</span>
-          <a class="recipe-name" href="${wikiPageUrl(item.name)}" target="_blank" rel="noopener">${escapeHtml(item.name)}</a>
+          <a class="recipe-name" href="${wikiPageUrl(item.name)}" target="_blank" rel="noopener"${itemTitleAttr(item.name)}>${escapeHtml(item.name)}</a>
         </div>
         <div class="recipe-item-meta">
           <span class="${priceClass} price-copyable" data-copy-price="${Math.round(price)}" title="Click to copy ${priceLabel.toLowerCase()} price">${priceLabel}: ${formatPrice(price)}</span>
@@ -1537,7 +1549,7 @@
               <div class="item-cell">
                 ${favoriteStarButton(favKey, "recipe", isRecipeFavorite(row))}
                 <span>
-                  <span class="recipe-title">${escapeHtml(recipeDisplayName(row))}</span>
+                  <span class="recipe-title"${itemTitleAttr(recipeDisplayName(row))}>${escapeHtml(recipeDisplayName(row))}</span>
                   <span class="recipe-kind">${escapeHtml(recipeKindLabel(row))}</span>
                 </span>
               </div>

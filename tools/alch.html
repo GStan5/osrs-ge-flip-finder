@@ -17,10 +17,10 @@
       </a>
       <nav class="site-nav" aria-label="Main">
         <span class="nav-label">Tools</span>
-        <a href="/tools/flips">Flips</a>
-        <a href="/tools/recipes">Transforms</a>
-        <a href="/tools/coffer">Coffer</a>
-        <a href="/tools/alch" class="active">High Alch</a>
+        <a href="/tools/flips">Economy</a>
+        <a href="/tools/dashboard">Track</a>
+        <a href="/tools/prep">Plan</a>
+        <a href="/guides">Guides</a>
         <a href="/changelog">Changelog</a>
         <span id="authSlot"></span>
         <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
@@ -30,7 +30,7 @@
 
   <div class="page-hero">
     <h1>High Alch Scanner</h1>
-    <p>Find items where high alchemy value beats the GE buy price after nature rune cost. Fire staff assumed (no fire rune cost).</p>
+    <p>Find items where high alchemy beats GE buy price after nature rune cost. Shows est. time to buy your limit, volume, and GP/hour.</p>
   </div>
 
   <p class="disclaimer">
@@ -41,7 +41,9 @@
     <span id="alchStatus">Loading…</span>
   </div>
 
-  <div class="tool-page-main">
+  <div id="alchSummary" class="tool-summary-strip" hidden></div>
+
+  <div class="tool-page-main tool-page-shell">
     <main style="padding:1rem 1.25rem 2rem;">
       <section class="filters">
         <h2 class="filters-title">Filters</h2>
@@ -85,11 +87,15 @@
               <th class="sortable num">Nature cost</th>
               <th class="sortable num" data-sort="profit">Profit</th>
               <th class="sortable num" data-sort="roi">ROI</th>
+              <th class="sortable num" data-sort="buyTimeHours">Est. buy</th>
+              <th class="sortable num" data-sort="volume5m">5m vol.</th>
+              <th class="sortable num" data-sort="dailyVolume">Daily vol.</th>
+              <th class="sortable num" data-sort="gpPerHour">GP / hr</th>
               <th class="sortable num" data-sort="limitProfit">Profit (limit)</th>
             </tr>
           </thead>
           <tbody id="alchBody">
-            <tr><td colspan="7" class="loading">Loading…</td></tr>
+            <tr><td colspan="11" class="loading">Loading…</td></tr>
           </tbody>
         </table>
       </div>

@@ -1,0 +1,34 @@
+{
+  "herbs": [
+    { "id": "ranarr", "name": "Ranarr weed", "seed": "Ranarr seed", "level": 32, "avgYield": 7.5 },
+    { "id": "snapdragon", "name": "Snapdragon", "seed": "Snapdragon seed", "level": 62, "avgYield": 7.2 },
+    { "id": "torstol", "name": "Torstol", "seed": "Torstol seed", "level": 85, "avgYield": 6.8 },
+    { "id": "cadantine", "name": "Cadantine", "seed": "Cadantine seed", "level": 67, "avgYield": 7.0 },
+    { "id": "kwuarm", "name": "Kwuarm", "seed": "Kwuarm seed", "level": 56, "avgYield": 7.1 },
+    { "id": "avantoe", "name": "Avantoe", "seed": "Avantoe seed", "level": 50, "avgYield": 7.2 }
+  ],
+  "runs": [
+    {
+      "id": "standard9",
+      "name": "Standard 9-patch",
+      "patches": 9,
+      "teleports": [
+        { "name": "Xeric's talisman", "qty": 1 },
+        { "name": "Ectophial", "qty": 1 },
+        { "name": "Rada's blessing 4", "qty": 1 }
+      ],
+      "notes": "Includes Hosidius, Farming Guild, Ardougne, Catherby, Falador, Morytania, Weiss, Harmony, Trollheim."
+    },
+    {
+      "id": "farmguild6",
+      "name": "Farm Guild + 5 easy",
+      "patches": 6,
+      "teleports": [{ "name": "Skills necklace", "qty": 1 }],
+      "notes": "Shorter run for quick daily profit."
+    }
+  ],
+  "extras": [
+    { "name": "Ultracompost", "qtyPerPatch": 1 },
+    { "name": "Magic secateurs", "qty": 1, "note": "Assumed equipped (+10% yield)" }
+  ]
+}

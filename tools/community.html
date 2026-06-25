@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Anonymous community flip stats — top OSRS items by reported profit on Graardor." />
+  <meta name="theme-color" content="#1a1410" />
+  <title>Community Stats — Graardor</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body class="site ads-off">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-logo" href="/"><span class="site-logo-text">Graardor</span><span class="site-logo-tag">OSRS Companion</span></a>
+      <nav class="site-nav" aria-label="Main">
+        <span class="nav-label">Tools</span>
+        <a href="/tools/flips">Economy</a>
+        <a href="/tools/dashboard">Track</a>
+        <a href="/tools/prep">Plan</a>
+        <a href="/guides">Guides</a>
+        <a href="/changelog">Changelog</a>
+        <span id="authSlot"></span>
+        <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
+      </nav>
+    </div>
+  </header>
+  <div class="page-hero"><h1>Community Flips</h1><p>Opt-in anonymous aggregates from Graardor flip log users.</p></div>
+  <p id="communityMeta" class="results-meta" style="padding:0 1.25rem;"></p>
+  <div class="tool-page-main"><main style="padding:0 1.25rem 2rem;">
+    <div class="table-wrap"><table><thead><tr><th>#</th><th>Item</th><th class="num">Profit (7d)</th><th class="num">Flips</th></tr></thead><tbody id="communityBody"><tr><td colspan="4" class="loading">Loading…</td></tr></tbody></table></div>
+  </main></div>
+  <footer class="site-footer"><p><a href="/tools/flip-log">Flip log</a> · Enable community sharing when logging flips.</p></footer>
+  <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/community.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/site-chrome.js"></script>
+</body>
+</html>

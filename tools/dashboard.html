@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Graardor Pro dashboard — flip P&amp;L and community stats." />
+  <meta name="theme-color" content="#1a1410" />
+  <title>Pro Dashboard — Graardor</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body class="site ads-off">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-logo" href="/"><span class="site-logo-text">Graardor</span><span class="site-logo-tag">OSRS Companion</span></a>
+      <nav class="site-nav" aria-label="Main">
+        <span class="nav-label">Tools</span>
+        <a href="/tools/flips">Economy</a>
+        <a href="/tools/dashboard">Track</a>
+        <a href="/tools/prep">Plan</a>
+        <a href="/guides">Guides</a>
+        <a href="/changelog">Changelog</a>
+        <span id="authSlot"></span>
+        <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
+      </nav>
+    </div>
+  </header>
+  <div class="page-hero"><h1>Pro Dashboard</h1><p>Flip P&amp;L summary and community trends — Graardor Pro.</p></div>
+  <div class="tool-page-main"><main style="padding:1rem 1.25rem 2rem;">
+    <div id="dashGate" class="upgrade-status" hidden>Sign in and subscribe to <a href="/upgrade">Graardor Pro</a> to open the dashboard.</div>
+    <div id="dashContent" hidden>
+      <h2 class="filters-title">Your flip log</h2>
+      <div id="dashLogSummary" class="stat-grid"></div>
+      <p><a href="/tools/flip-log">Manage flip log →</a> · <a href="/tools/alerts">Price alerts →</a></p>
+      <h2 class="filters-title" style="margin-top:1.5rem;">Community top items (7d)</h2>
+      <div class="table-wrap"><table><thead><tr><th>Item</th><th class="num">Flips</th><th class="num">Profit</th></tr></thead><tbody id="dashCommunityBody"></tbody></table></div>
+    </div>
+  </main></div>
+  <footer class="site-footer"><p><a href="/">← Graardor home</a></p></footer>
+  <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/sync.js"></script>
+  <script src="/assets/js/dashboard.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/site-chrome.js"></script>
+</body>
+</html>

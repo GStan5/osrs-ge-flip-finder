@@ -51,6 +51,67 @@ window.Graardor = window.Graardor || {};
     return G.WIKI_PAGE_BASE + encodeURIComponent(name.replace(/ /g, "_"));
   };
 
+  G.itemPageUrl = function itemPageUrl(id) {
+    return `/tools/item?id=${id}`;
+  };
+
+  G.fetchTimeseries = async function fetchTimeseries(itemId, timestep) {
+    const step = timestep || "5m";
+    const res = await G.fetchJson(`/timeseries?timestep=${step}&id=${itemId}`);
+    return res.data || [];
+  };
+
+  G.drawPriceSparkline = function drawPriceSparkline(canvas, series, options) {
+    if (!canvas || !series?.length) return;
+    const opts = options || {};
+    const dpr = window.devicePixelRatio || 1;
+    const width = canvas.clientWidth || 320;
+    const height = canvas.clientHeight || 80;
+    canvas.width = Math.round(width * dpr);
+    canvas.height = Math.round(height * dpr);
+    const ctx = canvas.getContext("2d");
+    ctx.scale(dpr, dpr);
+
+    const tail = series.slice(-Math.min(series.length, opts.maxPoints || 72));
+    const highs = tail.map((p) => p.avgHighPrice).filter((v) => v != null);
+    const lows = tail.map((p) => p.avgLowPrice).filter((v) => v != null);
+    const all = highs.concat(lows);
+    if (!all.length) return;
+
+    const min = Math.min(...all);
+    const max = Math.max(...all);
+    const pad = (max - min) * 0.08 || 1;
+    const yMin = min - pad;
+    const yMax = max + pad;
+    const plotW = width - 8;
+    const plotH = height - 8;
+
+    ctx.clearRect(0, 0, width, height);
+    ctx.fillStyle = "rgba(201, 162, 39, 0.06)";
+    ctx.fillRect(4, 4, plotW, plotH);
+
+    function drawLine(values, color) {
+      const pts = [];
+      tail.forEach((row, i) => {
+        const val = values === "high" ? row.avgHighPrice : row.avgLowPrice;
+        if (val == null) return;
+        const x = 4 + (i / Math.max(tail.length - 1, 1)) * plotW;
+        const y = 4 + plotH - ((val - yMin) / (yMax - yMin)) * plotH;
+        pts.push({ x, y });
+      });
+      if (pts.length < 2) return;
+      ctx.beginPath();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.moveTo(pts[0].x, pts[0].y);
+      for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+      ctx.stroke();
+    }
+
+    drawLine("high", "#5cb85c");
+    drawLine("low", "#6ba3c7");
+  };
+
   G.formatGp = function formatGp(n) {
     if (n == null || !Number.isFinite(n)) return "—";
     if (Math.abs(n) >= 1_000_000) return (n / 1_000_000).toFixed(2) + "M";
@@ -61,6 +122,28 @@ window.Graardor = window.Graardor || {};
   G.formatPrice = function formatPrice(n) {
     if (n == null || !Number.isFinite(n)) return "—";
     return Math.round(n).toLocaleString();
+  };
+
+  G.formatDuration = function formatDuration(hours) {
+    if (hours == null || !Number.isFinite(hours) || hours <= 0) return "—";
+    if (hours < 1 / 60) return "< 1m";
+    const totalMinutes = Math.round(hours * 60);
+    if (totalMinutes < 60) return `${totalMinutes}m`;
+    const h = Math.floor(totalMinutes / 60);
+    const m = totalMinutes % 60;
+    return m ? `${h}h ${m}m` : `${h}h`;
+  };
+
+  G.effectiveHourlyRate = function effectiveHourlyRate(vol5m, volHour) {
+    const rate5m = vol5m > 0 ? vol5m * 12 : 0;
+    if (rate5m > 0 && volHour > 0) return rate5m * 0.65 + volHour * 0.35;
+    if (rate5m > 0) return rate5m;
+    return volHour;
+  };
+
+  G.hoursToFillQty = function hoursToFillQty(qty, ratePerHour) {
+    if (!qty || !ratePerHour || ratePerHour <= 0) return null;
+    return qty / ratePerHour;
   };
 
   G.escapeHtml = function escapeHtml(str) {
@@ -83,6 +166,18 @@ window.Graardor = window.Graardor || {};
     const mapping = G.cachedApiData.mapping.find((m) => m.id === itemId);
     const latest = G.cachedApiData.latest[itemId];
     if (!mapping || !latest) return null;
+
+    const hourly = G.cachedApiData.hourly[itemId];
+    const fiveMin = G.cachedApiData.fiveMin[itemId];
+    const buyVolHour = hourly?.lowPriceVolume ?? 0;
+    const sellVolHour = hourly?.highPriceVolume ?? 0;
+    const buyVol5m = fiveMin?.lowPriceVolume ?? 0;
+    const sellVol5m = fiveMin?.highPriceVolume ?? 0;
+    const volume5m = buyVol5m + sellVol5m;
+    const buyRateHour = G.effectiveHourlyRate(buyVol5m, buyVolHour);
+    const sellRateHour = G.effectiveHourlyRate(sellVol5m, sellVolHour);
+    const dailyVolume = (buyRateHour + sellRateHour) * 24;
+
     return {
       id: itemId,
       name: mapping.name,
@@ -93,7 +188,15 @@ window.Graardor = window.Graardor || {};
       highalch: mapping.highalch ?? 0,
       buy: latest.low,
       sell: latest.high,
+      volume5m,
+      dailyVolume,
+      buyRateHour,
+      sellRateHour,
     };
+  };
+
+  G.itemTitleAttr = function itemTitleAttr(name) {
+    return ` title="${G.escapeHtml(name)}"`;
   };
 
   G.showToast = function showToast(message) {
@@ -143,9 +246,11 @@ window.Graardor = window.Graardor || {};
     const badge = item.members
       ? '<span class="badge badge-members">P2P</span>'
       : '<span class="badge badge-f2p">F2P</span>';
-    return `<td class="col-item"><div class="item-cell">
+    const tip = G.itemTitleAttr(item.name);
+    return `<td class="col-item"${tip}><div class="item-cell"${tip}>
       <img src="${G.iconUrl(item.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
-      <a class="item-name" href="${G.wikiPageUrl(item.name)}" target="_blank" rel="noopener">${G.escapeHtml(item.name)}</a>${badge}
+      <a class="item-name" href="${G.itemPageUrl(item.id)}"${tip}>${G.escapeHtml(item.name)}</a>
+      <a class="item-wiki-link" href="${G.wikiPageUrl(item.name)}" target="_blank" rel="noopener" title="OSRS Wiki">↗</a>${badge}
     </div></td>`;
   };
 

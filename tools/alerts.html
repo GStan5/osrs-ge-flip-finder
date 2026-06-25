@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Graardor Pro Discord price alerts for OSRS Grand Exchange items." />
+  <meta name="theme-color" content="#1a1410" />
+  <title>Price Alerts — Graardor Pro</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body class="site ads-off">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-logo" href="/"><span class="site-logo-text">Graardor</span><span class="site-logo-tag">OSRS Companion</span></a>
+      <nav class="site-nav" aria-label="Main">
+        <span class="nav-label">Tools</span>
+        <a href="/tools/flips">Economy</a>
+        <a href="/tools/dashboard">Track</a>
+        <a href="/tools/prep">Plan</a>
+        <a href="/guides">Guides</a>
+        <a href="/changelog">Changelog</a>
+        <span id="authSlot"></span>
+        <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
+      </nav>
+    </div>
+  </header>
+  <div class="page-hero"><h1>Price Alerts</h1><p>Discord webhook alerts when an item crosses your target — Graardor Pro.</p></div>
+  <div class="tool-page-main"><main style="padding:1rem 1.25rem 2rem;">
+    <div id="alertsGate" class="upgrade-status"><a href="/upgrade">Upgrade to Graardor Pro</a> and sign in with Discord to create alerts.</div>
+    <div id="alertsContent" hidden>
+      <form id="alertForm" class="flip-log-form">
+        <div class="filter-group wide"><label for="alertItemSearch">Item</label><input id="alertItemSearch" required placeholder="e.g. twisted bow" /></div>
+        <div class="filter-group"><label for="alertDirection">When price is</label><select id="alertDirection"><option value="above">Above</option><option value="below">Below</option></select></div>
+        <div class="filter-group"><label for="alertPrice">Target (gp)</label><input id="alertPrice" type="number" min="1" required /></div>
+        <div class="filter-group wide"><label for="alertWebhook">Discord webhook URL</label><input id="alertWebhook" required placeholder="https://discord.com/api/webhooks/…" /></div>
+        <div class="filter-group actions"><label>&nbsp;</label><button type="submit">Create alert</button></div>
+      </form>
+      <div class="table-wrap"><table><thead><tr><th>Item</th><th class="num">Rule</th><th class="num">Status</th><th class="num">Last fired</th><th></th></tr></thead><tbody id="alertsBody"></tbody></table></div>
+    </div>
+  </main></div>
+  <footer class="site-footer"><p>Alerts checked every 15 minutes · <a href="/">Graardor home</a></p></footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/alerts-page.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/site-chrome.js"></script>
+</body>
+</html>

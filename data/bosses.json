@@ -1,0 +1,129 @@
+{
+  "bosses": [
+    {
+      "id": "vorkath",
+      "name": "Vorkath",
+      "durationMinutes": 6,
+      "killsPerHour": 10,
+      "notes": "Average mid-level setup with dragon bolts (e).",
+      "supplies": [
+        { "name": "Super combat potion(4)", "qty": 1 },
+        { "name": "Ranging potion(4)", "qty": 1 },
+        { "name": "Dragon bolts (e)", "qty": 200 },
+        { "name": "Extended antifire(4)", "qty": 1 },
+        { "name": "Teleport to house", "qty": 5 }
+      ],
+      "lootPerKill": 850000
+    },
+    {
+      "id": "zulrah",
+      "name": "Zulrah",
+      "durationMinutes": 2.5,
+      "killsPerHour": 20,
+      "notes": "Swamp tele + ring of dueling returns.",
+      "supplies": [
+        { "name": "Magic potion(4)", "qty": 1 },
+        { "name": "Zul-andra teleport", "qty": 20 },
+        { "name": "Ring of dueling(8)", "qty": 2 },
+        { "name": "Runite crossbow", "qty": 1 },
+        { "name": "Diamond dragon bolts (e)", "qty": 150 }
+      ],
+      "lootPerKill": 420000
+    },
+    {
+      "id": "duke",
+      "name": "Duke Sucellus",
+      "durationMinutes": 3.5,
+      "killsPerHour": 14,
+      "notes": "Desert treasure II boss — arclight or scythe setups vary.",
+      "supplies": [
+        { "name": "Super combat potion(4)", "qty": 2 },
+        { "name": "Prayer potion(4)", "qty": 4 },
+        { "name": "Shark", "qty": 16 },
+        { "name": "House tab", "qty": 10 }
+      ],
+      "lootPerKill": 520000
+    },
+    {
+      "id": "nex",
+      "name": "Nex",
+      "durationMinutes": 4,
+      "killsPerHour": 12,
+      "notes": "Team or solo — supplies scale with trips per hour.",
+      "supplies": [
+        { "name": "Super combat potion(4)", "qty": 2 },
+        { "name": "Ranging potion(4)", "qty": 1 },
+        { "name": "Prayer potion(4)", "qty": 6 },
+        { "name": "Shark", "qty": 12 },
+        { "name": "House tab", "qty": 8 }
+      ],
+      "lootPerKill": 1200000
+    },
+    {
+      "id": "hydra",
+      "name": "Alchemical Hydra",
+      "durationMinutes": 1.8,
+      "killsPerHour": 25,
+      "notes": "Boosted setup with blowpipe/bow switch.",
+      "supplies": [
+        { "name": "Ranging potion(4)", "qty": 1 },
+        { "name": "Super combat potion(4)", "qty": 1 },
+        { "name": "Prayer potion(4)", "qty": 2 },
+        { "name": "Shark", "qty": 8 },
+        { "name": "House tab", "qty": 15 }
+      ],
+      "lootPerKill": 280000
+    },
+    {
+      "id": "muspah",
+      "name": "Phantom Muspah",
+      "durationMinutes": 4,
+      "killsPerHour": 13,
+      "notes": "Frozen key runs — loot is highly variable.",
+      "supplies": [
+        { "name": "Magic potion(4)", "qty": 1 },
+        { "name": "Prayer potion(4)", "qty": 3 },
+        { "name": "Shark", "qty": 10 },
+        { "name": "House tab", "qty": 10 }
+      ],
+      "lootPerKill": 750000
+    },
+    {
+      "id": "gauntlet",
+      "name": "The Gauntlet",
+      "durationMinutes": 5,
+      "killsPerHour": 12,
+      "notes": "No GE supplies per run — opportunity cost of time only.",
+      "supplies": [],
+      "lootPerKill": 650000
+    },
+    {
+      "id": "cerberus",
+      "name": "Cerberus",
+      "durationMinutes": 4,
+      "killsPerHour": 15,
+      "notes": "Key cost amortized over kills.",
+      "supplies": [
+        { "name": "Cerberus boots", "qty": 1 },
+        { "name": "Super combat potion(4)", "qty": 2 },
+        { "name": "Shark", "qty": 12 },
+        { "name": "Burning amulet(5)", "qty": 5 }
+      ],
+      "lootPerKill": 380000
+    },
+    {
+      "id": "barrows",
+      "name": "Barrows",
+      "durationMinutes": 8,
+      "killsPerHour": 7,
+      "notes": "Mort'ton tele + food + potions.",
+      "supplies": [
+        { "name": "Barrows teleport", "qty": 7 },
+        { "name": "Shark", "qty": 14 },
+        { "name": "Super combat potion(4)", "qty": 1 },
+        { "name": "Prayer potion(4)", "qty": 2 }
+      ],
+      "lootPerKill": 180000
+    }
+  ]
+}

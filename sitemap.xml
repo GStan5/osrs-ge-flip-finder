@@ -1,9 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://graardor.com/</loc></url>
-  <url><loc>https://graardor.com/tools/flips</loc></url>
-  <url><loc>https://graardor.com/tools/recipes</loc></url>
-  <url><loc>https://graardor.com/tools/coffer</loc></url>
-  <url><loc>https://graardor.com/tools/alch</loc></url>
-  <url><loc>https://graardor.com/changelog</loc></url>
+  <url><loc>https://www.graardor.com/</loc></url>
+  <url><loc>https://www.graardor.com/tools</loc></url>
+  <url><loc>https://www.graardor.com/tools/flips</loc></url>
+  <url><loc>https://www.graardor.com/tools/recipes</loc></url>
+  <url><loc>https://www.graardor.com/tools/coffer</loc></url>
+  <url><loc>https://www.graardor.com/tools/alch</loc></url>
+  <url><loc>https://www.graardor.com/tools/item</loc></url>
+  <url><loc>https://www.graardor.com/tools/flip-log</loc></url>
+  <url><loc>https://www.graardor.com/tools/dashboard</loc></url>
+  <url><loc>https://www.graardor.com/tools/boss</loc></url>
+  <url><loc>https://www.graardor.com/tools/herbs</loc></url>
+  <url><loc>https://www.graardor.com/tools/loot</loc></url>
+  <url><loc>https://www.graardor.com/tools/community</loc></url>
+  <url><loc>https://www.graardor.com/tools/alerts</loc></url>
+  <url><loc>https://www.graardor.com/tools/prep</loc></url>
+  <url><loc>https://www.graardor.com/upgrade</loc></url>
+  <url><loc>https://www.graardor.com/guides</loc></url>
+  <url><loc>https://www.graardor.com/guides/flipping</loc></url>
+  <url><loc>https://www.graardor.com/guides/death-coffer</loc></url>
+  <url><loc>https://www.graardor.com/guides/pro</loc></url>
+  <url><loc>https://www.graardor.com/changelog</loc></url>
 </urlset>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Track your OSRS GE flip sessions — log buys, sells, and profit. Graardor flip log." />
+  <meta name="theme-color" content="#1a1410" />
+  <title>Flip Log — Graardor</title>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+</head>
+<body class="site ads-off">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-logo" href="/">
+        <span class="site-logo-text">Graardor</span>
+        <span class="site-logo-tag">OSRS Companion</span>
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <span class="nav-label">Tools</span>
+        <a href="/tools/flips">Economy</a>
+        <a href="/tools/dashboard">Track</a>
+        <a href="/tools/prep">Plan</a>
+        <a href="/guides">Guides</a>
+        <a href="/changelog">Changelog</a>
+        <span id="authSlot"></span>
+        <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <h1>Flip Log</h1>
+    <p>Track completed flips locally in your browser — profit totals update as you log sessions.</p>
+  </div>
+
+  <div class="tool-page-main">
+    <main style="padding:1rem 1.25rem 2rem;">
+      <div id="flipLogSummary" class="flip-log-summary"></div>
+
+      <section class="filters">
+        <h2 class="filters-title">Log a flip</h2>
+        <form id="flipLogForm" class="flip-log-form">
+          <div class="filter-group wide">
+            <label for="logItemName">Item</label>
+            <input id="logItemName" type="text" required placeholder="e.g. Dragon scimitar" autocomplete="off" />
+          </div>
+          <div class="filter-group">
+            <label for="logBuyPrice">Buy price</label>
+            <input id="logBuyPrice" type="number" min="1" required />
+          </div>
+          <div class="filter-group">
+            <label for="logSellPrice">Sell price</label>
+            <input id="logSellPrice" type="number" min="1" required />
+          </div>
+          <div class="filter-group">
+            <label for="logQty">Quantity</label>
+            <input id="logQty" type="number" min="1" value="1" required />
+          </div>
+          <div class="filter-group actions">
+            <label>&nbsp;</label>
+            <button type="submit">Add flip</button>
+          </div>
+        </form>
+      </section>
+
+      <p class="results-meta">
+        <label class="toggle"><input id="aggregateOptIn" type="checkbox" /> Share anonymous flip stats with <a href="/tools/community">community</a></label>
+        · Stored locally · Cloud sync when signed in
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th>
+              <th class="num">Buy</th>
+              <th class="num">Sell</th>
+              <th class="num">Qty</th>
+              <th class="num">Profit</th>
+              <th class="num">When</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="flipLogBody"></tbody>
+        </table>
+      </div>
+
+      <div class="actions" style="margin-top:1rem;">
+        <button type="button" id="clearFlipLogBtn" class="btn-secondary">Clear log</button>
+      </div>
+    </main>
+  </div>
+
+  <footer class="site-footer">
+    <p><a href="/tools/flips">← Back to flips</a> · <a href="/">Graardor home</a></p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/sync.js"></script>
+  <script src="/assets/js/flip-log.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/site-chrome.js"></script>
+</body>
+</html>

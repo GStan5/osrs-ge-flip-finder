@@ -17,10 +17,10 @@
       </a>
       <nav class="site-nav" aria-label="Main">
         <span class="nav-label">Tools</span>
-        <a href="/tools/flips" class="active">Flips</a>
-        <a href="/tools/recipes">Transforms</a>
-        <a href="/tools/coffer">Coffer</a>
-        <a href="/tools/alch">High Alch</a>
+        <a href="/tools/flips" class="active">Economy</a>
+        <a href="/tools/dashboard">Track</a>
+        <a href="/tools/prep">Plan</a>
+        <a href="/guides">Guides</a>
         <a href="/changelog">Changelog</a>
         <span id="authSlot"></span>
         <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
@@ -52,6 +52,10 @@
     </div>
   </div>
 
+  <div id="flipSummary" class="tool-summary-strip" hidden></div>
+
+  <div class="tool-tip-bar">Tip: hover truncated names for the full item name · click prices to copy · use <kbd>Refresh prices</kbd> when your offers fill</div>
+
   <div class="content-shell">
     <!--
       Left sidebar ad: replace inner HTML with your ad network code (e.g. AdSense ins.adsbygoogle).
@@ -72,7 +76,7 @@
     <nav class="tabs">
       <button type="button" class="tab active" data-tab="top10">Top 10 Flips</button>
       <button type="button" class="tab" data-tab="search">Search</button>
-      <button type="button" class="tab" data-tab="transforms">Recipes</button>
+      <button type="button" class="tab" data-tab="transforms">Transforms</button>
     </nav>
 
     <div id="searchPanel" class="tab-panel">
@@ -503,6 +507,8 @@
   </footer>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/sync.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/site-chrome.js"></script>
 
@@ -584,6 +590,10 @@
     function saveStoredFavorites() {
       localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favoriteIds]));
       localStorage.setItem(RECIPE_FAV_STORAGE_KEY, JSON.stringify([...recipeFavoriteKeys]));
+      if (window.Graardor?.pushSync) {
+        Graardor.pushSync(FAVORITES_STORAGE_KEY, [...favoriteIds]);
+        Graardor.pushSync(RECIPE_FAV_STORAGE_KEY, [...recipeFavoriteKeys]);
+      }
     }
 
     function isItemFavorite(id) {
@@ -603,6 +613,7 @@
       if (favoriteIds.has(key)) favoriteIds.delete(key);
       else favoriteIds.add(key);
       saveStoredFavorites();
+      updateFlipSummaryStrip();
     }
 
     function showToast(message) {
@@ -648,15 +659,21 @@
       return `<button type="button" class="star-btn${active ? " active" : ""}" data-fav-id="${escapeHtml(String(id))}" data-fav-kind="${kind}" title="${active ? "Remove favorite" : "Add favorite"}">★</button>`;
     }
 
+    function itemTitleAttr(name) {
+      return ` title="${escapeHtml(name)}"`;
+    }
+
     function itemNameCellHtml(item) {
       const memberBadge = item.members
         ? '<span class="badge badge-members">P2P</span>'
         : '<span class="badge badge-f2p">F2P</span>';
-      return `<td class="col-item">
-        <div class="item-cell">
+      const tip = itemTitleAttr(item.name);
+      return `<td class="col-item"${tip}>
+        <div class="item-cell"${tip}>
           ${favoriteStarButton(item.id, "item", isItemFavorite(item.id))}
           <img src="${iconUrl(item.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
-          <a class="item-name" href="${wikiPageUrl(item.name)}" target="_blank" rel="noopener">${escapeHtml(item.name)}</a>${memberBadge}
+          <a class="item-name" href="/tools/item?id=${item.id}"${tip}>${escapeHtml(item.name)}</a>
+          <a class="item-wiki-link" href="${wikiPageUrl(item.name)}" target="_blank" rel="noopener" title="OSRS Wiki">↗</a>${memberBadge}
         </div>
       </td>`;
     }
@@ -1440,7 +1457,7 @@
         <div class="recipe-item-head">
           <img src="${iconUrl(item.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
           <span class="recipe-qty">${item.qty}×</span>
-          <a class="recipe-name" href="${wikiPageUrl(item.name)}" target="_blank" rel="noopener">${escapeHtml(item.name)}</a>
+          <a class="recipe-name" href="${wikiPageUrl(item.name)}" target="_blank" rel="noopener"${itemTitleAttr(item.name)}>${escapeHtml(item.name)}</a>
         </div>
         <div class="recipe-item-meta">
           <span class="${priceClass} price-copyable" data-copy-price="${Math.round(price)}" title="Click to copy ${priceLabel.toLowerCase()} price">${priceLabel}: ${formatPrice(price)}</span>
@@ -1538,7 +1555,7 @@
               <div class="item-cell">
                 ${favoriteStarButton(favKey, "recipe", isRecipeFavorite(row))}
                 <span>
-                  <span class="recipe-title">${escapeHtml(recipeDisplayName(row))}</span>
+                  <span class="recipe-title"${itemTitleAttr(recipeDisplayName(row))}>${escapeHtml(recipeDisplayName(row))}</span>
                   <span class="recipe-kind">${escapeHtml(recipeKindLabel(row))}</span>
                 </span>
               </div>
@@ -1560,6 +1577,7 @@
           </tr>`;
         })
         .join("");
+      updateFlipSummaryStrip();
     }
 
     function updateTransformsSortHeaders() {
@@ -1828,6 +1846,49 @@
       return sortItemList(list, key, dir);
     }
 
+    function updateFlipSummaryStrip() {
+      if (!items.length || typeof renderSummaryStrip !== "function") {
+        if (typeof renderSummaryStrip === "function") renderSummaryStrip("flipSummary", []);
+        return;
+      }
+      const includeTax = isChecked("t10IncludeTax");
+      const enriched = items.map((item) => enrichItem(item, includeTax));
+      const pool = enriched.filter(passesTop10Filters).filter(
+        (i) => !isBond(i) && i.gpPerHour != null && i.gpPerHour > 0
+      );
+      const best = sortItemList(pool, "gpPerHour", "desc")[0];
+      let bestTransform = null;
+      if (transformRows?.length) {
+        bestTransform = sortItemList(
+          filterTransformRows(transformRows).filter((r) => r.profit > 0),
+          "gpPerHour",
+          "desc"
+        )[0];
+      }
+      renderSummaryStrip("flipSummary", [
+        {
+          label: "Best flip GP/hr",
+          value: best ? formatGp(best.gpPerHour) : "—",
+          className: "highlight-gp",
+          hint: best ? best.name : "Loosen top 10 filters",
+          link: best ? `/tools/item?id=${best.id}` : null,
+        },
+        {
+          label: "Best transform",
+          value: bestTransform?.gpPerHour != null ? formatGp(bestTransform.gpPerHour) + "/hr" : "—",
+          className: bestTransform ? "highlight-gp" : "",
+          hint: bestTransform ? recipeDisplayName(bestTransform) : "Open Transforms tab",
+        },
+        { label: "Items priced", value: items.length.toLocaleString() },
+        { label: "Favorites", value: favoriteIds.size.toLocaleString() },
+        {
+          label: "Prices",
+          value: pricesLoadedAt ? formatTimeAgo(pricesLoadedAt) : "—",
+          hint: "Refresh when offers fill",
+        },
+      ]);
+    }
+
     function renderTop10() {
       if (!items.length) {
         el("top10Meta").textContent = "Load price data first, then use Refresh if needed.";
@@ -1860,6 +1921,7 @@
       el("top10Body").innerHTML = candidates
         .map((item, i) => itemRowHtml(item, { rank: i + 1, showGpPerHour: true, includeTax }))
         .join("");
+      updateFlipSummaryStrip();
     }
 
     function renderAll() {

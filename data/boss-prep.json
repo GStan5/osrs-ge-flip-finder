@@ -1,0 +1,28 @@
+{
+  "bosses": [
+    {
+      "id": "vorkath",
+      "name": "Vorkath",
+      "wiki": "Vorkath",
+      "gear": ["Dragon hunter crossbow", "Dragonfire ward", "Salve amulet (ei)", "Ava's assembler", "Bandos chestplate", "Bandos tassets"],
+      "inventory": ["Super combat potion(4)", "Ranging potion(4)", "Extended antifire(4)", "Dragon bolts (e)", "Teleport to house"],
+      "tips": ["Use POH pool between trips", "Protect from Missiles", "Walk fireball line"]
+    },
+    {
+      "id": "zulrah",
+      "name": "Zulrah",
+      "wiki": "Zulrah",
+      "gear": ["Trident of the swamp", "Occult necklace", "Mage's cap", "Ava's assembler", "Mystic robe top", "Mystic robe bottom"],
+      "inventory": ["Magic potion(4)", "Zul-andra teleport", "Ring of dueling(8)", "Runite crossbow", "Diamond dragon bolts (e)"],
+      "tips": ["Learn rotations", "Ring of dueling to Castle Wars", "Protect from Missiles default"]
+    },
+    {
+      "id": "toa",
+      "name": "Tombs of Amascut",
+      "wiki": "Tombs of Amascut",
+      "gear": ["Best melee/range/mage switches", "Lightbearer", "Blessing of the gods"],
+      "inventory": ["Food", "Prayer potion(4)", "Stamina potion(4)", "House tabs"],
+      "tips": ["Check invocations before raid", "Share supplies with team", "Use GE for bulk prep"]
+    }
+  ]
+}

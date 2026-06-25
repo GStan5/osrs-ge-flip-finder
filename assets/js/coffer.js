@@ -78,6 +78,7 @@
 
     if (!filtered.length) {
       G.el("cofferBody").innerHTML = '<tr><td colspan="8" class="loading">No matches.</td></tr>';
+      if (typeof renderSummaryStrip === "function") renderSummaryStrip("cofferSummary", []);
       return;
     }
 
@@ -100,6 +101,26 @@
 
     if (filtered.length > 500) {
       G.el("cofferMeta").textContent += ` (showing top 500)`;
+    }
+
+    if (typeof renderSummaryStrip === "function") {
+      const best = filtered[0];
+      renderSummaryStrip("cofferSummary", [
+        {
+          label: "Best profit",
+          value: best ? G.formatGp(best.profit) : "—",
+          className: best?.profit >= 0 ? "highlight-gp" : "",
+          hint: best?.name,
+          link: best ? G.itemPageUrl(best.id) : null,
+        },
+        {
+          label: "Best limit profit",
+          value: best?.limit ? G.formatGp(best.limitProfit) : "—",
+          className: "highlight-gp",
+        },
+        { label: "Matches", value: filtered.length.toLocaleString() },
+        { label: "Mode", value: mode === "patient" ? "Patient buy" : "Instant buy" },
+      ]);
     }
   }
 
