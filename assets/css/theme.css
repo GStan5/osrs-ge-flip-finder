@@ -1529,6 +1529,18 @@
       z-index: 200;
     }
 
+    /* Invisible bridge so pointer can cross the gap without closing hover */
+    @media (min-width: 861px) {
+      .nav-dropdown-panel::before {
+        content: "";
+        position: absolute;
+        bottom: 100%;
+        left: 0;
+        right: 0;
+        height: 0.35rem;
+      }
+    }
+
     .nav-dropdown:hover .nav-dropdown-panel,
     .nav-dropdown:focus-within .nav-dropdown-panel {
       display: block;
