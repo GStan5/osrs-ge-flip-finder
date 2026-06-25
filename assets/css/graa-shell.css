@@ -597,6 +597,239 @@ body.site .tool-hero-inner.plan {
   border-left-color: var(--gra-plan);
 }
 
+body.site .tool-hero-inner.home {
+  border-left-color: var(--gra-orange);
+}
+
+/* Inner pages — sidebar + content (matches homepage hub) */
+.tool-layout {
+  display: grid;
+  grid-template-columns: 200px minmax(0, 1fr);
+  gap: 1rem;
+  max-width: 1320px;
+  margin: 0 auto;
+  padding: 1rem 1.25rem 2rem;
+  align-items: start;
+}
+
+.tool-sidebar {
+  position: sticky;
+  top: 5.5rem;
+}
+
+.tool-sidebar-links {
+  display: flex;
+  flex-direction: column;
+}
+
+.tool-sidebar-links a {
+  display: block;
+  padding: 0.5rem 0.65rem;
+  color: var(--gra-cream);
+  text-decoration: none;
+  font-size: 0.82rem;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.25);
+}
+
+.tool-sidebar-links a:hover {
+  color: var(--gra-yellow);
+  background: rgba(255, 255, 0, 0.05);
+}
+
+.tool-sidebar-links a.active {
+  color: var(--gra-yellow);
+  background: var(--gra-stone-dark);
+  box-shadow: inset 3px 0 0 var(--gra-orange);
+}
+
+.tool-sidebar-home {
+  color: var(--gra-muted) !important;
+  font-weight: normal !important;
+  font-size: 0.78rem !important;
+}
+
+.tool-sidebar-all {
+  margin-top: 0.35rem;
+  color: var(--gra-yellow) !important;
+  text-decoration: underline;
+  font-size: 0.75rem !important;
+  border-bottom: none !important;
+}
+
+.tool-body {
+  min-width: 0;
+}
+
+body.site .tool-body .page-hero,
+body.site .tool-body .tool-subnav,
+body.site .tool-body .disclaimer,
+body.site .tool-body .status-bar,
+body.site .tool-body .tool-summary-strip,
+body.site .tool-body .tool-tip-bar {
+  max-width: none;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+body.site .tool-summary-strip {
+  background: var(--gra-stone-dark);
+  border: 2px solid;
+  border-color: var(--gra-bevel-up);
+  border-top: none;
+  padding: 0.65rem 1rem;
+}
+
+body.site .tool-tip-bar {
+  background: var(--gra-stone-dark);
+  border: 2px solid var(--gra-stone-light);
+  border-top: none;
+  padding: 0.45rem 1rem;
+  max-width: none;
+}
+
+body.site .tool-page-main,
+body.site .tool-body .tool-page-main {
+  max-width: none;
+  padding: 0;
+}
+
+body.site .tool-page-main main,
+body.site .tool-body main {
+  background: var(--gra-stone);
+  border: 2px solid;
+  border-color: var(--gra-bevel-up);
+  padding: 1rem;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+body.site .filters.gra-panel {
+  padding: 0;
+  overflow: hidden;
+  margin-bottom: 1rem;
+  border: 2px solid;
+  border-color: var(--gra-bevel-up);
+}
+
+body.site .filters.gra-panel .gra-panel-head {
+  margin: 0;
+}
+
+body.site .filters.gra-panel .filter-group,
+body.site .filters.gra-panel .toggles,
+body.site .filters.gra-panel .actions,
+body.site .filters.gra-panel .preset-filters,
+body.site .filters.gra-panel .filters-subtitle {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+body.site .filters.gra-panel .filter-group:first-of-type,
+body.site .filters.gra-panel .filters-subtitle:first-child {
+  margin-top: 0.75rem;
+}
+
+body.site .filters.gra-panel .actions {
+  margin-bottom: 1rem;
+}
+
+body.site .content-shell {
+  padding: 0;
+}
+
+body.site .content-shell .page-main {
+  min-width: 0;
+}
+
+/* Guides, Pro, changelog — card grids match hub tiles */
+body.site .tool-body .tool-card,
+body.site .upgrade-card,
+body.site .guide-article {
+  background: var(--gra-stone);
+  border: 2px solid;
+  border-color: var(--gra-bevel-up);
+  border-radius: 0;
+  box-shadow: none;
+}
+
+body.site .tool-body .tool-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.85rem 1rem;
+  text-decoration: none;
+  color: inherit;
+  border-left: 4px solid var(--gra-orange);
+}
+
+body.site .tool-body .tool-card:hover {
+  background: var(--gra-stone2, #4a4034);
+}
+
+body.site .tool-body .tool-card:hover h2,
+body.site .tool-body .tool-card:hover h3 {
+  color: var(--gra-yellow);
+}
+
+body.site .tool-body .tool-card h2,
+body.site .tool-body .tool-card h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  color: var(--gra-orange);
+  text-shadow: 1px 1px 0 #000;
+}
+
+body.site .tool-body .tool-card p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: var(--gra-muted);
+}
+
+body.site .tool-body .tool-card .tool-link {
+  color: var(--gra-yellow);
+  font-size: 0.78rem;
+  font-weight: bold;
+}
+
+body.site .upgrade-grid {
+  max-width: none;
+  padding: 0;
+}
+
+body.site .upgrade-card h2 {
+  color: var(--gra-orange);
+  text-shadow: 1px 1px 0 #000;
+}
+
+body.site .changelog-list {
+  max-width: none;
+  padding: 0;
+}
+
+body.site .changelog-entry {
+  background: var(--gra-stone);
+  border: 2px solid;
+  border-color: var(--gra-bevel-up);
+  border-left: 4px solid var(--gra-orange);
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+body.site .guide-article {
+  padding: 1.25rem;
+  max-width: none;
+}
+
+body.site .guide-article h1 {
+  color: var(--gra-orange);
+  text-shadow: 1px 1px 0 #000;
+}
+
+body.site .tools-hub-main {
+  max-width: none;
+  padding: 0;
+}
+
 body.site .page-hero h1 {
   font-size: 1.35rem;
   color: var(--gra-orange);
@@ -707,6 +940,23 @@ body.site th {
 }
 
 @media (max-width: 960px) {
+  .tool-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-sidebar {
+    position: static;
+  }
+
+  .tool-sidebar-links {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .tool-sidebar-home {
+    grid-column: 1 / -1;
+  }
+
   .hub-layout {
     grid-template-columns: 1fr;
   }

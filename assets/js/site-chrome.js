@@ -81,6 +81,8 @@
     const path = currentPath();
     let section = "home";
     if (path === "/") section = "home";
+    else if (path.startsWith("/guides")) section = "plan";
+    else if (path === "/upgrade" || path === "/changelog" || path === "/tools") section = "home";
     else {
       const sec = NAV_SECTIONS.find((s) => s.paths.some((p) => path === p || path.startsWith(p + "/")));
       if (sec) section = sec.id;
@@ -101,14 +103,97 @@
     logo.insertBefore(icon, logo.firstChild);
   }
 
+  function getPageSection(path) {
+    const sec = NAV_SECTIONS.find((s) => s.paths.some((p) => path === p || path.startsWith(p + "/")));
+    if (sec) return sec;
+    if (path.startsWith("/guides")) return NAV_SECTIONS.find((s) => s.id === "plan");
+    return null;
+  }
+
+  function buildToolSidebar(section, path) {
+    const aside = document.createElement("aside");
+    aside.className = "tool-sidebar";
+
+    const head = section ? section.label : "Quick links";
+    const links = section
+      ? section.tools
+      : [
+          { href: "/tools/flips", label: "Flip finder" },
+          { href: "/tools/item", label: "Item lookup" },
+          { href: "/tools/alch", label: "High alch" },
+          { href: "/tools", label: "All tools" },
+        ];
+
+    aside.innerHTML = `<nav class="gra-panel tool-sidebar-panel" aria-label="Section navigation">
+      <div class="gra-panel-head">${head}</div>
+      <div class="tool-sidebar-links">
+        <a href="/" class="tool-sidebar-home">← Home</a>
+        ${links
+          .map((t) => {
+            const active =
+              path === t.href || (t.href === "/tools/item" && path.startsWith("/tools/item"));
+            const badge = t.pro ? '<span class="nav-badge">Pro</span>' : "";
+            return `<a href="${t.href}" class="${active ? "active" : ""}">${t.label}${badge}</a>`;
+          })
+          .join("")}
+        ${section ? `<a class="tool-sidebar-all" href="/tools#${section.id}">All ${section.label.toLowerCase()}</a>` : ""}
+      </div>
+    </nav>`;
+    return aside;
+  }
+
+  function wrapToolPageLayout() {
+    const path = currentPath();
+    if (path === "/" || document.querySelector(".tool-layout")) return;
+
+    const header = document.querySelector(".site-header");
+    const footer = document.querySelector(".site-footer");
+    if (!header || !footer) return;
+
+    const section = getPageSection(path);
+    const layout = document.createElement("div");
+    layout.className = "tool-layout";
+    layout.appendChild(buildToolSidebar(section, path));
+
+    const body = document.createElement("div");
+    body.className = "tool-body";
+
+    const stop = document.querySelector(".kofi-strip") || footer;
+    const toMove = [];
+    let node = header.nextSibling;
+    while (node && node !== stop) {
+      const next = node.nextSibling;
+      if (node.nodeType === 1) toMove.push(node);
+      node = next;
+    }
+    toMove.forEach((el) => body.appendChild(el));
+    layout.appendChild(body);
+    header.insertAdjacentElement("afterend", layout);
+  }
+
+  function panelizeFilters() {
+    document.querySelectorAll(".filters:not(.gra-panelized)").forEach((filters) => {
+      filters.classList.add("gra-panelized", "gra-panel");
+      const title = filters.querySelector(".filters-title");
+      if (title && !filters.querySelector(".gra-panel-head")) {
+        const head = document.createElement("div");
+        head.className = "gra-panel-head";
+        head.textContent = title.textContent;
+        title.replaceWith(head);
+      }
+    });
+  }
+
   function enhancePageHero() {
     const hero = document.querySelector(".page-hero");
     if (!hero || hero.dataset.enhanced) return;
     hero.dataset.enhanced = "1";
 
     const path = currentPath();
-    const sec = NAV_SECTIONS.find((s) => s.paths.some((p) => path === p || path.startsWith(p + "/")));
-    const sectionClass = sec ? sec.id : "economy";
+    const sec = getPageSection(path);
+    let sectionClass = sec ? sec.id : "economy";
+    if (path === "/upgrade" || path === "/changelog" || path === "/tools") sectionClass = "home";
+    if (path.startsWith("/guides") && !sec) sectionClass = "plan";
 
     const inner = document.createElement("div");
     inner.className = `tool-hero-inner ${sectionClass}`;
@@ -338,6 +423,8 @@
     const bar = document.querySelector(".chrome-section-bar");
     if (bar) {
       if (path === "/") bar.className = "chrome-section-bar home";
+      else if (path.startsWith("/guides")) bar.className = "chrome-section-bar plan";
+      else if (path === "/upgrade" || path === "/changelog" || path === "/tools") bar.className = "chrome-section-bar home";
       else {
         const sec = NAV_SECTIONS.find((s) => s.paths.some((p) => path === p || path.startsWith(p + "/")));
         bar.className = `chrome-section-bar ${sec ? sec.id : "economy"}`;
@@ -360,6 +447,8 @@
     enhancePageHero();
     injectBreadcrumbs();
     injectSubnav();
+    wrapToolPageLayout();
+    panelizeFilters();
     injectProLink();
     injectKofiStrip();
     markActiveNav();
