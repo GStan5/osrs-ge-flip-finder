@@ -177,7 +177,7 @@
     <div class="table-wrap">
       <table id="searchTable">
         <colgroup>
-          <col style="width: 22%" />
+          <col style="width: 28%" />
           <col style="width: 6.5%" />
           <col style="width: 6.5%" />
           <col span="11" />
@@ -352,7 +352,7 @@
         <table id="top10Table">
           <colgroup>
             <col style="width: 2.5%" />
-            <col style="width: 18%" />
+            <col style="width: 22%" />
             <col style="width: 6.5%" />
             <col style="width: 6.5%" />
             <col style="width: 6%" />
@@ -1993,36 +1993,26 @@
       syncUrlFromState();
     }
 
-    async function loadData() {
-      el("status").textContent = "Loading price data…";
+    async function loadData(forceRefresh = false) {
+      el("status").textContent = forceRefresh ? "Refreshing price data…" : "Loading price data…";
       el("status").className = "";
       el("resultsBody").innerHTML = '<tr><td colspan="15" class="loading">Loading…</td></tr>';
       el("top10Body").innerHTML = '<tr><td colspan="18" class="loading">Loading…</td></tr>';
 
       try {
-        const [mapping, latestRes, hourlyRes, fiveMinRes] = await Promise.all([
-          fetchJson("/mapping"),
-          fetchJson("/latest"),
-          fetchJson("/1h"),
-          fetchJson("/5m"),
-        ]);
-
-        cachedApiData = {
-          mapping,
-          latest: latestRes.data,
-          hourly: hourlyRes.data,
-          fiveMin: fiveMinRes.data,
-        };
+        cachedApiData = await Graardor.loadPrices({ useCache: true, force: forceRefresh });
 
         items = buildItems();
 
-        const tsHour = hourlyRes.timestamp ? new Date(hourlyRes.timestamp * 1000) : null;
-        const ts5m = fiveMinRes.timestamp ? new Date(fiveMinRes.timestamp * 1000) : null;
+        pricesLoadedAt = Graardor.pricesLoadedAt;
+        volumeTimestamps = {
+          ts5m: Graardor.pricesMeta?.ts5m ?? null,
+          tsHour: Graardor.pricesMeta?.tsHour ?? null,
+        };
 
-        pricesLoadedAt = new Date();
-        volumeTimestamps = { ts5m, tsHour };
-
-        el("status").textContent = `Loaded ${items.length.toLocaleString()} of ${mapping.length.toLocaleString()} items — refresh manually when your flip step completes`;
+        const mapping = cachedApiData.mapping;
+        const cacheNote = Graardor.pricesMeta?.fromCache ? " (cached — click Refresh for live prices)" : "";
+        el("status").textContent = `Loaded ${items.length.toLocaleString()} of ${mapping.length.toLocaleString()} items — refresh manually when your flip step completes${cacheNote}`;
         el("status").className = "ok";
         startLastUpdatedClock();
         renderAll();
@@ -2199,9 +2189,9 @@
       btn.addEventListener("click", () => applyTop10Preset(btn.dataset.t10Preset));
     });
 
-    el("refreshBtn").addEventListener("click", loadData);
-    el("refreshTop10Btn").addEventListener("click", loadData);
-    el("refreshTransformsBtn").addEventListener("click", loadData);
+    el("refreshBtn").addEventListener("click", () => loadData(true));
+    el("refreshTop10Btn").addEventListener("click", () => loadData(true));
+    el("refreshTransformsBtn").addEventListener("click", () => loadData(true));
     el("resetBtn").addEventListener("click", resetFilters);
     el("resetTop10Btn").addEventListener("click", resetTop10Filters);
     el("resetTransformsBtn").addEventListener("click", resetTransformFilters);

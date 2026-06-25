@@ -163,7 +163,7 @@
         init._timer = setTimeout(render, 150);
       });
     });
-    G.el("refreshAlchBtn")?.addEventListener("click", load);
+    G.el("refreshAlchBtn")?.addEventListener("click", () => load(true));
     G.el("resetAlchBtn")?.addEventListener("click", () => {
       if (G.el("alchSearch")) G.el("alchSearch").value = "";
       if (G.el("alchMinProfit")) G.el("alchMinProfit").value = "";
@@ -176,11 +176,11 @@
     await load();
   }
 
-  async function load() {
-    G.updateStatus("alchStatus", "Loading price data…", "");
+  async function load(forceRefresh = false) {
+    G.updateStatus("alchStatus", forceRefresh ? "Refreshing price data…" : "Loading price data…", "");
     G.el("alchBody").innerHTML = '<tr><td colspan="11" class="loading">Loading…</td></tr>';
     try {
-      await G.loadPrices();
+      await G.loadPrices({ useCache: true, force: forceRefresh });
       const nature = G.getItemPrice(G.NATURE_RUNE_ID);
       natureCost = nature?.buy ?? 90;
       G.updateStatus(

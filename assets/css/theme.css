@@ -126,7 +126,7 @@
 
     .item-cell {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 0.35rem;
       min-width: 0;
     }
@@ -134,13 +134,14 @@
     .item-cell a.item-name {
       color: inherit;
       text-decoration: none;
-      flex: 1 1 0;
-      min-width: 0;
+      flex: 1 1 auto;
+      min-width: 6rem;
       font-weight: 600;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      line-height: 1.25;
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      line-height: 1.3;
     }
 
     .item-cell a.item-name:hover {
@@ -556,6 +557,9 @@
       overflow: visible;
       text-overflow: clip;
       vertical-align: middle;
+      min-width: 11rem;
+      width: 26%;
+      white-space: normal;
     }
 
     th.num:not(.col-item), td.num:not(.col-item) {
@@ -656,23 +660,25 @@
     }
 
     .recipe-name {
-      flex: 1 1 0;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      line-height: 1.25;
+      flex: 1 1 auto;
+      min-width: 4rem;
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      line-height: 1.3;
     }
 
     .recipe-title {
       display: block;
       font-weight: 600;
       margin-bottom: 0.15rem;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+      overflow-wrap: anywhere;
       min-width: 0;
-      line-height: 1.25;
+      line-height: 1.3;
     }
 
     .recipe-kind {
@@ -690,12 +696,13 @@
 
     .item-name {
       font-weight: 600;
-      flex: 1 1 0;
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      line-height: 1.25;
+      flex: 1 1 auto;
+      min-width: 6rem;
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      line-height: 1.3;
     }
 
     .item-cell .badge {
@@ -780,52 +787,7 @@
       th, td { padding: 0.3rem 0.2rem; }
       .item-cell img { width: 24px; height: 24px; }
       .filter-group.wide { grid-column: span 1; }
-
-      .item-cell a.item-name,
-      .item-cell .item-name,
-      .recipe-title,
-      .recipe-item-head .recipe-name {
-        white-space: normal;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-    }
-
-    @media (min-width: 900px) {
-      .item-cell a.item-name,
-      .item-cell .item-name,
-      .recipe-title,
-      .recipe-item-head .recipe-name {
-        white-space: normal;
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
-    }
-
-    @media (min-width: 1280px) {
-      .item-cell a.item-name,
-      .item-cell .item-name {
-        display: inline;
-        -webkit-line-clamp: unset;
-        -webkit-box-orient: unset;
-        overflow: visible;
-        text-overflow: clip;
-        white-space: normal;
-      }
-
-      .recipe-title,
-      .recipe-item-head .recipe-name {
-        display: block;
-        -webkit-line-clamp: unset;
-        -webkit-box-orient: unset;
-        overflow: visible;
-        text-overflow: clip;
-        white-space: normal;
-      }
+      th.col-item, td.col-item { min-width: 9rem; width: 30%; }
     }
 
     /* Site chrome: see graa-shell.css */
@@ -945,7 +907,7 @@
 
     .recipe-item-head {
       display: flex;
-      align-items: center;
+      align-items: flex-start;
       gap: 0.35rem;
       min-width: 0;
     }
@@ -954,10 +916,12 @@
       color: inherit;
       text-decoration: none;
       font-weight: 600;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      min-width: 0;
+      overflow: visible;
+      text-overflow: clip;
+      white-space: normal;
+      overflow-wrap: anywhere;
+      min-width: 4rem;
+      line-height: 1.3;
     }
 
     .recipe-item-head .recipe-name:hover {
@@ -1157,16 +1121,9 @@
     .item-lookup-results a span {
       flex: 1;
       min-width: 0;
-      line-height: 1.3;
-    }
-
-    @media (max-width: 699px) {
-      .item-lookup-results a span {
-        display: -webkit-box;
-        -webkit-line-clamp: 2;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-      }
+      line-height: 1.35;
+      white-space: normal;
+      overflow-wrap: anywhere;
     }
 
     .item-lookup-results a:hover {
@@ -1472,10 +1429,11 @@
         flex-wrap: wrap;
       }
 
-      #authSlot {
-        width: 100%;
+      #authSlot,
+      .header-actions {
+        width: auto;
         justify-content: flex-start;
-        padding-top: 0.25rem;
+        padding-top: 0;
       }
 
       .economy-subnav,

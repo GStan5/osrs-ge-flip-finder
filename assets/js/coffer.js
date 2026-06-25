@@ -150,7 +150,7 @@
         init._timer = setTimeout(render, 150);
       });
     });
-    G.el("refreshCofferBtn")?.addEventListener("click", load);
+    G.el("refreshCofferBtn")?.addEventListener("click", () => load(true));
     G.el("resetCofferBtn")?.addEventListener("click", () => {
       if (G.el("cofferSearch")) G.el("cofferSearch").value = "";
       if (G.el("cofferMinProfit")) G.el("cofferMinProfit").value = "";
@@ -163,11 +163,11 @@
     await load();
   }
 
-  async function load() {
-    G.updateStatus("cofferStatus", "Loading price data…", "");
+  async function load(forceRefresh = false) {
+    G.updateStatus("cofferStatus", forceRefresh ? "Refreshing price data…" : "Loading price data…", "");
     G.el("cofferBody").innerHTML = '<tr><td colspan="8" class="loading">Loading…</td></tr>';
     try {
-      await G.loadPrices();
+      await G.loadPrices({ useCache: true, force: forceRefresh });
       G.updateStatus(
         "cofferStatus",
         `Loaded ${G.cachedApiData.mapping.length.toLocaleString()} items — refresh when you want new prices`,

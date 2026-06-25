@@ -13,8 +13,83 @@ window.Graardor = window.Graardor || {};
 
   G.cachedApiData = null;
   G.pricesLoadedAt = null;
+  G.pricesMeta = { tsHour: null, ts5m: null, fromCache: false };
+
+  const CACHE_DB = "graardor-prices-v1";
+  const CACHE_STORE = "bundles";
+  const CACHE_KEY = "latest";
+  /** Background revalidation only updates stored cache — not live UI — after this age. */
+  G.PRICE_CACHE_STALE_MS = 24 * 60 * 60 * 1000;
+
+  let inflightLoad = null;
+  let idbPromise = null;
 
   G.el = (id) => document.getElementById(id);
+
+  function openPriceDb() {
+    if (idbPromise) return idbPromise;
+    idbPromise = new Promise((resolve, reject) => {
+      if (!("indexedDB" in globalThis)) {
+        resolve(null);
+        return;
+      }
+      const req = indexedDB.open(CACHE_DB, 1);
+      req.onupgradeneeded = () => {
+        const db = req.result;
+        if (!db.objectStoreNames.contains(CACHE_STORE)) {
+          db.createObjectStore(CACHE_STORE);
+        }
+      };
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    return idbPromise;
+  }
+
+  async function readPriceCache() {
+    try {
+      const db = await openPriceDb();
+      if (!db) return null;
+      return await new Promise((resolve, reject) => {
+        const tx = db.transaction(CACHE_STORE, "readonly");
+        const req = tx.objectStore(CACHE_STORE).get(CACHE_KEY);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => reject(req.error);
+      });
+    } catch {
+      return null;
+    }
+  }
+
+  async function writePriceCache(entry) {
+    try {
+      const db = await openPriceDb();
+      if (!db) return;
+      await new Promise((resolve, reject) => {
+        const tx = db.transaction(CACHE_STORE, "readwrite");
+        tx.objectStore(CACHE_STORE).put(entry, CACHE_KEY);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => reject(tx.error);
+      });
+    } catch {
+      /* cache is optional */
+    }
+  }
+
+  function asDate(value) {
+    if (!value) return null;
+    return value instanceof Date ? value : new Date(value);
+  }
+
+  function applyBundle(bundle, meta) {
+    G.cachedApiData = bundle;
+    G.pricesLoadedAt = meta.savedAt ? new Date(meta.savedAt) : new Date();
+    G.pricesMeta = {
+      tsHour: asDate(meta.tsHour),
+      ts5m: asDate(meta.ts5m),
+      fromCache: Boolean(meta.fromCache),
+    };
+  }
 
   G.fetchJson = async function fetchJson(path) {
     const res = await fetch(`${G.API_BASE}${path}`, {
@@ -24,22 +99,88 @@ window.Graardor = window.Graardor || {};
     return res.json();
   };
 
-  G.loadPrices = async function loadPrices() {
-    const [mapping, latestRes, hourlyRes, fiveMinRes] = await Promise.all([
+  async function fetchPriceBundle() {
+    const [mappingRes, latestRes, hourlyRes, fiveMinRes] = await Promise.all([
       G.fetchJson("/mapping"),
       G.fetchJson("/latest"),
       G.fetchJson("/1h"),
       G.fetchJson("/5m"),
     ]);
 
-    G.cachedApiData = {
-      mapping,
+    const bundle = {
+      mapping: mappingRes,
       latest: latestRes.data,
       hourly: hourlyRes.data,
       fiveMin: fiveMinRes.data,
     };
-    G.pricesLoadedAt = new Date();
-    return G.cachedApiData;
+
+    const savedAt = new Date().toISOString();
+    const meta = {
+      savedAt,
+      tsHour: hourlyRes.timestamp ? new Date(hourlyRes.timestamp * 1000) : null,
+      ts5m: fiveMinRes.timestamp ? new Date(fiveMinRes.timestamp * 1000) : null,
+      fromCache: false,
+    };
+
+    applyBundle(bundle, meta);
+    await writePriceCache({ bundle, ...meta });
+    return bundle;
+  }
+
+  function scheduleBackgroundRevalidate(savedAt) {
+    if (!savedAt) return;
+    const age = Date.now() - new Date(savedAt).getTime();
+    if (age < G.PRICE_CACHE_STALE_MS) return;
+    fetchPriceBundle().catch(() => {
+      /* keep showing cached prices */
+    });
+  }
+
+  /**
+   * Load OSRS Wiki price bundle.
+   * @param {{ useCache?: boolean, force?: boolean }} [options]
+   * useCache — read IndexedDB / memory before network (default true)
+   * force — ignore cache and fetch fresh (Refresh prices buttons)
+   */
+  G.loadPrices = async function loadPrices(options) {
+    const opts = options || {};
+    const useCache = opts.useCache !== false;
+    const force = Boolean(opts.force);
+
+    if (!force && useCache && G.cachedApiData) {
+      return G.cachedApiData;
+    }
+
+    if (inflightLoad && !force) {
+      return inflightLoad;
+    }
+
+    const run = async () => {
+      if (!force && useCache) {
+        const cached = await readPriceCache();
+        if (cached?.bundle) {
+          applyBundle(cached.bundle, { ...cached, fromCache: true });
+          scheduleBackgroundRevalidate(cached.savedAt);
+          return G.cachedApiData;
+        }
+      }
+
+      try {
+        return await fetchPriceBundle();
+      } catch (err) {
+        const cached = await readPriceCache();
+        if (cached?.bundle) {
+          applyBundle(cached.bundle, { ...cached, fromCache: true });
+          return G.cachedApiData;
+        }
+        throw err;
+      }
+    };
+
+    inflightLoad = run().finally(() => {
+      inflightLoad = null;
+    });
+    return inflightLoad;
   };
 
   G.iconUrl = function iconUrl(filename) {
