@@ -72,6 +72,16 @@
     .status-bar .error { color: var(--red); }
     .status-bar .ok { color: var(--green); }
 
+    .disclaimer {
+      margin: 0;
+      padding: 0.6rem 1.5rem;
+      background: rgba(199, 80, 80, 0.12);
+      border-bottom: 1px solid rgba(199, 80, 80, 0.35);
+      color: var(--muted);
+      font-size: 0.82rem;
+      line-height: 1.4;
+    }
+
     html, body {
       overflow-x: hidden;
       max-width: 100%;
@@ -417,8 +427,13 @@
 <body>
   <header>
     <h1>OSRS GE Flip Finder</h1>
-    <p>Live GE prices via <a href="https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices" target="_blank" rel="noopener">OSRS Wiki / RuneLite</a> · Estimates only, not trading advice</p>
+    <p>Live GE prices via <a href="https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices" target="_blank" rel="noopener">OSRS Wiki / RuneLite</a></p>
   </header>
+
+  <p class="disclaimer">
+    <strong>Disclaimer:</strong> Recommended prices and margins are estimates only — not trading or financial advice.
+    Verify every offer in-game before buying or selling. Not affiliated with Jagex. Use <strong>Refresh prices</strong> when you want new data; prices stay fixed until you refresh.
+  </p>
 
   <div class="status-bar">
     <span id="status">Loading price data…</span>
@@ -751,6 +766,9 @@
     let debounceTimer = null;
     let activeTab = "top10";
     let top10Sort = { key: "gpPerHour", dir: "desc" };
+    let pricesLoadedAt = null;
+    let volumeTimestamps = { ts5m: null, tsHour: null };
+    let lastUpdatedTimer = null;
 
     const SORT_KEY_TO_DROPDOWN = {
       buy: "buyPrice",
@@ -765,6 +783,41 @@
     };
 
     const el = (id) => document.getElementById(id);
+
+    function formatTimeAgo(date) {
+      const sec = Math.floor((Date.now() - date.getTime()) / 1000);
+      if (sec < 10) return "just now";
+      if (sec < 60) return `${sec}s ago`;
+      const min = Math.floor(sec / 60);
+      if (min < 60) return `${min}m ago`;
+      const hr = Math.floor(min / 60);
+      if (hr < 24) return `${hr}h ago`;
+      const days = Math.floor(hr / 24);
+      return `${days}d ago`;
+    }
+
+    function updateLastUpdatedDisplay() {
+      const node = el("lastUpdated");
+      if (!node || !pricesLoadedAt) {
+        if (node) node.textContent = "";
+        return;
+      }
+
+      const parts = [`Last updated ${formatTimeAgo(pricesLoadedAt)}`];
+      if (volumeTimestamps.ts5m) {
+        parts.push(`5m data ${volumeTimestamps.ts5m.toLocaleTimeString()}`);
+      }
+      if (volumeTimestamps.tsHour) {
+        parts.push(`1h data ${volumeTimestamps.tsHour.toLocaleTimeString()}`);
+      }
+      node.textContent = parts.join(" · ");
+    }
+
+    function startLastUpdatedClock() {
+      if (lastUpdatedTimer) clearInterval(lastUpdatedTimer);
+      updateLastUpdatedDisplay();
+      lastUpdatedTimer = setInterval(updateLastUpdatedDisplay, 15000);
+    }
 
     async function fetchJson(path) {
       const res = await fetch(`${API_BASE}${path}`, { headers: { "User-Agent": USER_AGENT } });
@@ -1299,17 +1352,19 @@
         const tsHour = hourlyRes.timestamp ? new Date(hourlyRes.timestamp * 1000) : null;
         const ts5m = fiveMinRes.timestamp ? new Date(fiveMinRes.timestamp * 1000) : null;
 
-        el("status").textContent = `Loaded ${items.length.toLocaleString()} of ${mapping.length.toLocaleString()} items (latest prices; volume optional)`;
+        pricesLoadedAt = new Date();
+        volumeTimestamps = { ts5m, tsHour };
+
+        el("status").textContent = `Loaded ${items.length.toLocaleString()} of ${mapping.length.toLocaleString()} items — refresh manually when your flip step completes`;
         el("status").className = "ok";
-        el("lastUpdated").textContent = [
-          ts5m ? `5m vol.: ${ts5m.toLocaleString()}` : null,
-          tsHour ? `Daily est. from 1h: ${tsHour.toLocaleString()}` : null,
-        ]
-          .filter(Boolean)
-          .join(" · ");
+        startLastUpdatedClock();
         renderAll();
       } catch (err) {
         items = [];
+        pricesLoadedAt = null;
+        volumeTimestamps = { ts5m: null, tsHour: null };
+        if (lastUpdatedTimer) clearInterval(lastUpdatedTimer);
+        el("lastUpdated").textContent = "";
         el("status").textContent = `Failed to load data: ${err.message}`;
         el("status").className = "error";
         const errHtml = `Could not load price data. Check your connection and click <strong>Refresh prices</strong>.<br><small>${escapeHtml(err.message)}</small>`;
