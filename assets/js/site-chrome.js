@@ -238,6 +238,38 @@
     if (hero) hero.prepend(bar);
   }
 
+  function injectThemeToggle() {
+    const nav = document.querySelector(".site-nav");
+    if (!nav || document.querySelector(".theme-toggle")) return;
+
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "theme-toggle";
+    btn.setAttribute("aria-label", "Toggle light/dark theme");
+
+    function applyLabel() {
+      const light = document.documentElement.getAttribute("data-theme") === "light";
+      btn.innerHTML = light
+        ? '<span class="theme-toggle-icon" aria-hidden="true">☀</span><span class="theme-toggle-text">Light</span>'
+        : '<span class="theme-toggle-icon" aria-hidden="true">☾</span><span class="theme-toggle-text">Dark</span>';
+      btn.title = light ? "Switch to dark mode" : "Switch to light mode";
+    }
+
+    btn.addEventListener("click", () => {
+      const next = document.documentElement.getAttribute("data-theme") === "light" ? "dark" : "light";
+      document.documentElement.setAttribute("data-theme", next);
+      localStorage.setItem("graardor-theme", next);
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute("content", next === "light" ? "#f8f4eb" : "#1e1e1e");
+      applyLabel();
+    });
+
+    applyLabel();
+    const authSlot = document.getElementById("authSlot");
+    if (authSlot) authSlot.insertAdjacentElement("beforebegin", btn);
+    else nav.appendChild(btn);
+  }
+
   function injectProLink() {
     const authSlot = document.getElementById("authSlot");
     const nav = document.querySelector(".site-nav");
@@ -291,6 +323,7 @@
     injectBreadcrumbs();
     injectSubnav();
     injectProLink();
+    injectThemeToggle();
     injectKofiStrip();
     markActiveNav();
   }
