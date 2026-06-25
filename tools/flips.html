@@ -23,14 +23,14 @@
         <a href="/tools/alch">High Alch</a>
         <a href="/changelog">Changelog</a>
         <span id="authSlot"></span>
-        <a href="https://ko-fi.com/greatblue" target="_blank" rel="noopener">Ko-fi</a>
+        <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
       </nav>
     </div>
   </header>
 
   <div class="page-hero">
     <h1>GE Flip Finder</h1>
-    <p>Live GE prices via <a href="https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices" target="_blank" rel="noopener">OSRS Wiki / RuneLite</a> — ranked flips, search, favorites, and shareable links.</p>
+    <p>Graardor live GE prices — ranked flips, full search, favorites, and shareable filter links.</p>
   </div>
 
   <p class="disclaimer">
@@ -465,12 +465,18 @@
               <th class="sortable num" data-xf-sort="sellValue">Revenue</th>
               <th class="sortable num" data-xf-sort="profit">Profit</th>
               <th class="sortable num" data-xf-sort="marginPct">ROI</th>
+              <th class="sortable num" data-xf-sort="gpPerHour">GP / hr</th>
+              <th class="sortable num" data-xf-sort="buyTimeHours">Est. buy</th>
+              <th class="sortable num" data-xf-sort="sellTimeHours">Est. sell</th>
+              <th class="sortable num" data-xf-sort="cycleHours">Cycle</th>
+              <th class="sortable num" data-xf-sort="minVolume5m">5m vol.</th>
+              <th class="sortable num" data-xf-sort="minDailyVolume">Daily vol.</th>
               <th class="sortable" data-xf-sort="category">Category</th>
               <th class="sortable" data-xf-sort="members">Members</th>
             </tr>
           </thead>
           <tbody id="transformsBody">
-            <tr><td colspan="9" class="loading">Loading recipe catalog…</td></tr>
+            <tr><td colspan="15" class="loading">Loading recipe catalog…</td></tr>
           </tbody>
         </table>
       </div>
@@ -498,6 +504,7 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/site-chrome.js"></script>
 
   <script>
     const API_BASE = "https://prices.runescape.wiki/api/v1/osrs";
@@ -520,7 +527,7 @@
     let lastUpdatedTimer = null;
     let transformCatalog = null;
     let transformRows = [];
-    let transformsSort = { key: "profit", dir: "desc" };
+    let transformsSort = { key: "gpPerHour", dir: "desc" };
 
     const WIKI_PAGE_BASE = "https://oldschool.runescape.wiki/w/";
     const FAVORITES_STORAGE_KEY = "osrs-ge-flip-favorites-v1";
@@ -982,7 +989,7 @@
         populateSkillFilter();
       } catch (err) {
         transformCatalog = null;
-        el("transformsBody").innerHTML = `<tr><td colspan="9" class="loading">Could not load recipe catalog: ${escapeHtml(err.message)}</td></tr>`;
+        el("transformsBody").innerHTML = `<tr><td colspan="15" class="loading">Could not load recipe catalog: ${escapeHtml(err.message)}</td></tr>`;
         el("transformsMeta").textContent = "Run npm run build:recipes to generate data/recipes.json";
       }
     }
@@ -1015,6 +1022,18 @@
       const mapping = mappingById().get(itemId);
       const latest = cachedApiData.latest[itemId];
       if (!mapping || !latest) return null;
+
+      const hourly = cachedApiData.hourly[itemId];
+      const fiveMin = cachedApiData.fiveMin[itemId];
+      const buyVolHour = hourly?.lowPriceVolume ?? 0;
+      const sellVolHour = hourly?.highPriceVolume ?? 0;
+      const buyVol5m = fiveMin?.lowPriceVolume ?? 0;
+      const sellVol5m = fiveMin?.highPriceVolume ?? 0;
+      const volume5m = buyVol5m + sellVol5m;
+      const buyRateHour = effectiveHourlyRate(buyVol5m, buyVolHour);
+      const sellRateHour = effectiveHourlyRate(sellVol5m, sellVolHour);
+      const dailyVolume = (buyRateHour + sellRateHour) * 24;
+
       return {
         id: itemId,
         name: mapping.name,
@@ -1023,6 +1042,36 @@
         buy: latest.low,
         sell: latest.high,
         limit: mapping.limit ?? 0,
+        volume5m,
+        dailyVolume,
+        buyRateHour,
+        sellRateHour,
+      };
+    }
+
+    function hoursForQty(qty, ratePerHour) {
+      if (!qty || !ratePerHour || ratePerHour <= 0) return null;
+      return qty / ratePerHour;
+    }
+
+    function enrichRecipeRow(row) {
+      const buyTimes = row.inputs.map((i) => i.buyTimeHours).filter((t) => t != null && t > 0);
+      const sellTimes = row.outputs.map((o) => o.sellTimeHours).filter((t) => t != null && t > 0);
+      const buyTimeHours = buyTimes.length ? Math.max(...buyTimes) : null;
+      const sellTimeHours = sellTimes.length ? Math.max(...sellTimes) : null;
+      const cycleHours =
+        buyTimeHours != null && sellTimeHours != null ? buyTimeHours + sellTimeHours : null;
+      const gpPerHour = cycleHours && cycleHours > 0 ? row.profit / cycleHours : null;
+      const vols5m = row.inputs.map((i) => i.volume5m).filter((v) => v != null);
+      const dailies = row.inputs.map((i) => i.dailyVolume).filter((v) => v != null);
+      return {
+        ...row,
+        buyTimeHours,
+        sellTimeHours,
+        cycleHours,
+        gpPerHour,
+        minVolume5m: vols5m.length ? Math.min(...vols5m) : null,
+        minDailyVolume: dailies.length ? Math.min(...dailies) : null,
       };
     }
 
@@ -1094,7 +1143,19 @@
     function recipeItemRef(itemId, qty) {
       const p = getTransformPrices(itemId);
       if (!p) return null;
-      return { id: p.id, name: p.name, icon: p.icon, qty, members: p.members };
+      return {
+        id: p.id,
+        name: p.name,
+        icon: p.icon,
+        qty,
+        members: p.members,
+        buy: p.buy,
+        sell: p.sell,
+        buyTimeHours: hoursForQty(qty, p.buyRateHour),
+        sellTimeHours: hoursForQty(qty, p.sellRateHour),
+        volume5m: p.volume5m,
+        dailyVolume: p.dailyVolume,
+      };
     }
 
     function recipeMembers(inputs, outputs) {
@@ -1361,7 +1422,7 @@
         );
       }
 
-      return rows;
+      return rows.map(enrichRecipeRow);
     }
 
     function recipeKindLabel(row) {
@@ -1373,16 +1434,29 @@
       return row.type;
     }
 
-    function recipeItemChip(item) {
-      return `<div class="recipe-item">
-        <img src="${iconUrl(item.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
-        <span class="recipe-qty">${item.qty}×</span>
-        <span class="recipe-name">${escapeHtml(item.name)}</span>
+    function recipeItemChip(item, side) {
+      const isBuy = side !== "sell";
+      const price = isBuy ? item.buy : item.sell;
+      const priceLabel = isBuy ? "Buy" : "Sell";
+      const priceClass = isBuy ? "price-buy" : "price-sell";
+      const time = isBuy ? item.buyTimeHours : item.sellTimeHours;
+      const timeLabel = isBuy ? "buy" : "sell";
+      return `<div class="recipe-item recipe-item-detailed">
+        <div class="recipe-item-head">
+          <img src="${iconUrl(item.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
+          <span class="recipe-qty">${item.qty}×</span>
+          <a class="recipe-name" href="${wikiPageUrl(item.name)}" target="_blank" rel="noopener">${escapeHtml(item.name)}</a>
+        </div>
+        <div class="recipe-item-meta">
+          <span class="${priceClass} price-copyable" data-copy-price="${Math.round(price)}" title="Click to copy ${priceLabel.toLowerCase()} price">${priceLabel}: ${formatPrice(price)}</span>
+          <span class="recipe-vol">5m ${formatGp(item.volume5m ?? 0)} · day ${formatGp(item.dailyVolume ?? 0)}</span>
+          <span class="recipe-time">Est. ${timeLabel}: ${formatDuration(time)}</span>
+        </div>
       </div>`;
     }
 
-    function recipeIoCell(items) {
-      return `<td class="recipe-io">${items.map((item) => recipeItemChip(item)).join("")}</td>`;
+    function recipeIoCell(items, side) {
+      return `<td class="recipe-io">${items.map((item) => recipeItemChip(item, side)).join("")}</td>`;
     }
 
     function recipeDisplayName(row) {
@@ -1420,12 +1494,12 @@
       if (!el("transformsBody")) return;
 
       if (!transformCatalog) {
-        el("transformsBody").innerHTML = '<tr><td colspan="9" class="loading">Recipe catalog not loaded.</td></tr>';
+        el("transformsBody").innerHTML = '<tr><td colspan="15" class="loading">Recipe catalog not loaded.</td></tr>';
         return;
       }
 
       if (!cachedApiData) {
-        el("transformsBody").innerHTML = '<tr><td colspan="9" class="loading">Load prices with Refresh prices.</td></tr>';
+        el("transformsBody").innerHTML = '<tr><td colspan="15" class="loading">Load prices with Refresh prices.</td></tr>';
         el("transformsMeta").textContent = `${transformCatalog.stats.skilling ?? 0} skilling · ${transformCatalog.stats.decants ?? 0} decants · ${transformCatalog.stats.sets ?? 0} sets · full members catalog`;
         return;
       }
@@ -1433,11 +1507,12 @@
       transformRows = buildTransformRows();
       const filtered = filterTransformRows(transformRows);
       const sorted = sortItemList(filtered, transformsSort.key, transformsSort.dir);
+      updateTransformsSortHeaders();
 
-      el("transformsMeta").textContent = `Showing ${sorted.length.toLocaleString()} of ${transformRows.length.toLocaleString()} recipes · catalog updated ${transformCatalog.generatedAt.slice(0, 10)}`;
+      el("transformsMeta").textContent = `Showing ${sorted.length.toLocaleString()} of ${transformRows.length.toLocaleString()} recipes · catalog updated ${transformCatalog.generatedAt.slice(0, 10)} · click column headers to sort`;
 
       if (!sorted.length) {
-        el("transformsBody").innerHTML = '<tr><td colspan="9" class="loading">No recipes match your filters.</td></tr>';
+        el("transformsBody").innerHTML = '<tr><td colspan="15" class="loading">No recipes match your filters.</td></tr>';
         if (el("recipeBestBanner")) el("recipeBestBanner").hidden = true;
         return;
       }
@@ -1447,7 +1522,9 @@
       if (banner) {
         if (best) {
           banner.hidden = false;
-          banner.innerHTML = `Best match right now: <strong>${escapeHtml(recipeDisplayName(best))}</strong> — ${formatGp(best.profit)} profit${best.marginPct != null ? ` (${best.marginPct.toFixed(1)}% ROI)` : ""}. Verify in-game before buying.`;
+          const gpHr =
+            best.gpPerHour != null ? ` · ${formatGp(best.gpPerHour)}/hr` : "";
+          banner.innerHTML = `Best match: <strong>${escapeHtml(recipeDisplayName(best))}</strong> — ${formatGp(best.profit)} profit${best.marginPct != null ? ` (${best.marginPct.toFixed(1)}% ROI)` : ""}${gpHr}. Verify in-game before buying.`;
         } else {
           banner.hidden = true;
         }
@@ -1456,6 +1533,7 @@
       el("transformsBody").innerHTML = sorted
         .map((row) => {
           const marginClass = row.profit >= 0 ? "positive" : "negative";
+          const gpHrClass = row.gpPerHour != null && row.gpPerHour >= 0 ? "positive" : "";
           const memberBadge = row.members
             ? '<span class="badge badge-members">P2P</span>'
             : '<span class="badge badge-f2p">F2P</span>';
@@ -1470,17 +1548,33 @@
                 </span>
               </div>
             </td>
-            ${recipeIoCell(row.inputs)}
-            ${recipeIoCell(row.outputs)}
+            ${recipeIoCell(row.inputs, "buy")}
+            ${recipeIoCell(row.outputs, "sell")}
             <td class="num">${formatGp(row.buyCost)}</td>
             <td class="num">${formatGp(row.sellValue)}</td>
             <td class="num ${marginClass}">${formatGp(row.profit)}</td>
             <td class="num ${marginClass}">${row.marginPct == null ? "—" : `${row.marginPct.toFixed(2)}%`}</td>
+            <td class="num ${gpHrClass} highlight-gp">${row.gpPerHour == null ? "—" : formatGp(row.gpPerHour)}</td>
+            <td class="num">${formatDuration(row.buyTimeHours)}</td>
+            <td class="num">${formatDuration(row.sellTimeHours)}</td>
+            <td class="num">${formatDuration(row.cycleHours)}</td>
+            <td class="num">${row.minVolume5m == null ? "—" : formatGp(row.minVolume5m)}</td>
+            <td class="num">${row.minDailyVolume == null ? "—" : formatGp(row.minDailyVolume)}</td>
             <td>${escapeHtml(row.category)}</td>
             <td>${memberBadge}</td>
           </tr>`;
         })
         .join("");
+    }
+
+    function updateTransformsSortHeaders() {
+      const table = el("transformsTable");
+      if (!table) return;
+      table.querySelectorAll("th.sortable").forEach((th) => {
+        const active = th.dataset.xfSort === transformsSort.key;
+        th.classList.toggle("sorted-asc", active && transformsSort.dir === "asc");
+        th.classList.toggle("sorted-desc", active && transformsSort.dir === "desc");
+      });
     }
 
     function handleTransformsHeaderSort(key) {
@@ -1890,7 +1984,7 @@
         el("resultsMeta").textContent = "Price data not loaded — filters will apply once data loads.";
         el("top10Meta").textContent = "Price data not loaded — filters will apply once data loads.";
         if (el("transformsBody")) {
-          el("transformsBody").innerHTML = `<tr><td colspan="9" class="loading">${errHtml}</td></tr>`;
+          el("transformsBody").innerHTML = `<tr><td colspan="15" class="loading">${errHtml}</td></tr>`;
         }
       }
     }

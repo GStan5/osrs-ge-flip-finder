@@ -3,18 +3,36 @@ import { extendProByEmail, recordKofiEvent } from "../../lib/db.mjs";
 const PRO_TIER = "Graardor Pro";
 
 function parseKofiPayload(req) {
-  let raw = req.body;
-  if (typeof raw === "string") {
-    const params = new URLSearchParams(raw);
-    raw = params.get("data");
+  const body = req.body;
+
+  if (typeof body === "string") {
+    try {
+      return JSON.parse(body);
+    } catch {
+      const params = new URLSearchParams(body);
+      const data = params.get("data");
+      if (data) return JSON.parse(data);
+    }
   }
-  if (raw?.data) raw = raw.data;
-  if (typeof raw === "string") return JSON.parse(raw);
-  if (typeof raw === "object" && raw.verification_token) return raw;
+
+  if (body && typeof body === "object") {
+    if (body.verification_token) return body;
+    if (typeof body.data === "string") return JSON.parse(body.data);
+    if (body.data && typeof body.data === "object") return body.data;
+  }
+
   return null;
 }
 
 export default async function handler(req, res) {
+  if (req.method === "GET") {
+    res.status(200).json({
+      ok: true,
+      message: "Graardor Ko-fi webhook is reachable. POST payment events here.",
+    });
+    return;
+  }
+
   if (req.method !== "POST") {
     res.status(405).json({ error: "Method not allowed" });
     return;
@@ -23,7 +41,8 @@ export default async function handler(req, res) {
   let payload;
   try {
     payload = parseKofiPayload(req);
-  } catch {
+  } catch (err) {
+    console.error("Ko-fi parse error:", err);
     res.status(400).json({ error: "Invalid payload" });
     return;
   }
@@ -35,6 +54,7 @@ export default async function handler(req, res) {
 
   const verificationToken = process.env.KO_FI_VERIFICATION_TOKEN;
   if (verificationToken && payload.verification_token !== verificationToken) {
+    console.warn("Ko-fi webhook rejected: bad verification token");
     res.status(401).json({ error: "Invalid verification token" });
     return;
   }
@@ -56,10 +76,13 @@ export default async function handler(req, res) {
     });
 
     if (isSubscription && isProTier && email) {
-      await extendProByEmail(email, 32);
+      const updated = await extendProByEmail(email, 32);
+      console.log("Ko-fi Pro extended:", email, updated ? "matched user" : "no discord user with email");
+    } else {
+      console.log("Ko-fi event recorded:", type, tierName || "no tier", email || "no email");
     }
 
-    res.status(200).json({ ok: true });
+    res.status(200).json({ ok: true, type, tierName, email: email ? "received" : "none" });
   } catch (err) {
     console.error("Ko-fi webhook error:", err);
     res.status(500).json({ error: "Webhook processing failed" });

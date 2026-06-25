@@ -1077,6 +1077,134 @@
       gap: 0.35rem;
     }
 
+    .kofi-nav-cta {
+      background: rgba(201, 162, 39, 0.15) !important;
+      border: 1px solid var(--accent-dim) !important;
+      color: var(--accent) !important;
+      font-weight: 600;
+    }
+
+    .kofi-nav-cta:hover {
+      background: var(--accent-dim) !important;
+      color: var(--text) !important;
+    }
+
+    .kofi-strip {
+      margin-top: 2rem;
+      padding: 1.25rem 1.5rem;
+      background: linear-gradient(90deg, rgba(201, 162, 39, 0.12) 0%, rgba(42, 34, 24, 0.9) 50%, rgba(201, 162, 39, 0.08) 100%);
+      border-top: 1px solid var(--accent-dim);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .kofi-strip-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+      text-align: center;
+    }
+
+    .kofi-strip-text {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .kofi-strip-text strong {
+      color: var(--text);
+    }
+
+    .kofi-strip-btn {
+      display: inline-block;
+      padding: 0.55rem 1.1rem;
+      background: var(--accent);
+      color: #1a1410;
+      font-weight: 700;
+      text-decoration: none;
+      border-radius: 6px;
+      border: 1px solid var(--accent);
+      white-space: nowrap;
+    }
+
+    .kofi-strip-btn:hover {
+      background: #e0b830;
+    }
+
+    body.recipes-only-page .tabs,
+    body.recipes-only-page #searchPanel,
+    body.recipes-only-page #top10Panel {
+      display: none !important;
+    }
+
+    body.recipes-only-page #transformsPanel {
+      display: block !important;
+    }
+
+    body.recipes-only-page .status-bar-tools label[for="flipQty"],
+    body.recipes-only-page .status-bar-tools #flipQty {
+      display: none;
+    }
+
+    .recipe-item-detailed {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 0.2rem;
+      padding: 0.35rem 0;
+      border-bottom: 1px dashed rgba(74, 60, 40, 0.5);
+    }
+
+    .recipe-item-detailed:last-child {
+      border-bottom: none;
+    }
+
+    .recipe-item-head {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      min-width: 0;
+    }
+
+    .recipe-item-head .recipe-name {
+      color: inherit;
+      text-decoration: none;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .recipe-item-head .recipe-name:hover {
+      color: var(--accent);
+      text-decoration: underline;
+    }
+
+    .recipe-item-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem 0.65rem;
+      font-size: 0.68rem;
+      color: var(--muted);
+      padding-left: 1.6rem;
+    }
+
+    .recipe-item-meta .price-copyable {
+      font-weight: 600;
+      cursor: copy;
+    }
+
+    .recipe-vol,
+    .recipe-time {
+      white-space: nowrap;
+    }
+
+    #transformsTable th.col-io,
+    #transformsTable td.recipe-io {
+      width: 18%;
+    }
+
     @media (max-width: 700px) {
       .site-nav {
         margin-left: 0;
