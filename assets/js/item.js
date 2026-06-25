@@ -30,9 +30,9 @@
     }
     box.innerHTML = results
       .map(
-        (m) => `<a href="${G.itemPageUrl(m.id)}">
+        (m) => `<a href="${G.itemPageUrl(m.id)}"${G.itemTitleAttr(m.name)}>
           <img src="${G.iconUrl(m.icon)}" alt="" width="28" height="28" loading="lazy" />
-          <span>${G.escapeHtml(m.name)}</span>
+          <span${G.itemTitleAttr(m.name)}>${G.escapeHtml(m.name)}</span>
         </a>`
       )
       .join("");

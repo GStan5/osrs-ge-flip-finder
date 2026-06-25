@@ -553,7 +553,8 @@ body.site .table-wrap {
   border: 1px solid var(--g-border);
   border-radius: var(--g-radius);
   background: var(--g-surface);
-  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 body.site table {
