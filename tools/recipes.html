@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="OSRS recipe profit calculator — skilling, decants, item sets. Live GE prices on Graardor." />
+  <meta name="description" content="Instant OSRS GE transforms — potion decants, item set combine/split, and uncharges. Live prices on Graardor." />
   <meta name="theme-color" content="#1a1410" />
-  <title>Recipe Profit — Graardor</title>
+  <title>GE Transforms — Graardor</title>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   </head>
 <body class="site ads-off recipes-only-page">
@@ -18,7 +18,7 @@
       <nav class="site-nav" aria-label="Main">
         <span class="nav-label">Tools</span>
         <a href="/tools/flips">Flips</a>
-        <a href="/tools/recipes" class="active">Recipes</a>
+        <a href="/tools/recipes" class="active">Transforms</a>
         <a href="/tools/coffer">Coffer</a>
         <a href="/tools/alch">High Alch</a>
         <a href="/changelog">Changelog</a>
@@ -29,8 +29,8 @@
   </header>
 
   <div class="page-hero">
-    <h1>Recipe Profit</h1>
-    <p>Skilling, decants, and item sets with <strong>recommended buy/sell prices</strong>, est. fill times, volume, and GP/hour per recipe.</p>
+    <h1>GE Transforms</h1>
+    <p>Instant Grand Exchange arbitrage only — potion decants, item set combine/split, and uncharges. No skilling or crafting timers.</p>
   </div>
 
   <p class="disclaimer">
@@ -385,9 +385,9 @@
 
     <div id="transformsPanel" class="tab-panel">
       <section class="filters">
-        <h2 class="filters-title">Recipe profit calculator</h2>
+        <h2 class="filters-title">GE transform profit</h2>
         <p class="filters-subtitle">
-          Click input <span class="price-buy">buy</span> / output <span class="price-sell">sell</span> prices to copy. Est. buy/sell uses the same 65% 5m + 35% 1h volume blend as flips.
+          Buy inputs and sell outputs on the GE — click prices to copy. Est. buy/sell uses 65% 5m + 35% 1h volume. Skilling recipes (e.g. cannonballs) are excluded.
         </p>
 
         <div class="preset-filters">
@@ -396,22 +396,22 @@
         </div>
 
         <div class="filter-group wide">
-          <label for="xfSearch">Search recipes or items</label>
-          <input id="xfSearch" type="text" placeholder="e.g. shark, bronze bar, super combat" autocomplete="off" />
+          <label for="xfSearch">Search transforms or items</label>
+          <input id="xfSearch" type="text" placeholder="e.g. super combat, dragon bones" autocomplete="off" />
         </div>
 
         <div class="filter-group">
           <label for="xfType">Category</label>
           <select id="xfType">
-            <option value="all">All categories</option>
-            <option value="skill">Skilling</option>
+            <option value="all">All transforms</option>
             <option value="decant">Decant potions</option>
             <option value="set_combine">Combine set</option>
             <option value="set_split">Split set</option>
+            <option value="uncharge">Uncharge</option>
           </select>
         </div>
 
-        <div class="filter-group">
+        <div class="filter-group" hidden>
           <label for="xfSkill">Skill</label>
           <select id="xfSkill">
             <option value="all">All skills</option>
@@ -1379,11 +1379,6 @@
       const rows = [];
       const includeTax = isChecked("xfIncludeTax");
 
-      for (const recipe of transformCatalog.skilling ?? []) {
-        const row = evalSkillRecipe(recipe, includeTax);
-        if (row) rows.push(row);
-      }
-
       for (const decant of transformCatalog.decants ?? []) {
         const combine = evalDecantCombine(decant, isChecked("xfIncludeTax"));
         const split = evalDecantSplit(decant, isChecked("xfIncludeTax"));
@@ -1499,7 +1494,7 @@
 
       if (!cachedApiData) {
         el("transformsBody").innerHTML = '<tr><td colspan="15" class="loading">Load prices with Refresh prices.</td></tr>';
-        el("transformsMeta").textContent = `${transformCatalog.stats.skilling ?? 0} skilling · ${transformCatalog.stats.decants ?? 0} decants · ${transformCatalog.stats.sets ?? 0} sets · full members catalog`;
+        el("transformsMeta").textContent = `${transformCatalog.stats.decants ?? 0} decants · ${transformCatalog.stats.sets ?? 0} sets · instant GE transforms only`;
         return;
       }
 
@@ -1508,7 +1503,7 @@
       const sorted = sortItemList(filtered, transformsSort.key, transformsSort.dir);
       updateTransformsSortHeaders();
 
-      el("transformsMeta").textContent = `Showing ${sorted.length.toLocaleString()} of ${transformRows.length.toLocaleString()} recipes · catalog updated ${transformCatalog.generatedAt.slice(0, 10)} · click column headers to sort`;
+      el("transformsMeta").textContent = `Showing ${sorted.length.toLocaleString()} of ${transformRows.length.toLocaleString()} transforms · catalog updated ${transformCatalog.generatedAt.slice(0, 10)} · click column headers to sort`;
 
       if (!sorted.length) {
         el("transformsBody").innerHTML = '<tr><td colspan="15" class="loading">No recipes match your filters.</td></tr>';

@@ -1,5 +1,3 @@
-import { extendProByEmail, recordKofiEvent } from "../../lib/db.mjs";
-
 const PRO_TIER = "Graardor Pro";
 
 function parseKofiPayload(req) {
@@ -24,7 +22,7 @@ function parseKofiPayload(req) {
   return null;
 }
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   if (req.method === "GET") {
     res.status(200).json({
       ok: true,
@@ -66,6 +64,8 @@ export default async function handler(req, res) {
   const isProTier = tierName && tierName.toLowerCase() === PRO_TIER.toLowerCase();
 
   try {
+    const { recordKofiEvent, extendProByEmail } = require("../lib/db.js");
+
     await recordKofiEvent({
       transactionId: payload.kofi_transaction_id || payload.message_id || `${Date.now()}`,
       email,
@@ -85,6 +85,6 @@ export default async function handler(req, res) {
     res.status(200).json({ ok: true, type, tierName, email: email ? "received" : "none" });
   } catch (err) {
     console.error("Ko-fi webhook error:", err);
-    res.status(500).json({ error: "Webhook processing failed" });
+    res.status(500).json({ error: "Webhook processing failed", detail: err.message });
   }
-}
+};

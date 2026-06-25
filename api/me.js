@@ -1,7 +1,6 @@
-import { getUserByDiscordId } from "../../lib/db.mjs";
-import { parseSessionToken, readSessionCookie } from "../../lib/session.mjs";
+const { parseSessionToken, readSessionCookie } = require("../lib/session.js");
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const token = readSessionCookie(req);
   const session = parseSessionToken(token);
   if (!session) {
@@ -9,7 +8,13 @@ export default async function handler(req, res) {
     return;
   }
 
+  if (!process.env.DATABASE_URL) {
+    res.status(200).json({ user: null, pro: false });
+    return;
+  }
+
   try {
+    const { getUserByDiscordId } = require("../lib/db.js");
     const user = await getUserByDiscordId(session.discordId);
     if (!user) {
       res.status(200).json({ user: null, pro: false });
@@ -32,4 +37,4 @@ export default async function handler(req, res) {
     console.error("/api/me error:", err);
     res.status(500).json({ error: "Could not load session" });
   }
-}
+};

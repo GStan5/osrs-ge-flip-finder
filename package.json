@@ -2,7 +2,6 @@
   "name": "graardor",
   "version": "2.0.0",
   "private": true,
-  "type": "module",
   "description": "Graardor — OSRS companion tools with live Grand Exchange prices",
   "scripts": {
     "start": "npx --yes serve -l 3500",

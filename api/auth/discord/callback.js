@@ -1,8 +1,7 @@
-import { upsertDiscordUser } from "../../../lib/db.mjs";
-import { createSessionToken, setSessionCookie } from "../../../lib/session.mjs";
-import { getBaseUrl } from "../../../lib/url.mjs";
+const { createSessionToken, setSessionCookie } = require("../../../lib/session.js");
+const { getBaseUrl } = require("../../../lib/url.js");
 
-export default async function handler(req, res) {
+module.exports = async function handler(req, res) {
   const code = req.query?.code;
   if (!code) {
     res.redirect(302, "/?auth=missing");
@@ -47,6 +46,7 @@ export default async function handler(req, res) {
     }
 
     const discord = await userRes.json();
+    const { upsertDiscordUser } = require("../../../lib/db.js");
     const user = await upsertDiscordUser({
       discordId: discord.id,
       username: discord.global_name || discord.username,
@@ -63,4 +63,4 @@ export default async function handler(req, res) {
     console.error("Discord callback error:", err);
     res.redirect(302, "/?auth=error");
   }
-}
+};

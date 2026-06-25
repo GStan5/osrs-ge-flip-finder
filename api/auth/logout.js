@@ -1,6 +1,6 @@
-import { clearSessionCookie } from "../../lib/session.mjs";
+const { clearSessionCookie } = require("../../lib/session.js");
 
-export default function handler(_req, res) {
+module.exports = function handler(_req, res) {
   clearSessionCookie(res);
   res.redirect(302, "/");
-}
+};

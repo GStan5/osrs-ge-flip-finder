@@ -18,7 +18,7 @@
       <nav class="site-nav" aria-label="Main">
         <span class="nav-label">Tools</span>
         <a href="/tools/flips" class="active">Flips</a>
-        <a href="/tools/recipes">Recipes</a>
+        <a href="/tools/recipes">Transforms</a>
         <a href="/tools/coffer">Coffer</a>
         <a href="/tools/alch">High Alch</a>
         <a href="/changelog">Changelog</a>
@@ -1380,11 +1380,6 @@
       const rows = [];
       const includeTax = isChecked("xfIncludeTax");
 
-      for (const recipe of transformCatalog.skilling ?? []) {
-        const row = evalSkillRecipe(recipe, includeTax);
-        if (row) rows.push(row);
-      }
-
       for (const decant of transformCatalog.decants ?? []) {
         const combine = evalDecantCombine(decant, isChecked("xfIncludeTax"));
         const split = evalDecantSplit(decant, isChecked("xfIncludeTax"));
@@ -1500,7 +1495,7 @@
 
       if (!cachedApiData) {
         el("transformsBody").innerHTML = '<tr><td colspan="15" class="loading">Load prices with Refresh prices.</td></tr>';
-        el("transformsMeta").textContent = `${transformCatalog.stats.skilling ?? 0} skilling · ${transformCatalog.stats.decants ?? 0} decants · ${transformCatalog.stats.sets ?? 0} sets · full members catalog`;
+        el("transformsMeta").textContent = `${transformCatalog.stats.decants ?? 0} decants · ${transformCatalog.stats.sets ?? 0} sets · instant GE transforms only`;
         return;
       }
 
