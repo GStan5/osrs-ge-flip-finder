@@ -128,7 +128,7 @@
     const gpHrCls = row.gpPerHour != null && row.gpPerHour >= 0 ? "highlight-gp" : "";
     return G.itemListRow(
       G.itemListNameCell(row, { showBadge: true }) +
-        G.itemListNumCell(G.formatPrice(row.buyPrice), "num price-copyable price-buy", "Buy price", {
+        G.itemListNumCell(G.formatPrice(row.buyPrice), "num price-buy price-col-buy price-copyable", "Buy price", {
           "data-copy-price": Math.round(row.buyPrice),
           title: "Click to copy buy price",
         }) +

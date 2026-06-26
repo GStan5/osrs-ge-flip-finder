@@ -386,6 +386,10 @@
           <span class="preset-label">Budget</span>
           <button type="button" class="preset-btn" data-xf-preset="budget1m">Under 1M</button>
           <button type="button" class="preset-btn" data-xf-preset="budget10m">Under 10M</button>
+          <button type="button" class="preset-btn" data-xf-preset="budget50m">Under 50M</button>
+          <button type="button" class="preset-btn" data-xf-preset="budget100m">Under 100M</button>
+          <button type="button" class="preset-btn" data-xf-preset="budget250m">Under 250M</button>
+          <button type="button" class="preset-btn" data-xf-preset="budget500m">Under 500M</button>
         </div>
 
         <div class="preset-filters">
@@ -1666,6 +1670,10 @@
       highMargin: { minMargin: 5, profitableOnly: true, sortKey: "marginPct" },
       budget1m: { maxBudget: 1_000_000, profitableOnly: true, sortKey: "gpPerHour" },
       budget10m: { maxBudget: 10_000_000, profitableOnly: true, sortKey: "gpPerHour" },
+      budget50m: { maxBudget: 50_000_000, profitableOnly: true, sortKey: "gpPerHour" },
+      budget100m: { maxBudget: 100_000_000, profitableOnly: true, sortKey: "gpPerHour" },
+      budget250m: { maxBudget: 250_000_000, profitableOnly: true, sortKey: "gpPerHour" },
+      budget500m: { maxBudget: 500_000_000, profitableOnly: true, sortKey: "gpPerHour" },
       decantsOnly: { type: "decant", profitableOnly: true, sortKey: "gpPerHour" },
       setsOnly: { type: "sets", profitableOnly: true, sortKey: "profit" },
       f2p: { membersFilter: "f2p", profitableOnly: true, sortKey: "gpPerHour" },
