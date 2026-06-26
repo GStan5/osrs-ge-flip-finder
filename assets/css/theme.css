@@ -1361,9 +1361,23 @@
     }
 
     .monster-lookup-results a {
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .monster-lookup-results a img {
+      width: 28px;
+      height: 28px;
+      image-rendering: pixelated;
+      flex-shrink: 0;
+    }
+
+    .monster-result-text {
+      display: flex;
       flex-direction: column;
-      align-items: flex-start;
       gap: 0.15rem;
+      min-width: 0;
+      flex: 1;
     }
 
     .monster-result-name {

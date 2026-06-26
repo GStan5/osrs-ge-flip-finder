@@ -5,6 +5,8 @@
   let searchTimer;
   let monstersMeta = null;
 
+  // Stats/drops from data/monsters-meta.json — npm run build:monsters-meta (scripts/build-monsters-meta.mjs)
+
   async function loadMonstersMeta() {
     if (monstersMeta) return monstersMeta;
     const res = await fetch("/data/monsters-meta.json");
@@ -62,8 +64,11 @@
     box.innerHTML = results
       .map(
         (m) => `<a href="${G.monsterPageUrl(m.id)}">
-          <span class="monster-result-name">${G.escapeHtml(m.name)}</span>
-          <span class="monster-result-meta">Cb-${m.combatLevel} · ${m.hitpoints} HP</span>
+          <img src="${G.monsterIconUrl(m)}" alt="" width="28" height="28" loading="lazy" onerror="this.style.visibility='hidden'" />
+          <span class="monster-result-text">
+            <span class="monster-result-name">${G.escapeHtml(m.name)}</span>
+            <span class="monster-result-meta">Cb-${m.combatLevel} · ${m.hitpoints} HP</span>
+          </span>
         </a>`
       )
       .join("");
@@ -198,7 +203,7 @@
     root.innerHTML = `
       <article class="monster-detail">
         <header class="item-detail-hero monster-detail-hero">
-          <div class="monster-icon-placeholder" aria-hidden="true">👹</div>
+          <img src="${G.monsterIconUrl(monster)}" alt="" width="64" height="64" loading="lazy" onerror="this.style.visibility='hidden'" />
           <div class="item-detail-hero-text">
             <h1>${G.escapeHtml(monster.name)} ${badge}</h1>
             <p class="results-meta">${G.escapeHtml(monster.examine || "")}</p>

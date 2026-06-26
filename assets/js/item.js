@@ -6,6 +6,8 @@
   let itemsMeta = null;
   let recipesCatalog = null;
 
+  // Equipment stats from data/items-meta.json — npm run build:items-meta (scripts/build-items-meta.mjs)
+
   function findItemById(id) {
     return G.cachedApiData?.mapping?.find((m) => m.id === id) || null;
   }
