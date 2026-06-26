@@ -80,6 +80,25 @@
     },
   ];
 
+  const TOOL_ICONS = {
+    "/tools/flips": "Dragon_scimitar.png",
+    "/tools/recipes": "Saradomin_brew(4).png",
+    "/tools/coffer": "Bones.png",
+    "/tools/alch": "Nature_rune.png",
+    "/tools/item": "Ring_of_wealth_(i).png",
+    "/tools/flip-log": "Coins_10000.png",
+    "/tools/dashboard": "Collection_log.png",
+    "/tools/boss": "Vorkath%27s_head.png",
+    "/tools/herbs": "Ranarr_weed.png",
+    "/tools/loot": "Clue_scroll_(elite).png",
+    "/tools/community": "Coins_10000.png",
+    "/tools/alerts": "Ring_of_suffering.png",
+    "/tools/gear": "Armadyl_helmet.png",
+    "/tools/prep": "Armadyl_chestplate.png",
+    "/tools/monster": "General_Graardor.png",
+    "/guides": "Book_of_law_page_set.png",
+  };
+
   const PATH_LABELS = {};
   NAV_SECTIONS.forEach((sec) => {
     sec.tools.forEach((t) => {
@@ -208,6 +227,26 @@
     inner.insertBefore(form, nav);
   }
 
+  function renderToolCard(tool, sectionId) {
+    const iconFile = TOOL_ICONS[tool.href];
+    if (!iconFile) return "";
+    const badge = tool.pro ? ' <span class="tool-card-badge">Pro</span>' : "";
+    const icon = `https://oldschool.runescape.wiki/images/${iconFile}`;
+    return `<a class="tool-card ${sectionId}" href="${tool.href}"><span class="tool-card-icon"><img src="${icon}" alt="" width="28" height="28" loading="lazy" /></span><span class="tool-card-body"><span class="tool-card-name">${tool.label}${badge}</span><span class="tool-card-desc">${tool.desc}</span></span></a>`;
+  }
+
+  function syncHubToolCards() {
+    const path = currentPath();
+    if (path !== "/" && path !== "/tools") return;
+
+    NAV_SECTIONS.forEach((sec) => {
+      const grid = document.querySelector(`#${sec.id} .tool-grid`);
+      if (!grid) return;
+      const html = sec.tools.map((t) => renderToolCard(t, sec.id)).filter(Boolean).join("");
+      if (html) grid.innerHTML = html;
+    });
+  }
+
   function injectNavDropdowns() {
     const nav = document.querySelector(".site-nav");
     if (!nav || nav.dataset.enhanced) return;
@@ -268,7 +307,11 @@
     nav.setAttribute("aria-label", `${section.label} tools`);
     nav.innerHTML = section.tools
       .map((t) => {
-        const active = path === t.href || (t.href === "/tools/item" && path.startsWith("/tools/item")) || (t.href === "/tools/monster" && path.startsWith("/tools/monster"));
+        const active =
+          path === t.href ||
+          (t.href === "/tools/item" && path.startsWith("/tools/item")) ||
+          (t.href === "/tools/monster" && path.startsWith("/tools/monster")) ||
+          (t.href === "/tools/gear" && path.startsWith("/tools/gear"));
         const badge = t.pro ? '<span class="nav-badge">Pro</span>' : "";
         return `<a href="${t.href}" class="${active ? "active" : ""}">${t.label}${badge}</a>`;
       })
@@ -632,6 +675,7 @@
     setupMobileNav();
     injectHeaderSearch();
     injectNavDropdowns();
+    syncHubToolCards();
     ensureHeaderActions();
     injectHeaderSubnav();
     injectBreadcrumbs();
