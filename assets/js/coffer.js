@@ -43,10 +43,13 @@
         const h = hourly?.[m.id];
         const f = fiveMin?.[m.id];
         const buyVolHour = h?.lowPriceVolume ?? 0;
+        const sellVolHour = h?.highPriceVolume ?? 0;
         const buyVol5m = f?.lowPriceVolume ?? 0;
-        const volume5m = buyVol5m + (f?.highPriceVolume ?? 0);
+        const sellVol5m = f?.highPriceVolume ?? 0;
+        const volume5m = buyVol5m + sellVol5m;
         const buyRateHour = G.effectiveHourlyRate(buyVol5m, buyVolHour);
-        const dailyVolume = buyRateHour * 24;
+        const sellRateHour = G.effectiveHourlyRate(sellVol5m, sellVolHour);
+        const dailyVolume = (buyRateHour + sellRateHour) * 24;
         const buyQty = limit > 0 ? limit : 1;
         const buyTimeHours = G.hoursToFillQty(buyQty, buyRateHour);
         const gpPerHour =
@@ -138,6 +141,7 @@
         G.itemListNumCell(row.roi != null ? row.roi.toFixed(1) + "%" : "—", `num col-hide-xs ${profitCls}`, "ROI") +
         G.itemListNumCell(G.formatDuration(row.buyTimeHours), "num", "Est. buy", { title: buyTimingTooltip(row) }) +
         G.itemListNumCell(G.formatGp(row.volume5m), "num col-hide-narrow", "5m vol.") +
+        G.itemListNumCell(G.formatGp(row.dailyVolume), "num col-hide-narrow", "Daily vol.") +
         G.itemListNumCell(row.gpPerHour == null ? "—" : G.formatGp(row.gpPerHour), `num ${gpHrCls}`, "GP / hr") +
         G.itemListNumCell(row.limit ? row.limit.toLocaleString() : "—", "num col-hide-narrow", "Limit") +
         G.itemListNumCell(row.limit ? G.formatGp(row.limitProfit) : "—", `num col-hide-narrow ${profitCls}`, "Profit (limit)")
@@ -275,7 +279,7 @@
     const hasCache = Boolean(G.cachedApiData);
     if (!hasCache || forceRefresh) {
       G.updateStatus("cofferStatus", forceRefresh ? "Refreshing price data…" : "Loading price data…", "");
-      G.applyItemListSkeleton("cofferBody", 11, 10);
+      G.applyItemListSkeleton("cofferBody", 12, 10);
     }
     try {
       await G.loadPrices({ useCache: true, force: forceRefresh });

@@ -262,6 +262,7 @@ body.site .gra-item-list__row:hover {
     var(--gra-col-num)
     var(--gra-col-timing)
     var(--gra-col-num)
+    var(--gra-col-num)
     var(--gra-col-gp)
     var(--gra-col-num)
     var(--gra-col-gp);
@@ -290,6 +291,8 @@ body.site .gra-item-list__row:hover {
 .gra-item-list--coffer .gra-item-list__row > :nth-child(10) { grid-column: 10; }
 .gra-item-list--coffer .gra-item-list__header > :nth-child(11),
 .gra-item-list--coffer .gra-item-list__row > :nth-child(11) { grid-column: 11; }
+.gra-item-list--coffer .gra-item-list__header > :nth-child(12),
+.gra-item-list--coffer .gra-item-list__row > :nth-child(12) { grid-column: 12; }
 
 .gra-item-list--flip-log .gra-item-list__header,
 .gra-item-list--flip-log .gra-item-list__row {
