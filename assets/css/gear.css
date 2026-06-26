@@ -1,3 +1,5 @@
+/* Gear Planner — OSRS equipment tab layout */
+
 .gear-gate {
   max-width: var(--g-page-max);
   margin: 1.5rem auto;
@@ -34,12 +36,12 @@
 
 @media (min-width: 960px) {
   .gear-layout {
-    grid-template-columns: 1fr 320px;
+    grid-template-columns: 1fr 340px;
     align-items: start;
   }
 }
 
-.gear-section {
+.gear-panel {
   background: var(--surface2);
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -47,9 +49,11 @@
   margin-bottom: 1rem;
 }
 
-.gear-section h2 {
+.gear-panel h2 {
   margin: 0 0 0.75rem;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
 }
 
 .gear-section-head {
@@ -64,110 +68,106 @@
   margin: 0;
 }
 
+/* —— Target —— */
+.gear-target-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.gear-target-search {
+  position: relative;
+}
+
+.gear-monster-pick {
+  position: absolute;
+  z-index: 15;
+  left: 0;
+  right: 0;
+  top: 100%;
+  max-height: 220px;
+  overflow: auto;
+  background: var(--surface-dark);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.gear-monster-pick a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.85rem;
+}
+
+.gear-monster-pick a:hover {
+  background: var(--surface2);
+}
+
+.gear-monster-summary {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.gear-monster-summary a {
+  color: var(--link);
+}
+
+/* —— Setup (character + style) —— */
+.gear-setup-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 640px) {
+  .gear-setup-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.gear-setup-block h2 {
+  margin-bottom: 0.5rem;
+}
+
 .gear-char-row {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
   align-items: flex-end;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .gear-char-row .filter-group {
   flex: 1;
-  min-width: 140px;
+  min-width: 120px;
 }
 
 .gear-stats-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.35rem 0.75rem;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.gear-slots {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 0.5rem;
-}
-
-.gear-slot {
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.gear-slot label {
-  font-size: 0.75rem;
-  color: var(--muted);
-  text-transform: capitalize;
-}
-
-.gear-slot-input-wrap {
-  position: relative;
-}
-
-.gear-slot input[type="search"] {
-  width: 100%;
-}
-
-.gear-slot-picked {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
+  gap: 0.25rem 0.65rem;
   font-size: 0.8rem;
-  min-height: 1.25rem;
-}
-
-.gear-slot-picked img {
-  flex-shrink: 0;
-}
-
-.gear-slot-picked button {
-  margin-left: auto;
-  background: none;
-  border: none;
   color: var(--muted);
-  cursor: pointer;
-  font-size: 0.75rem;
 }
 
-.gear-slot-results {
-  position: absolute;
-  z-index: 20;
-  left: 0;
-  right: 0;
-  top: 100%;
-  max-height: 200px;
-  overflow: auto;
-  background: var(--surface-dark);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-}
-
-.gear-slot-results a {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.5rem;
-  text-decoration: none;
-  color: var(--text);
-  font-size: 0.8rem;
-}
-
-.gear-slot-results a:hover {
-  background: var(--surface2);
+.gear-stats-row span {
+  white-space: nowrap;
 }
 
 .gear-prayer-chips {
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
+  margin-top: 0.5rem;
 }
 
 .gear-prayer-chips button {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.5rem;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.45rem;
   border-radius: 4px;
   border: 1px solid var(--border);
   background: var(--surface-dark);
@@ -180,18 +180,6 @@
   background: var(--accent-dim, rgba(100, 160, 255, 0.15));
 }
 
-.gear-monster-pick a {
-  display: block;
-  padding: 0.35rem 0;
-  color: var(--link);
-}
-
-.gear-monster-summary {
-  margin-top: 0.5rem;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
 .gear-toggle {
   display: flex;
   align-items: center;
@@ -200,12 +188,369 @@
   cursor: pointer;
 }
 
-.gear-preset-meta textarea {
+/* —— Paper doll (OSRS equipment tab) —— */
+.gear-paper-doll-wrap {
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+.gear-paper-doll {
+  display: grid;
+  grid-template-columns: repeat(3, 72px);
+  grid-template-rows: repeat(5, 72px);
+  grid-template-areas:
+    ". head ."
+    "cape amulet ammo"
+    "weapon body shield"
+    "gloves legs boots"
+    ". ring .";
+  gap: 6px;
+  padding: 12px;
+  background: var(--surface-dark);
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.gear-paper-slot {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 72px;
+  height: 72px;
+  padding: 4px;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #2a2a2a 0%, #1e1e1e 100%);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  overflow: hidden;
+}
+
+.gear-paper-slot:hover,
+.gear-paper-slot:focus-visible {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+  outline: none;
+}
+
+.gear-paper-slot[data-slot="head"] { grid-area: head; }
+.gear-paper-slot[data-slot="cape"] { grid-area: cape; }
+.gear-paper-slot[data-slot="amulet"] { grid-area: amulet; }
+.gear-paper-slot[data-slot="ammo"] { grid-area: ammo; }
+.gear-paper-slot[data-slot="weapon"] { grid-area: weapon; }
+.gear-paper-slot[data-slot="body"] { grid-area: body; }
+.gear-paper-slot[data-slot="shield"] { grid-area: shield; }
+.gear-paper-slot[data-slot="gloves"] { grid-area: gloves; }
+.gear-paper-slot[data-slot="legs"] { grid-area: legs; }
+.gear-paper-slot[data-slot="boots"] { grid-area: boots; }
+.gear-paper-slot[data-slot="ring"] { grid-area: ring; }
+
+.gear-paper-slot img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.5));
+}
+
+.gear-paper-slot-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 2px 3px;
+  font-size: 0.55rem;
+  line-height: 1.15;
+  text-align: center;
+  color: #e8e8e8;
+  background: rgba(0, 0, 0, 0.72);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.gear-paper-slot:hover .gear-paper-slot-label,
+.gear-paper-slot:focus-visible .gear-paper-slot-label {
+  opacity: 1;
+}
+
+.gear-paper-slot--empty .gear-paper-slot-silhouette {
+  width: 32px;
+  height: 32px;
+  opacity: 0.35;
+  background: center / contain no-repeat;
+}
+
+.gear-paper-slot--empty .gear-paper-slot-silhouette--head {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23888' d='M8 14h16v4H8zM10 10h12v4H10z'/%3E%3C/svg%3E");
+}
+
+.gear-paper-slot--empty .gear-paper-slot-silhouette--cape {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23888' d='M16 6L6 26h20z'/%3E%3C/svg%3E");
+}
+
+.gear-paper-slot--empty .gear-paper-slot-silhouette--amulet {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='18' r='8' fill='none' stroke='%23888' stroke-width='2'/%3E%3Cpath fill='%23888' d='M16 6v6'/%3E%3C/svg%3E");
+}
+
+.gear-paper-slot--empty .gear-paper-slot-silhouette--weapon {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23888' d='M22 6L26 10 12 24 8 20z'/%3E%3C/svg%3E");
+}
+
+.gear-paper-slot--empty .gear-paper-slot-silhouette--body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect x='10' y='8' width='12' height='16' rx='2' fill='%23888'/%3E%3C/svg%3E");
+}
+
+.gear-paper-slot--empty .gear-paper-slot-silhouette--shield {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23888' d='M16 4L8 8v10c0 6 8 10 8 10s8-4 8-10V8z'/%3E%3C/svg%3E");
+}
+
+.gear-paper-slot--empty .gear-paper-slot-silhouette--legs {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23888' d='M10 8h12v8H10zM10 16h5v12h-5zM17 16h5v12h-5z'/%3E%3C/svg%3E");
+}
+
+.gear-paper-slot--empty .gear-paper-slot-silhouette--gloves {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23888' d='M10 14h4v12h-4zM14 12h4v14h-4zM18 14h4v12h-4z'/%3E%3C/svg%3E");
+}
+
+.gear-paper-slot--empty .gear-paper-slot-silhouette--boots {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23888' d='M8 20h16v6H8zM10 16h6v4h-6zM18 18h4v2h-4z'/%3E%3C/svg%3E");
+}
+
+.gear-paper-slot--empty .gear-paper-slot-silhouette--ring {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='9' fill='none' stroke='%23888' stroke-width='3'/%3E%3C/svg%3E");
+}
+
+.gear-paper-slot--empty .gear-paper-slot-silhouette--ammo {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath fill='%23888' d='M16 4v20M12 8h8M12 12h8'/%3E%3C/svg%3E");
+}
+
+.gear-paper-slot-name {
+  position: absolute;
+  bottom: 3px;
+  font-size: 0.55rem;
+  color: #666;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.gear-paper-slot--empty:hover .gear-paper-slot-name {
+  color: var(--muted);
+}
+
+/* Light theme paper doll */
+html[data-theme="light"] .gear-paper-doll {
+  background: #c4b89a;
+  border-color: #8a7d5e;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="light"] .gear-paper-slot {
+  border-color: #6b5f48;
+  background: linear-gradient(180deg, #d4c8aa 0%, #b8aa88 100%);
+}
+
+html[data-theme="light"] .gear-paper-slot--empty .gear-paper-slot-silhouette {
+  opacity: 0.5;
+}
+
+html[data-theme="light"] .gear-paper-slot-name {
+  color: #5a5040;
+}
+
+/* —— Item picker modal —— */
+.gear-picker-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 2rem 1rem;
+  overflow-y: auto;
+}
+
+.gear-picker-modal[hidden] {
+  display: none;
+}
+
+.gear-picker-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+}
+
+.gear-picker-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(420px, 100%);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+.gear-picker-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.gear-picker-head h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.gear-picker-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 0.25rem;
+}
+
+.gear-picker-close:hover {
+  color: var(--text);
+}
+
+.gear-picker-body {
+  padding: 0.75rem 1rem 1rem;
+}
+
+.gear-picker-search {
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.gear-picker-results {
+  max-height: 280px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface-dark);
+  margin-bottom: 0.75rem;
+}
+
+.gear-picker-results:empty::before {
+  content: "Type to search items…";
+  display: block;
+  padding: 1rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+  text-align: center;
+}
+
+.gear-picker-result {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.45rem 0.65rem;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  font-size: 0.85rem;
+}
+
+.gear-picker-result:last-child {
+  border-bottom: none;
+}
+
+.gear-picker-result:hover,
+.gear-picker-result.active {
+  background: var(--surface2);
+}
+
+.gear-picker-result img {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.gear-picker-result-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.gear-picker-result-name {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.gear-picker-result-stat {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+
+.gear-picker-manual {
+  margin-bottom: 0.75rem;
+}
+
+.gear-picker-manual label {
+  display: block;
+  font-size: 0.75rem;
+  color: var(--muted);
+  margin-bottom: 0.25rem;
+}
+
+.gear-picker-manual input {
+  width: 100%;
+}
+
+.gear-picker-foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+/* —— Results aside —— */
+.gear-aside {
+  position: sticky;
+  top: 1rem;
+}
+
+.gear-panel--results .ui-stat-grid {
+  margin-bottom: 0.75rem;
+}
+
+.gear-panel--results .ui-stat-card {
+  padding: 0.5rem 0.65rem;
+}
+
+.gear-panel--results .ui-stat-card .label {
+  font-size: 0.7rem;
+}
+
+.gear-panel--results .ui-stat-card .value {
+  font-size: 1.05rem;
+}
+
+.gear-panel--meta textarea {
   width: 100%;
   margin-bottom: 0.5rem;
   resize: vertical;
 }
 
+/* —— Upgrades —— */
 .gear-upgrade-actions {
   display: flex;
   flex-wrap: wrap;
@@ -224,6 +569,21 @@
   padding: 0.35rem 0.5rem;
   text-align: left;
   border-bottom: 1px solid var(--border);
+  vertical-align: middle;
+}
+
+.gear-upgrade-item {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.gear-upgrade-item img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  flex-shrink: 0;
 }
 
 .gear-upgrade-locked {
@@ -243,11 +603,43 @@
   user-select: none;
 }
 
-.gear-aside {
-  position: sticky;
-  top: 1rem;
+/* —— Mobile —— */
+@media (max-width: 959px) {
+  .gear-aside {
+    position: static;
+  }
+
+  .gear-paper-doll {
+    grid-template-columns: repeat(3, 64px);
+    grid-template-rows: repeat(5, 64px);
+  }
+
+  .gear-paper-slot {
+    width: 64px;
+    height: 64px;
+  }
+
+  .gear-paper-slot img {
+    width: 36px;
+    height: 36px;
+  }
 }
 
-.gear-prep-link {
-  margin-left: 0.5rem;
+@media (max-width: 480px) {
+  .gear-paper-doll {
+    grid-template-columns: repeat(3, 56px);
+    grid-template-rows: repeat(5, 56px);
+    gap: 4px;
+    padding: 8px;
+  }
+
+  .gear-paper-slot {
+    width: 56px;
+    height: 56px;
+  }
+
+  .gear-paper-slot img {
+    width: 32px;
+    height: 32px;
+  }
 }

@@ -47,6 +47,8 @@
   let activePresetId = null;
   let shareId = null;
   let upgradeTimer = null;
+  let activePickerSlot = null;
+  let pickerSearchTimer = null;
 
   const state = {
     monsterId: Number(params.get("monster")) || DEFAULT_MONSTER,
@@ -79,12 +81,40 @@
     return meta.slot === want;
   }
 
+  function itemStatSnippet(id) {
+    const item = itemsMeta?.items?.[String(id)];
+    if (!item) return "";
+    const parts = [];
+    if (item.strength) parts.push(`+${item.strength} str`);
+    if (item.rangedStrength) parts.push(`+${item.rangedStrength} rstr`);
+    if (item.prayer) parts.push(`+${item.prayer} pray`);
+    if (item.magicDamage) parts.push(`+${item.magicDamage}% mage`);
+    const atk = item.attack || {};
+    const maxAtk = Math.max(atk.stab || 0, atk.slash || 0, atk.crush || 0, atk.magic || 0, atk.ranged || 0);
+    if (maxAtk > 0) parts.push(`+${maxAtk} atk`);
+    return parts.slice(0, 2).join(" · ");
+  }
+
   function searchItems(q, slot) {
     if (!q || !G.cachedApiData?.mapping) return [];
     const lower = q.toLowerCase();
     return G.cachedApiData.mapping
       .filter((m) => m.name.toLowerCase().includes(lower) && itemMatchesSlot(m.id, slot))
-      .slice(0, 12);
+      .slice(0, 14);
+  }
+
+  function resolveManualEntry(raw, slot) {
+    const text = raw.trim();
+    if (!text) return null;
+    const asId = Number(text);
+    if (Number.isFinite(asId) && asId > 0 && itemMatchesSlot(asId, slot)) return asId;
+    const lower = text.toLowerCase();
+    const exact = G.cachedApiData?.mapping?.find(
+      (m) => m.name.toLowerCase() === lower && itemMatchesSlot(m.id, slot)
+    );
+    if (exact) return exact.id;
+    const hits = searchItems(text, slot);
+    return hits.length === 1 ? hits[0].id : null;
   }
 
   function currentMonster() {
@@ -165,7 +195,14 @@
     const el = G.el("gearStatsRow");
     if (!el) return;
     const s = primaryStats();
-    el.innerHTML = `Atk ${s.attack} · Str ${s.strength} · Def ${s.defence} · Rng ${s.ranged} · Mag ${s.magic} · HP ${s.hitpoints}`;
+    el.innerHTML = [
+      `<span>Atk ${s.attack}</span>`,
+      `<span>Str ${s.strength}</span>`,
+      `<span>Def ${s.defence}</span>`,
+      `<span>Rng ${s.ranged}</span>`,
+      `<span>Mag ${s.magic}</span>`,
+      `<span>HP ${s.hitpoints}</span>`,
+    ].join("");
   }
 
   function renderStyleChips() {
@@ -210,83 +247,144 @@
     });
   }
 
-  function renderSlot(slot) {
+  function setSlotItem(slot, id) {
+    if (id) state.slots[slot] = id;
+    else delete state.slots[slot];
+    if (slot === "weapon" && id && itemsMeta?.items?.[String(id)]?.slot === "2h") {
+      delete state.slots.shield;
+    }
+    renderSlots();
+    renderResults();
+    scheduleUpgrades();
+  }
+
+  function renderPickerResults(q) {
+    const box = G.el("gearPickerResults");
+    if (!box || !activePickerSlot) return;
+    const hits = q ? searchItems(q, activePickerSlot) : [];
+    if (!hits.length) {
+      box.innerHTML = q
+        ? `<span class="results-meta" style="display:block;padding:0.75rem;text-align:center;">No items found</span>`
+        : "";
+      return;
+    }
+    box.innerHTML = hits
+      .map((m) =>
+        ui.gearPickerResult({
+          id: m.id,
+          name: m.name,
+          icon: G.iconUrl(m.icon) || G.itemIconUrlById(m.id, m.name),
+          snippet: itemStatSnippet(m.id),
+        })
+      )
+      .join("");
+  }
+
+  function openPicker(slot) {
+    activePickerSlot = slot;
+    const modal = G.el("gearPickerModal");
+    const title = G.el("gearPickerTitle");
+    const search = G.el("gearPickerSearch");
+    const manual = G.el("gearPickerManual");
+    if (!modal || !title || !search) return;
+
+    title.textContent = SLOT_LABELS[slot] || slot;
     const id = state.slots[slot];
-    const name = id ? itemName(id) : "";
-    const icon = id ? G.itemIconUrlById(id, name) : "";
-    return `<div class="gear-slot" data-slot="${slot}">
-      <label>${SLOT_LABELS[slot]}</label>
-      <div class="gear-slot-input-wrap">
-        <input type="search" class="gear-slot-search" data-slot="${slot}" placeholder="Search item…" autocomplete="off" value="${id ? G.escapeHtml(name) : ""}" />
-        <div class="gear-slot-results" hidden></div>
-      </div>
-      <div class="gear-slot-picked">${id ? `<img src="${icon}" alt="" width="20" height="20" loading="lazy" /><span>${G.escapeHtml(name)}</span><button type="button" data-clear-slot="${slot}">Clear</button>` : ""}</div>
-    </div>`;
+    search.value = id ? itemName(id) : "";
+    if (manual) manual.value = "";
+    renderPickerResults("");
+
+    modal.hidden = false;
+    modal.setAttribute("aria-hidden", "false");
+    document.body.style.overflow = "hidden";
+    setTimeout(() => search.focus(), 50);
+  }
+
+  function closePicker() {
+    activePickerSlot = null;
+    const modal = G.el("gearPickerModal");
+    if (!modal) return;
+    modal.hidden = true;
+    modal.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
+
+  function applyPickerSelection(id) {
+    if (!activePickerSlot) return;
+    setSlotItem(activePickerSlot, id);
+    closePicker();
   }
 
   function renderSlots() {
     const root = G.el("gearSlots");
     if (!root) return;
-    root.innerHTML = SLOT_KEYS.map(renderSlot).join("");
-
-    root.querySelectorAll(".gear-slot-search").forEach((input) => {
-      let timer;
-      input.addEventListener("input", () => {
-        clearTimeout(timer);
-        timer = setTimeout(() => {
-          const slot = input.dataset.slot;
-          const box = input.closest(".gear-slot-input-wrap")?.querySelector(".gear-slot-results");
-          const q = input.value.trim();
-          if (!q || (state.slots[slot] && q === itemName(state.slots[slot]))) {
-            box.hidden = true;
-            return;
-          }
-          const hits = searchItems(q, slot);
-          if (!hits.length) {
-            box.innerHTML = `<span class="results-meta" style="padding:0.5rem;">No items</span>`;
-            box.hidden = false;
-            return;
-          }
-          box.innerHTML = hits
-            .map(
-              (m) =>
-                `<a href="#" data-pick-id="${m.id}" data-pick-slot="${slot}"><img src="${G.iconUrl(m.icon)}" alt="" width="20" height="20" loading="lazy" />${G.escapeHtml(m.name)}</a>`
-            )
-            .join("");
-          box.hidden = false;
-        }, 120);
-      });
-
-      input.addEventListener("blur", () => {
-        setTimeout(() => {
-          const box = input.closest(".gear-slot-input-wrap")?.querySelector(".gear-slot-results");
-          if (box) box.hidden = true;
-        }, 150);
-      });
+    root.innerHTML = ui.gearPaperDoll({
+      slots: state.slots,
+      labels: SLOT_LABELS,
+      getIconUrl: (id, name) => G.itemIconUrlById(id, name),
+      getItemName: itemName,
     });
+  }
+
+  function bindSlotPicker() {
+    const root = G.el("gearSlots");
+    const modal = G.el("gearPickerModal");
+    const search = G.el("gearPickerSearch");
+    const manual = G.el("gearPickerManual");
+    if (!root || !modal) return;
 
     root.addEventListener("click", (e) => {
-      const pick = e.target.closest("[data-pick-id]");
-      if (pick) {
-        e.preventDefault();
-        const slot = pick.dataset.pickSlot;
-        const id = Number(pick.dataset.pickId);
-        state.slots[slot] = id;
-        if (slot === "weapon" && itemsMeta?.items?.[String(id)]?.slot === "2h") {
-          delete state.slots.shield;
-        }
-        renderSlots();
-        renderResults();
-        scheduleUpgrades();
+      const slotBtn = e.target.closest(".gear-paper-slot");
+      if (!slotBtn?.dataset.slot) return;
+      openPicker(slotBtn.dataset.slot);
+    });
+
+    modal.querySelectorAll("[data-picker-close]").forEach((el) => {
+      el.addEventListener("click", closePicker);
+    });
+
+    search?.addEventListener("input", () => {
+      clearTimeout(pickerSearchTimer);
+      pickerSearchTimer = setTimeout(() => renderPickerResults(search.value.trim()), 120);
+    });
+
+    G.el("gearPickerResults")?.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-pick-id]");
+      if (!btn) return;
+      applyPickerSelection(Number(btn.dataset.pickId));
+    });
+
+    G.el("gearPickerApply")?.addEventListener("click", () => {
+      if (!activePickerSlot) return;
+      const q = search?.value.trim() || "";
+      const manualVal = manual?.value.trim() || "";
+      const fromSearch = resolveManualEntry(q, activePickerSlot);
+      const fromManual = manualVal ? resolveManualEntry(manualVal, activePickerSlot) : null;
+      const id = fromManual || fromSearch;
+      if (!id) {
+        toast("Item not found for this slot");
         return;
       }
-      const clear = e.target.closest("[data-clear-slot]");
-      if (clear) {
-        delete state.slots[clear.dataset.clearSlot];
-        renderSlots();
-        renderResults();
-        scheduleUpgrades();
-      }
+      applyPickerSelection(id);
+    });
+
+    G.el("gearPickerClear")?.addEventListener("click", () => {
+      if (!activePickerSlot) return;
+      setSlotItem(activePickerSlot, null);
+      closePicker();
+    });
+
+    manual?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") G.el("gearPickerApply")?.click();
+    });
+
+    search?.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") closePicker();
+      if (e.key === "Enter") G.el("gearPickerApply")?.click();
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !modal.hidden) closePicker();
     });
   }
 
@@ -448,15 +546,16 @@
     }
 
     const rows = (data.upgrades || [])
-      .map(
-        (u) => `<tr>
+      .map((u) => {
+        const icon = G.itemIconUrlById(u.itemId, u.name);
+        return `<tr>
         <td>${G.escapeHtml(SLOT_LABELS[u.slot] || u.slot)}</td>
-        <td><a href="${G.itemPageUrl(u.itemId)}">${G.escapeHtml(u.name)}</a></td>
+        <td><span class="gear-upgrade-item"><img src="${icon}" alt="" width="24" height="24" loading="lazy" onerror="this.style.visibility='hidden'" /><a href="${G.itemPageUrl(u.itemId)}">${G.escapeHtml(u.name)}</a></span></td>
         <td>+${u.deltaDps} DPS</td>
         <td>${pro ? G.formatGp(u.deltaGpHr) + "/hr" : "—"}</td>
         <td>${u.price != null ? G.formatGp(u.price) : "—"}</td>
-      </tr>`
-      )
+      </tr>`;
+      })
       .join("");
 
     const locked = data.lockedCount || 0;
@@ -608,6 +707,7 @@
       renderStyleChips();
       renderPrayerChips();
       renderSlots();
+      bindSlotPicker();
       renderStatsRow();
       renderResults();
       bindMonsterSearch();

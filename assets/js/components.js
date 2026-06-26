@@ -332,6 +332,43 @@ window.Graardor = window.Graardor || {};
       .join("")}</div>`;
   };
 
+  /**
+   * OSRS equipment tab paper doll — slot grid with wiki icons.
+   * @param {{ slots: Record<string, number>, labels: Record<string, string>, getIconUrl: (id: number, name: string) => string, getItemName: (id: number) => string }} opts
+   */
+  G.ui.gearPaperDoll = function gearPaperDoll({ slots, labels, getIconUrl, getItemName }) {
+    const order = ["head", "cape", "amulet", "ammo", "weapon", "body", "shield", "gloves", "legs", "boots", "ring"];
+    return `<div class="gear-paper-doll">${order
+      .map((slot) => {
+        const id = slots[slot];
+        const label = labels[slot] || slot;
+        if (id) {
+          const name = getItemName(id);
+          const icon = getIconUrl(id, name);
+          return `<button type="button" class="gear-paper-slot" data-slot="${esc(slot)}" title="${esc(name)}" aria-label="${esc(label)}: ${esc(name)}">
+            <img src="${esc(icon)}" alt="" width="40" height="40" loading="lazy" onerror="this.style.visibility='hidden'" />
+            <span class="gear-paper-slot-label">${esc(name)}</span>
+          </button>`;
+        }
+        return `<button type="button" class="gear-paper-slot gear-paper-slot--empty" data-slot="${esc(slot)}" aria-label="${esc(label)} — empty">
+          <span class="gear-paper-slot-silhouette gear-paper-slot-silhouette--${esc(slot)}" aria-hidden="true"></span>
+          <span class="gear-paper-slot-name">${esc(label)}</span>
+        </button>`;
+      })
+      .join("")}</div>`;
+  };
+
+  /** Single row in gear item picker results. */
+  G.ui.gearPickerResult = function gearPickerResult({ id, name, icon, snippet, active = false }) {
+    return `<button type="button" class="gear-picker-result${active ? " active" : ""}" data-pick-id="${id}">
+      <img src="${esc(icon)}" alt="" width="32" height="32" loading="lazy" onerror="this.style.visibility='hidden'" />
+      <span class="gear-picker-result-text">
+        <span class="gear-picker-result-name">${esc(name)}</span>
+        ${snippet ? `<span class="gear-picker-result-stat">${esc(snippet)}</span>` : ""}
+      </span>
+    </button>`;
+  };
+
   /** Bind drop simulator controls on a container. */
   G.ui.bindDropSimulator = function bindDropSimulator(root, { getMonster, getSellPrice, resultsId = "monsterSimResults", summaryId = "monsterSimSummary", lootId = "monsterSimLoot" }) {
     if (!root || root._simBound) return;

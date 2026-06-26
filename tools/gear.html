@@ -56,45 +56,50 @@
     </section>
 
     <div class="gear-layout">
-      <div class="gear-main">
-        <section class="gear-section">
+      <main class="gear-main">
+        <section class="gear-panel gear-panel--target">
           <h2>Target</h2>
-          <div class="filter-group">
-            <label for="gearMonsterSearch">Monster</label>
-            <input id="gearMonsterSearch" type="search" placeholder="Search monster…" autocomplete="off" />
-          </div>
-          <div id="gearMonsterPick" class="gear-monster-pick"></div>
-          <div id="gearMonsterSummary" class="gear-monster-summary"></div>
-        </section>
-
-        <section class="gear-section">
-          <h2>Character</h2>
-          <div class="gear-char-row">
-            <div class="filter-group">
-              <label for="gearOsrsName">OSRS username</label>
-              <input id="gearOsrsName" type="text" maxlength="12" placeholder="Username" autocomplete="off" />
+          <div class="gear-target-row">
+            <div class="filter-group gear-target-search">
+              <label for="gearMonsterSearch">Monster</label>
+              <input id="gearMonsterSearch" type="search" placeholder="Search monster…" autocomplete="off" />
+              <div id="gearMonsterPick" class="gear-monster-pick"></div>
             </div>
-            <button type="button" id="gearLinkStatsBtn" class="btn-secondary">Link stats</button>
-            <button type="button" id="gearImportWomBtn" class="btn-secondary">Import gear</button>
+            <div id="gearMonsterSummary" class="gear-monster-summary"></div>
           </div>
-          <div id="gearStatsRow" class="gear-stats-row"></div>
         </section>
 
-        <section class="gear-section">
-          <h2>Style &amp; prayers</h2>
-          <div id="gearStyleChips" class="preset-filters"></div>
-          <div id="gearPrayerChips" class="gear-prayer-chips"></div>
+        <section class="gear-panel gear-panel--setup">
+          <div class="gear-setup-grid">
+            <div class="gear-setup-block">
+              <h2>Character</h2>
+              <div class="gear-char-row">
+                <div class="filter-group">
+                  <label for="gearOsrsName">OSRS username</label>
+                  <input id="gearOsrsName" type="text" maxlength="12" placeholder="Username" autocomplete="off" />
+                </div>
+                <button type="button" id="gearLinkStatsBtn" class="btn-secondary">Link stats</button>
+                <button type="button" id="gearImportWomBtn" class="btn-secondary">Import gear</button>
+              </div>
+              <div id="gearStatsRow" class="gear-stats-row"></div>
+            </div>
+            <div class="gear-setup-block">
+              <h2>Style &amp; prayers</h2>
+              <div id="gearStyleChips" class="preset-filters"></div>
+              <div id="gearPrayerChips" class="gear-prayer-chips"></div>
+            </div>
+          </div>
         </section>
 
-        <section class="gear-section">
+        <section class="gear-panel gear-panel--equipment">
           <div class="gear-section-head">
             <h2>Equipment</h2>
             <label class="gear-toggle"><input type="checkbox" id="gearIronmanToggle" /> Ironman</label>
           </div>
-          <div id="gearSlots" class="gear-slots"></div>
+          <div id="gearSlots" class="gear-paper-doll-wrap"></div>
         </section>
 
-        <section class="gear-section">
+        <section class="gear-panel gear-panel--upgrades">
           <h2>Upgrades</h2>
           <div class="gear-upgrade-actions">
             <button type="button" id="gearLoadUpgradesBtn" class="btn-primary">Load upgrades</button>
@@ -102,19 +107,41 @@
           </div>
           <div id="gearUpgrades" class="gear-upgrades"></div>
         </section>
-      </div>
+      </main>
 
       <aside class="gear-aside">
-        <section class="gear-section">
-          <h2>Results</h2>
+        <section class="gear-panel gear-panel--results">
+          <h2>Combat stats</h2>
           <div id="gearResults"></div>
         </section>
-        <section class="gear-section gear-preset-meta">
+        <section class="gear-panel gear-panel--meta">
           <label for="gearGoal">Goal</label>
           <textarea id="gearGoal" rows="2" maxlength="200" placeholder="Optional notes"></textarea>
           <label class="gear-toggle"><input type="checkbox" id="gearPublicToggle" checked /> Public preset</label>
         </section>
       </aside>
+    </div>
+  </div>
+
+  <div id="gearPickerModal" class="gear-picker-modal" hidden aria-hidden="true">
+    <div class="gear-picker-backdrop" data-picker-close></div>
+    <div class="gear-picker-dialog" role="dialog" aria-modal="true" aria-labelledby="gearPickerTitle">
+      <header class="gear-picker-head">
+        <h3 id="gearPickerTitle">Select item</h3>
+        <button type="button" class="gear-picker-close" data-picker-close aria-label="Close">&times;</button>
+      </header>
+      <div class="gear-picker-body">
+        <input id="gearPickerSearch" type="search" class="gear-picker-search" placeholder="Search items…" autocomplete="off" />
+        <div id="gearPickerResults" class="gear-picker-results"></div>
+        <div class="gear-picker-manual">
+          <label for="gearPickerManual">Manual entry</label>
+          <input id="gearPickerManual" type="text" placeholder="Exact item name or ID" autocomplete="off" />
+        </div>
+        <div class="gear-picker-foot">
+          <button type="button" id="gearPickerClear" class="btn-secondary">Clear slot</button>
+          <button type="button" id="gearPickerApply" class="btn-primary">Apply</button>
+        </div>
+      </div>
     </div>
   </div>
 
