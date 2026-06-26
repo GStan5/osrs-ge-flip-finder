@@ -336,25 +336,29 @@ window.Graardor = window.Graardor || {};
    * OSRS equipment tab paper doll — slot grid with wiki icons.
    * @param {{ slots: Record<string, number>, labels: Record<string, string>, getIconUrl: (id: number, name: string) => string, getItemName: (id: number) => string }} opts
    */
-  G.ui.gearPaperDoll = function gearPaperDoll({ slots, labels, getIconUrl, getItemName }) {
+  G.ui.gearPaperDoll = function gearPaperDoll({ slots, labels, getIconUrl, getItemName, readOnly = false }) {
     const order = ["head", "cape", "amulet", "ammo", "weapon", "body", "shield", "gloves", "legs", "boots", "ring"];
-    return `<div class="gear-paper-doll">${order
+    const tag = readOnly ? "div" : "button";
+    const typeAttr = readOnly ? "" : ' type="button"';
+    return `<div class="gear-paper-doll${readOnly ? " gear-paper-doll--readonly" : ""}">${order
       .map((slot) => {
         const id = slots[slot];
         const label = labels[slot] || slot;
         if (id) {
           const name = getItemName(id);
           const icon = getIconUrl(id, name);
-          return `<button type="button" class="gear-paper-slot" data-slot="${esc(slot)}" title="${esc(name)}" aria-label="${esc(label)}: ${esc(name)}">
+          return `<${tag} class="gear-paper-slot"${typeAttr} data-slot="${esc(slot)}" title="${esc(name)}" aria-label="${esc(label)}: ${esc(name)}">
             <img src="${esc(icon)}" alt="" width="40" height="40" loading="lazy" onerror="this.style.visibility='hidden'" />
             <span class="gear-paper-slot-label">${esc(name)}</span>
-          </button>`;
+          </${tag}>`;
         }
-        return `<button type="button" class="gear-paper-slot gear-paper-slot--empty" data-slot="${esc(slot)}" aria-label="${esc(label)} — empty">
+        if (readOnly) return "";
+        return `<${tag} class="gear-paper-slot gear-paper-slot--empty"${typeAttr} data-slot="${esc(slot)}" aria-label="${esc(label)} — empty">
           <span class="gear-paper-slot-silhouette gear-paper-slot-silhouette--${esc(slot)}" aria-hidden="true"></span>
           <span class="gear-paper-slot-name">${esc(label)}</span>
-        </button>`;
+        </${tag}>`;
       })
+      .filter(Boolean)
       .join("")}</div>`;
   };
 
@@ -370,24 +374,39 @@ window.Graardor = window.Graardor || {};
   };
 
   /** Compact read-only gear loadout card for slayer guide. */
-  G.ui.gearLoadoutCard = function gearLoadoutCard({ tier, tierLabel, slots, prayers, getIconUrl, getItemName, plannerHref }) {
+  G.ui.gearLoadoutCard = function gearLoadoutCard({
+    tier,
+    tierLabel,
+    slots,
+    prayers,
+    getIconUrl,
+    getItemName,
+    plannerHref,
+    usePaperDoll = true,
+    note,
+  }) {
     const slotLabels = {
       head: "Head", cape: "Cape", amulet: "Amulet", weapon: "Weapon", body: "Body", legs: "Legs",
       shield: "Shield", gloves: "Gloves", boots: "Boots", ring: "Ring", ammo: "Ammo",
     };
     const order = ["head", "cape", "amulet", "ammo", "weapon", "body", "shield", "gloves", "legs", "boots", "ring"];
-    const slotHtml = order
-      .filter((slot) => slots[slot])
-      .map((slot) => {
-        const id = slots[slot];
-        const name = getItemName(id);
-        const icon = getIconUrl(id, name);
-        return `<div class="slayer-loadout-slot" title="${esc(name)}">
+    const hasSlots = slots && order.some((slot) => slots[slot]);
+    const slotHtml = note
+      ? `<p class="slayer-loadout-note">${esc(note)}</p>`
+      : usePaperDoll && hasSlots
+        ? G.ui.gearPaperDoll({ slots, labels: slotLabels, getIconUrl, getItemName, readOnly: true })
+        : order
+            .filter((slot) => slots?.[slot])
+            .map((slot) => {
+              const id = slots[slot];
+              const name = getItemName(id);
+              const icon = getIconUrl(id, name);
+              return `<div class="slayer-loadout-slot" title="${esc(name)}">
           <img src="${esc(icon)}" alt="" width="32" height="32" loading="lazy" onerror="this.style.visibility='hidden'" />
           <span class="slayer-loadout-slot-name">${esc(name)}</span>
         </div>`;
-      })
-      .join("");
+            })
+            .join("");
     const prayerHtml = (prayers || [])
       .map((pid) => {
         const p = G._slayerPrayersCache?.[String(pid)];
@@ -401,11 +420,67 @@ window.Graardor = window.Graardor || {};
     return `<article class="slayer-loadout-card slayer-loadout-card--${esc(tier)}">
       <header class="slayer-loadout-head">
         <h3 class="slayer-loadout-tier">${esc(tierLabel)}</h3>
-        ${plannerHref ? `<a href="${esc(plannerHref)}" class="slayer-loadout-planner">Plan in Gear Planner</a>` : ""}
+        ${plannerHref && hasSlots ? `<a href="${esc(plannerHref)}" class="slayer-loadout-planner">Plan in Gear Planner</a>` : ""}
       </header>
       <div class="slayer-loadout-slots">${slotHtml || `<span class="slayer-loadout-empty">—</span>`}</div>
       ${prayerHtml ? `<div class="slayer-loadout-prayers" aria-label="Recommended prayers">${prayerHtml}</div>` : ""}
     </article>`;
+  };
+
+  /**
+   * Slayer task detail — style accordion with BIS / Mid / Entry loadouts per combat style.
+   */
+  G.ui.slayerStyleGear = function slayerStyleGear({
+    styles,
+    recommendedStyle,
+    styleGear,
+    stylePrayers,
+    tierLabels,
+    styleLabels,
+    getIconUrl,
+    getItemName,
+    plannerUrlFor,
+  }) {
+    const tabs = styles
+      .map((style) => {
+        const rec = style === recommendedStyle;
+        return `<button type="button" class="slayer-style-tab${rec ? " slayer-style-tab--recommended is-open" : ""}" data-style="${esc(style)}" aria-expanded="${rec ? "true" : "false"}">
+          <span class="slayer-style-tab-label">${esc(styleLabels[style] || style)}</span>
+          ${rec ? `<span class="slayer-style-tab-badge">Recommended</span>` : ""}
+        </button>`;
+      })
+      .join("");
+
+    const panels = styles
+      .map((style) => {
+        const g = styleGear[style] || {};
+        const styleNote = g.note || "";
+        const tiers = ["bis", "mid", "entry"];
+        const cards = tiers
+          .map((tier) =>
+            G.ui.gearLoadoutCard({
+              tier,
+              tierLabel: tierLabels[tier],
+              slots: styleNote ? {} : g[tier] || {},
+              prayers: stylePrayers?.[style]?.[tier] || [],
+              getIconUrl,
+              getItemName,
+              plannerHref: styleNote ? "" : plannerUrlFor(style, tier),
+              note: tier === "bis" ? styleNote : "",
+            })
+          )
+          .join("");
+        const open = style === recommendedStyle;
+        return `<section class="slayer-style-panel${open ? " is-open" : ""}" data-style-panel="${esc(style)}"${open ? "" : " hidden"}>
+          <div class="slayer-loadouts">${cards}</div>
+        </section>`;
+      })
+      .join("");
+
+    return `<div class="slayer-style-gear">
+      <div class="slayer-style-tabs" role="tablist">${tabs}</div>
+      <div class="slayer-style-panels">${panels}</div>
+    </div>`;
   };
 
   /** Monster row in gear planner search dropdown. */

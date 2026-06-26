@@ -17,31 +17,20 @@
 .slayer-search-wrap {
   position: relative;
   flex: 1 1 220px;
-  min-width: 180px;
+  min-width: 0;
 }
 
 .slayer-quick-pick {
   margin-bottom: 1rem;
 }
 
+/* —— Hero —— */
 .slayer-hero {
-  display: grid;
-  gap: 1rem;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 1rem;
   margin-bottom: 1rem;
 }
 
-@media (min-width: 640px) {
-  .slayer-hero {
-    grid-template-columns: auto 1fr;
-    align-items: start;
-  }
-}
-
-.slayer-hero-portrait img {
+.slayer-hero-portrait img,
+.slayer-hero .gear-monster-target-sprite {
   width: 96px;
   height: 96px;
   object-fit: contain;
@@ -51,8 +40,6 @@
 
 .slayer-hero-name {
   margin: 0 0 0.35rem;
-  font-size: 1.25rem;
-  font-weight: 600;
 }
 
 .slayer-hero-badges {
@@ -72,24 +59,40 @@
   color: var(--text-muted, var(--text));
 }
 
-.slayer-hero-stats {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem 1.25rem;
-  margin: 0.5rem 0;
-}
-
-.slayer-hero-stat .value {
-  display: block;
+.slayer-badge--style {
   font-weight: 600;
-  font-size: 0.95rem;
+  color: var(--text);
+  border-color: var(--accent, #c9a227);
+  background: color-mix(in srgb, var(--accent, #c9a227) 12%, var(--surface-dark));
 }
 
-.slayer-hero-stat .label {
-  display: block;
-  font-size: 0.72rem;
+.slayer-badge--melee { border-color: #c45c3e; background: color-mix(in srgb, #c45c3e 14%, var(--surface-dark)); }
+.slayer-badge--ranged { border-color: #4a9e4a; background: color-mix(in srgb, #4a9e4a 14%, var(--surface-dark)); }
+.slayer-badge--magic { border-color: #4a7ec4; background: color-mix(in srgb, #4a7ec4 14%, var(--surface-dark)); }
+
+.slayer-weakness-chip {
+  display: inline-block;
+  margin: 0.25rem 0 0.5rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  background: var(--surface-dark);
+  border: 1px solid var(--accent, #c9a227);
+  color: var(--text);
+  line-height: 1.35;
+}
+
+.slayer-style-reason {
+  margin: 0.35rem 0 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
   color: var(--text-muted, var(--text));
-  opacity: 0.85;
+  font-style: italic;
+}
+
+.slayer-hero-stats {
+  margin: 0.5rem 0;
 }
 
 .slayer-hero-notes {
@@ -99,6 +102,15 @@
   color: var(--text-muted, var(--text));
 }
 
+.slayer-hero-actions {
+  margin-top: 0.65rem;
+}
+
+.slayer-hero-actions a {
+  color: var(--accent);
+}
+
+/* —— Sections —— */
 .slayer-section {
   background: var(--surface2);
   border: 1px solid var(--border);
@@ -152,14 +164,70 @@
   border: 1px solid var(--border);
 }
 
+/* —— Style tabs —— */
+.slayer-style-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.85rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.65rem;
+}
+
+.slayer-style-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface-dark);
+  color: var(--text);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.slayer-style-tab:hover {
+  border-color: var(--accent, #c9a227);
+}
+
+.slayer-style-tab.is-open,
+.slayer-style-tab--recommended.is-open {
+  border-color: var(--accent, #c9a227);
+  background: color-mix(in srgb, var(--accent, #c9a227) 10%, var(--surface-dark));
+}
+
+.slayer-style-tab-badge {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+  background: var(--accent, #c9a227);
+  color: #1a1a1a;
+}
+
+.slayer-style-panel {
+  animation: slayer-fade-in 0.2s ease;
+}
+
+@keyframes slayer-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* —— Loadout cards —— */
 .slayer-loadouts {
   display: grid;
   gap: 1rem;
 }
 
-@media (min-width: 900px) {
+@media (min-width: 720px) {
   .slayer-loadouts {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     align-items: start;
   }
 }
@@ -172,6 +240,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
+  min-width: 0;
 }
 
 .slayer-loadout-card--bis {
@@ -193,14 +262,32 @@
 }
 
 .slayer-loadout-planner {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   white-space: nowrap;
+  color: var(--accent);
 }
 
 .slayer-loadout-slots {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.slayer-loadout-slots .gear-paper-doll {
+  transform: scale(0.92);
+  transform-origin: top center;
+  margin: 0 auto;
+}
+
+.slayer-loadout-slots .gear-paper-doll--readonly .gear-paper-slot {
+  cursor: default;
+  pointer-events: none;
+}
+
+.slayer-loadout-note {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: var(--text-muted, var(--text));
 }
 
 .slayer-loadout-slot {
@@ -256,14 +343,8 @@
   font-size: 0.9rem;
 }
 
-.slayer-hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-top: 0.5rem;
-  font-size: 0.82rem;
-}
-
-.slayer-hero-actions a {
-  color: var(--accent);
+@media (max-width: 719px) {
+  .slayer-loadouts .gear-paper-doll {
+    transform: scale(0.85);
+  }
 }

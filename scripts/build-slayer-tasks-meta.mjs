@@ -236,14 +236,120 @@ const PRAYERS = {
   magicBudget: [5],
 };
 
-function gear(bisKey, midKey, budgetKey) {
-  return { bis: { ...LOADOUTS[bisKey] }, mid: { ...LOADOUTS[midKey] }, budget: { ...LOADOUTS[budgetKey] } };
+function gear(bisKey, midKey, entryKey) {
+  return { bis: { ...LOADOUTS[bisKey] }, mid: { ...LOADOUTS[midKey] }, entry: { ...LOADOUTS[entryKey] } };
 }
 
 function prayers(style) {
-  if (style === "ranged") return { bis: PRAYERS.rangedBis, mid: PRAYERS.rangedMid, budget: PRAYERS.rangedBudget };
-  if (style === "magic") return { bis: PRAYERS.magicBis, mid: PRAYERS.magicMid, budget: PRAYERS.magicBudget };
-  return { bis: PRAYERS.meleeBis, mid: PRAYERS.meleeMid, budget: PRAYERS.meleeBudget };
+  if (style === "ranged") return { bis: PRAYERS.rangedBis, mid: PRAYERS.rangedMid, entry: PRAYERS.rangedBudget };
+  if (style === "magic") return { bis: PRAYERS.magicBis, mid: PRAYERS.magicMid, entry: PRAYERS.magicBudget };
+  return { bis: PRAYERS.meleeBis, mid: PRAYERS.meleeMid, entry: PRAYERS.meleeBudget };
+}
+
+const STYLE_ORDER = ["melee", "ranged", "magic"];
+
+/** Tasks where alternate styles are impractical — short note, empty gear. */
+const NOT_RECOMMENDED = {
+  410: { ranged: "Leaf-bladed weapons only — melee required.", magic: "Leaf-bladed weapons only — melee required." },
+  426: { ranged: "Leaf-bladed weapons only — melee required.", magic: "Leaf-bladed weapons only — melee required." },
+  3162: { melee: "Kree'arra is ranged-only.", magic: "Kree'arra is ranged-only." },
+};
+
+function gearFromKeys(bisKey, midKey, entryKey) {
+  return gear(bisKey, midKey, entryKey);
+}
+
+function gearFromLegacy(legacy) {
+  return {
+    bis: { ...(legacy.bis || {}) },
+    mid: { ...(legacy.mid || {}) },
+    entry: { ...(legacy.budget || legacy.entry || {}) },
+  };
+}
+
+function normalizePrayers(raw, style) {
+  const p = raw.prayers;
+  if (p?.bis && Array.isArray(p.bis)) {
+    return {
+      bis: [...p.bis],
+      mid: [...(p.mid || [])],
+      entry: [...(p.budget || p.entry || [])],
+    };
+  }
+  return prayers(style);
+}
+
+function getStyleTemplateKeys(raw, style) {
+  if (raw.styleOverrides?.[style]) return raw.styleOverrides[style];
+
+  const w = (raw.weakness || "").toLowerCase();
+  const n = (raw.name || "").toLowerCase();
+  const id = raw.monsterId;
+
+  if (style === "melee") {
+    if (w.includes("leaf-bladed")) return ["meleeLeafBis", "meleeLeafMid", "meleeLeafBudget"];
+    if (w.includes("crush") || /gargoyle|devil|dust|smoke|night beast|basilisk/.test(n))
+      return ["meleeCrushBis", "meleeCrushMid", "meleeCrushBudget"];
+    if (w.includes("demon") || /demon|cerberus/.test(n)) return ["meleeDemonBis", "meleeDemonMid", "meleeDemonBudget"];
+    if ([2215, 2205, 3129, 2211, 6766].includes(id)) return ["meleeGwd", "meleeGwdMid", "meleeGwdBudget"];
+    if (/wyrm|lance/.test(w) || n.includes("wyrm")) return ["meleeWyvern", "meleeWyvernMid", "meleeWyvernBudget"];
+    if (/hellhound|bloodveld|fire giant|kalphite|cave horror/.test(n)) return ["meleeMid", "meleeBudget", "meleeBudget"];
+    if (id === 7936) return ["meleeObsidian", "meleeObsidianMid", "meleeObsidianBudget"];
+    return ["meleeBis", "meleeMid", "meleeBudget"];
+  }
+
+  if (style === "ranged") {
+    if (/dragon|wyvern|drake|hydra|vorkath|aviansie|kree|adamant dragon|mithril dragon|iron dragon|brutal black/.test(n + w) || w.includes("anti-dragon"))
+      return ["rangedDragonBis", "rangedDragonMid", "rangedDragonBudget"];
+    if (/gwd|armadyl|dark beast/.test(n + w) || [3162, 3169, 4005].includes(id))
+      return ["rangedGwd", "rangedGwdMid", "rangedGwdBudget"];
+    return ["rangedBis", "rangedMid", "rangedBudget"];
+  }
+
+  if (style === "magic") {
+    if (/trident|kraken/.test(n + w)) return ["magicTrident", "magicTridentMid", "magicTridentBudget"];
+    if (/burst|barrage|nechryael/.test(n + w)) return ["meleeBarrage", "meleeBarrageMid", "meleeBarrageBudget"];
+    return ["magicBis", "magicMid", "magicBudget"];
+  }
+
+  return ["meleeBis", "meleeMid", "meleeBudget"];
+}
+
+function buildStyleReason(raw, recommendedStyle) {
+  if (raw.styleReason) return raw.styleReason;
+  const w = (raw.weakness || "").split("·")[0]?.trim();
+  const hints = {
+    melee: "Strong melee DPS; check crush/slash/stab weakness.",
+    ranged: "Safespot or low ranged defence.",
+    magic: "Safespot, burst, or low magic defence.",
+  };
+  return [w, hints[recommendedStyle]].filter(Boolean).join(" · ");
+}
+
+function expandTaskGear(raw) {
+  const recommendedStyle = raw.recommendedStyle || raw.style || "melee";
+  const primaryGear = gearFromLegacy(raw.gear);
+  const primaryPrayers = normalizePrayers(raw, recommendedStyle);
+  const notRec = { ...(NOT_RECOMMENDED[raw.monsterId] || {}), ...(raw.notRecommended || {}) };
+
+  const gear = {};
+  const stylePrayers = {};
+
+  for (const style of STYLE_ORDER) {
+    if (style === recommendedStyle) {
+      gear[style] = primaryGear;
+      stylePrayers[style] = primaryPrayers;
+    } else if (notRec[style]) {
+      gear[style] = { note: notRec[style], bis: {}, mid: {}, entry: {} };
+      stylePrayers[style] = { bis: [], mid: [], entry: [] };
+    } else {
+      const keys = getStyleTemplateKeys(raw, style);
+      gear[style] = gearFromKeys(keys[0], keys[1], keys[2]);
+      stylePrayers[style] = prayers(style);
+    }
+  }
+
+  return { gear, prayers: stylePrayers, recommendedStyle, styleReason: buildStyleReason(raw, recommendedStyle) };
 }
 
 /** Curated slayer tasks — extensible list. */
@@ -348,7 +454,8 @@ const CURATED = [
     prayers: prayers("melee"),
   },
   {
-    monsterId: 7278, name: "Greater nechryael", masters: ["Duradel", "Nieve", "Konar"], style: "melee",
+    monsterId: 7278, name: "Greater nechryael", masters: ["Duradel", "Nieve", "Konar"], style: "magic",
+    styleReason: "Burst/barrage in Catacombs — fastest XP.",
     weakness: "Magic burst/barrage in Catacombs", bring: ["Runes for burst/barrage", "Food"],
     notes: "Burst or barrage in Catacombs. Slayer Tower for melee.",
     skipBlock: "Excellent XP in Catacombs — keep.",
@@ -689,9 +796,17 @@ function validateItemId(id, ctx) {
 }
 
 function validateGear(loadout, ctx) {
+  if (!loadout || typeof loadout !== "object") return;
   for (const slot of SLOT_KEYS) {
     const id = loadout[slot];
     if (id != null) validateItemId(id, `${ctx}.${slot}`);
+  }
+}
+
+function validateStyleGear(styleGear, ctx) {
+  if (styleGear.note) return;
+  for (const tier of ["bis", "mid", "entry"]) {
+    validateGear(styleGear[tier], `${ctx}.${tier}`);
   }
 }
 
@@ -703,6 +818,11 @@ function enrichTask(raw) {
   validateGear(raw.gear.mid, `${raw.name}.mid`);
   validateGear(raw.gear.budget, `${raw.name}.budget`);
 
+  const expanded = expandTaskGear(raw);
+  for (const style of STYLE_ORDER) {
+    validateStyleGear(expanded.gear[style], `${raw.name}.${style}`);
+  }
+
   const slayer = monster.slayer || {};
   return {
     monsterId: raw.monsterId,
@@ -711,14 +831,16 @@ function enrichTask(raw) {
     combatLevel: monster.combatLevel,
     slayerLevel: slayer.level ?? null,
     slayerXp: slayer.xp ?? null,
-    style: raw.style || "melee",
+    recommendedStyle: expanded.recommendedStyle,
+    style: expanded.recommendedStyle,
+    styleReason: expanded.styleReason,
     weakness: raw.weakness || "",
     bring: raw.bring || [],
     location: raw.location || "",
     skipBlock: raw.skipBlock || "",
     notes: raw.notes || "",
-    gear: raw.gear,
-    prayers: raw.prayers || prayers(raw.style),
+    gear: expanded.gear,
+    prayers: expanded.prayers,
   };
 }
 

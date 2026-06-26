@@ -2,12 +2,12 @@
   const ui = G.ui;
   const params = new URLSearchParams(location.search);
   const POPULAR_TASKS = [415, 2215, 5862, 494, 499, 412, 7278, 6766, 8609, 8615];
-  const TIER_LABELS = { bis: "BIS", mid: "Mid", budget: "Budget" };
+  const STYLES = ["melee", "ranged", "magic"];
+  const TIER_LABELS = { bis: "BIS", mid: "Mid", entry: "Entry" };
   const STYLE_LABELS = { melee: "Melee", ranged: "Ranged", magic: "Magic" };
 
   let slayerMeta = null;
   let monstersMeta = null;
-  let prayersMeta = null;
   let activeTaskId = Number(params.get("task")) || null;
   let masterFilter = params.get("master") || "";
   let searchTimer = null;
@@ -38,16 +38,51 @@
       .slice(0, 20);
   }
 
-  function gearPlannerUrl(task, tier) {
-    const slots = task.gear?.[tier];
-    if (!slots) return `/tools/gear?monster=${task.monsterId}`;
+  /** Normalize legacy flat gear { bis, mid, budget } → per-style { melee|ranged|magic: { bis, mid, entry } }. */
+  function resolveStyleGear(task) {
+    const g = task.gear;
+    if (!g) return { gear: {}, prayers: {} };
+
+    if (g.melee || g.ranged || g.magic) {
+      return { gear: g, prayers: task.prayers || {} };
+    }
+
+    const style = task.recommendedStyle || task.style || "melee";
+    return {
+      gear: {
+        [style]: {
+          bis: g.bis || {},
+          mid: g.mid || {},
+          entry: g.budget || g.entry || {},
+        },
+      },
+      prayers: task.prayers
+        ? {
+            [style]: {
+              bis: task.prayers.bis || [],
+              mid: task.prayers.mid || [],
+              entry: task.prayers.budget || task.prayers.entry || [],
+            },
+          }
+        : {},
+    };
+  }
+
+  function recommendedStyle(task) {
+    return task.recommendedStyle || task.style || "melee";
+  }
+
+  function gearPlannerUrl(task, style, tier) {
+    const { gear } = resolveStyleGear(task);
+    const slots = gear[style]?.[tier];
+    if (!slots || !Object.keys(slots).length) return `/tools/gear?monster=${task.monsterId}&style=${style}`;
     const slotPairs = Object.entries(slots)
       .map(([slot, id]) => `${slot}:${id}`)
       .join(",");
-    const prayers = (task.prayers?.[tier] || []).join(",");
+    const prayers = (resolveStyleGear(task).prayers[style]?.[tier] || []).join(",");
     const qs = new URLSearchParams();
     qs.set("monster", String(task.monsterId));
-    if (task.style) qs.set("style", task.style);
+    qs.set("style", style);
     if (slotPairs) qs.set("slots", slotPairs);
     if (prayers) qs.set("prayers", prayers);
     return `/tools/gear?${qs.toString()}`;
@@ -123,20 +158,24 @@
     });
   }
 
-  function renderLoadouts(task) {
-    return ["bis", "mid", "budget"]
-      .map((tier) =>
-        ui.gearLoadoutCard({
-          tier,
-          tierLabel: TIER_LABELS[tier],
-          slots: task.gear?.[tier] || {},
-          prayers: task.prayers?.[tier] || [],
-          getIconUrl: (id, name) => G.itemIconUrlById(id, name),
-          getItemName: itemName,
-          plannerHref: gearPlannerUrl(task, tier),
-        })
-      )
-      .join("");
+  function bindStyleTabs(root) {
+    const tabs = root.querySelectorAll(".slayer-style-tab");
+    const panels = root.querySelectorAll(".slayer-style-panel");
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const style = tab.dataset.style;
+        tabs.forEach((t) => {
+          const on = t.dataset.style === style;
+          t.classList.toggle("is-open", on);
+          t.setAttribute("aria-expanded", on ? "true" : "false");
+        });
+        panels.forEach((p) => {
+          const on = p.dataset.stylePanel === style;
+          p.classList.toggle("is-open", on);
+          p.hidden = !on;
+        });
+      });
+    });
   }
 
   function renderDetail() {
@@ -150,50 +189,73 @@
 
     const monster = findMonster(task.monsterId);
     const iconUrl = G.monsterIconUrl(monster || { name: task.name });
-    const styleBadge = `<span class="slayer-badge">${G.escapeHtml(STYLE_LABELS[task.style] || task.style)}</span>`;
+    const recStyle = recommendedStyle(task);
+    const styleBadge = `<span class="slayer-badge slayer-badge--style slayer-badge--${G.escapeHtml(recStyle)}">${G.escapeHtml(STYLE_LABELS[recStyle] || recStyle)} recommended</span>`;
     const masterBadges = (task.masters || [])
-      .map((m) => `<span class="slayer-badge">${G.escapeHtml(m)}</span>`)
+      .map((m) => `<span class="slayer-badge slayer-badge--master">${G.escapeHtml(m)}</span>`)
       .join("");
+    const weaknessChip = task.weakness
+      ? `<span class="slayer-weakness-chip" title="Combat weakness">${G.escapeHtml(task.weakness)}</span>`
+      : "";
 
     const bringHtml = (task.bring || []).length
       ? `<div class="slayer-bring-list">${task.bring.map((b) => `<span class="slayer-bring-chip">${G.escapeHtml(b)}</span>`).join("")}</div>`
       : "—";
 
+    const { gear, prayers } = resolveStyleGear(task);
+
     root.innerHTML = `
-      <article class="slayer-hero">
-        <div class="slayer-hero-portrait">
-          <img src="${G.escapeHtml(iconUrl)}" alt="" width="96" height="96" loading="lazy" onerror="this.style.visibility='hidden'" />
+      <article class="slayer-hero gear-monster-target">
+        <div class="slayer-hero-portrait gear-monster-target-portrait">
+          <img src="${G.escapeHtml(iconUrl)}" alt="" width="96" height="96" loading="lazy" class="gear-monster-target-sprite" onerror="this.style.visibility='hidden'" />
         </div>
-        <div class="slayer-hero-info">
-          <div class="slayer-hero-badges">${styleBadge}${masterBadges}</div>
-          <h2 class="slayer-hero-name">${G.escapeHtml(task.name)}</h2>
-          <div class="slayer-hero-stats">
-            <div class="slayer-hero-stat"><span class="value">${task.combatLevel ?? "—"}</span><span class="label">Combat</span></div>
-            <div class="slayer-hero-stat"><span class="value">${task.slayerLevel ?? "—"}</span><span class="label">Slayer req</span></div>
-            <div class="slayer-hero-stat"><span class="value">${task.slayerXp ?? "—"}</span><span class="label">Slayer XP</span></div>
+        <div class="slayer-hero-info gear-monster-target-info">
+          <div class="slayer-hero-badges monster-hero-badges">${styleBadge}${masterBadges}</div>
+          <h2 class="slayer-hero-name gear-monster-target-name">${G.escapeHtml(task.name)}</h2>
+          ${weaknessChip}
+          <div class="slayer-hero-stats monster-hero-stats">
+            <div class="monster-hero-stat"><span class="value">${task.combatLevel ?? "—"}</span><span class="label">Combat</span></div>
+            <div class="monster-hero-stat"><span class="value">${task.slayerLevel ?? "—"}</span><span class="label">Slayer req</span></div>
+            <div class="monster-hero-stat"><span class="value">${task.slayerXp ?? "—"}</span><span class="label">Slayer XP</span></div>
           </div>
+          ${task.styleReason ? `<p class="slayer-style-reason">${G.escapeHtml(task.styleReason)}</p>` : ""}
           ${task.notes ? `<p class="slayer-hero-notes">${G.escapeHtml(task.notes)}</p>` : ""}
-          <div class="slayer-hero-actions">
+          <div class="slayer-hero-actions gear-monster-target-actions">
             <a href="/tools/monster?id=${task.monsterId}">Monster stats</a>
-            <a href="/tools/gear?monster=${task.monsterId}">Gear planner</a>
+            <a href="/tools/gear?monster=${task.monsterId}&style=${recStyle}">Gear planner</a>
           </div>
         </div>
       </article>
 
-      <section class="slayer-section">
-        <h2>Gear loadouts</h2>
-        <div class="slayer-loadouts">${renderLoadouts(task)}</div>
-      </section>
-
-      <section class="slayer-section">
+      <section class="slayer-section slayer-section--notes">
         <h2>Task info</h2>
         <dl class="slayer-notes-grid">
-          ${task.weakness ? `<div class="slayer-note-row"><dt>Weakness</dt><dd>${G.escapeHtml(task.weakness)}</dd></div>` : ""}
           ${task.location ? `<div class="slayer-note-row"><dt>Location</dt><dd>${G.escapeHtml(task.location)}</dd></div>` : ""}
           <div class="slayer-note-row"><dt>Bring</dt><dd>${bringHtml}</dd></div>
           ${task.skipBlock ? `<div class="slayer-note-row"><dt>Skip / block</dt><dd>${G.escapeHtml(task.skipBlock)}</dd></div>` : ""}
         </dl>
+      </section>
+
+      <section class="slayer-section slayer-section--gear">
+        <h2>Gear loadouts</h2>
+        <div id="slayerStyleGearRoot"></div>
       </section>`;
+
+    const gearRoot = G.el("slayerStyleGearRoot");
+    if (gearRoot) {
+      gearRoot.innerHTML = ui.slayerStyleGear({
+        styles: STYLES,
+        recommendedStyle: recStyle,
+        styleGear: gear,
+        stylePrayers: prayers,
+        tierLabels: TIER_LABELS,
+        styleLabels: STYLE_LABELS,
+        getIconUrl: (id, name) => G.itemIconUrlById(id, name),
+        getItemName: itemName,
+        plannerUrlFor: (style, tier) => gearPlannerUrl(task, style, tier),
+      });
+      bindStyleTabs(gearRoot);
+    }
 
     document.title = `${task.name} — Slayer Guide — Graardor`;
     const titleEl = document.querySelector(".page-hero h1");
@@ -256,7 +318,6 @@
       ]);
       slayerMeta = sm;
       monstersMeta = mm;
-      prayersMeta = pm;
       G._slayerPrayersCache = pm.prayers;
 
       await G.loadPrices({ useCache: true }).catch(() => {});
