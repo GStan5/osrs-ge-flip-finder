@@ -194,6 +194,19 @@ window.Graardor = window.Graardor || {};
     return G.iconUrl(`${name}.png`);
   };
 
+  G.findMappingById = function findMappingById(id) {
+    return G.cachedApiData?.mapping?.find((m) => m.id === id) || null;
+  };
+
+  /** Wiki item icon — mapping icon when prices loaded, else name-based fallback. */
+  G.itemIconUrlById = function itemIconUrlById(id, fallbackName) {
+    const mapping = G.findMappingById(id);
+    if (mapping?.icon) return G.iconUrl(mapping.icon);
+    const name = (fallbackName || mapping?.name || "").trim();
+    if (name) return G.iconUrl(`${name}.png`);
+    return "";
+  };
+
   G.wikiPageUrl = function wikiPageUrl(name) {
     return G.WIKI_PAGE_BASE + encodeURIComponent(name.replace(/ /g, "_"));
   };
