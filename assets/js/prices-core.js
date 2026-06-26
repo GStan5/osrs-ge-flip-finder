@@ -383,18 +383,6 @@ window.Graardor = window.Graardor || {};
     });
   };
 
-  G.itemNameCell = function itemNameCell(item) {
-    const badge = item.members
-      ? '<span class="badge badge-members">P2P</span>'
-      : '<span class="badge badge-f2p">F2P</span>';
-    const tip = G.itemTitleAttr(item.name);
-    return `<td class="col-item"${tip}><div class="item-cell"${tip}>
-      <img src="${G.iconUrl(item.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
-      <a class="item-name" href="${G.itemPageUrl(item.id)}"${tip}>${G.escapeHtml(item.name)}</a>
-      <a class="item-wiki-link" href="${G.wikiPageUrl(item.name)}" target="_blank" rel="noopener" title="OSRS Wiki">↗</a>${badge}
-    </div></td>`;
-  };
-
   G.updateStatus = function updateStatus(nodeId, message, type) {
     const node = G.el(nodeId);
     if (!node) return;
@@ -419,7 +407,12 @@ window.Graardor = window.Graardor || {};
 
   G.applyTableSkeleton = function applyTableSkeleton(tbodyId, cols, rows) {
     const tb = G.el(tbodyId);
-    if (tb) tb.innerHTML = G.tableSkeletonRows(cols, rows);
+    if (!tb) return;
+    if (typeof G.itemListSkeletonRows === "function") {
+      tb.innerHTML = G.itemListSkeletonRows(cols, rows);
+      return;
+    }
+    tb.innerHTML = G.tableSkeletonRows(cols, rows);
   };
 
   G.onCacheReady = function onCacheReady(fn) {

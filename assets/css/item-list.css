@@ -1,0 +1,305 @@
+/* Graardor item list — CSS Grid rows (replaces tool tables) */
+
+.gra-item-list-wrap {
+  overflow-x: hidden;
+  max-width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 0;
+  background: var(--surface);
+}
+
+body.site .gra-item-list-wrap {
+  border-radius: var(--g-radius, 0);
+}
+
+.gra-item-list {
+  --gra-col-name: minmax(8rem, 1fr);
+  --gra-col-num: minmax(4.5rem, max-content);
+  --gra-col-rank: minmax(1.75rem, max-content);
+  --gra-col-recipe: minmax(10rem, 1.15fr);
+  --gra-col-io: minmax(5.5rem, 0.85fr);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  font-size: 0.78rem;
+}
+
+.gra-item-list__header,
+.gra-item-list__row {
+  display: grid;
+  column-gap: 6px;
+  align-items: center;
+  min-width: 0;
+}
+
+.gra-item-list__header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--surface-dark);
+  border-bottom: 1px solid var(--border);
+}
+
+body.site .gra-item-list__header {
+  background: var(--g-surface-2, var(--surface-dark));
+}
+
+.gra-item-list__head {
+  padding: 0.3rem 0.35rem;
+  font-size: 0.72rem;
+  font-weight: bold;
+  color: var(--title);
+  line-height: 1.2;
+  white-space: normal;
+  min-width: 0;
+}
+
+.gra-item-list__head.num,
+.gra-item-list__cell--num {
+  text-align: right;
+}
+
+.gra-item-list__row {
+  border-bottom: 1px solid var(--border);
+  transition: background 0.12s ease;
+}
+
+.gra-item-list__row:last-child {
+  border-bottom: none;
+}
+
+.gra-item-list__row:hover {
+  background: var(--hover-row, rgba(255, 255, 255, 0.04));
+}
+
+body.site .gra-item-list__row:hover {
+  background: var(--g-hover-row, rgba(255, 255, 255, 0.04));
+}
+
+.gra-item-list__cell {
+  padding: 0.28rem 0.35rem;
+  min-width: 0;
+  vertical-align: middle;
+}
+
+.gra-item-list__cell--name,
+.gra-item-list__cell--recipe {
+  text-align: left;
+  overflow: hidden;
+}
+
+.gra-item-list__cell--num {
+  white-space: nowrap;
+  font-size: 0.8125rem;
+  overflow: visible;
+  text-overflow: clip;
+}
+
+.gra-item-list__cell--name .item-cell,
+.gra-item-list__cell--recipe .item-cell {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+}
+
+.gra-item-list__cell--name .item-cell a.item-name,
+.gra-item-list__cell--recipe .recipe-title {
+  flex: 1 1 auto;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gra-item-list__cell--name .item-wiki-link,
+.gra-item-list__cell--name .badge {
+  display: none;
+}
+
+.gra-item-list__cell.rank-cell {
+  text-align: center;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.gra-item-list__empty {
+  padding: 1.25rem 1rem;
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1.45;
+}
+
+.gra-item-list__empty.loading {
+  font-style: italic;
+}
+
+/* Column templates per tool list */
+.gra-item-list--flip-search .gra-item-list__header,
+.gra-item-list--flip-search .gra-item-list__row {
+  grid-template-columns: var(--gra-col-name) repeat(14, var(--gra-col-num));
+}
+
+.gra-item-list--flip-top10 .gra-item-list__header,
+.gra-item-list--flip-top10 .gra-item-list__row {
+  grid-template-columns: var(--gra-col-rank) var(--gra-col-name) repeat(16, var(--gra-col-num));
+}
+
+.gra-item-list--transforms .gra-item-list__header,
+.gra-item-list--transforms .gra-item-list__row {
+  grid-template-columns:
+    var(--gra-col-recipe)
+    var(--gra-col-io)
+    var(--gra-col-io)
+    repeat(12, var(--gra-col-num));
+}
+
+.gra-item-list--alch .gra-item-list__header,
+.gra-item-list--alch .gra-item-list__row {
+  grid-template-columns: var(--gra-col-name) repeat(10, var(--gra-col-num));
+}
+
+.gra-item-list--coffer .gra-item-list__header,
+.gra-item-list--coffer .gra-item-list__row {
+  grid-template-columns: var(--gra-col-name) repeat(7, var(--gra-col-num));
+}
+
+/* Top 10 buy/sell emphasis */
+.gra-item-list--flip-top10 .gra-item-list__head.col-price-buy,
+.gra-item-list--flip-top10 .gra-item-list__cell.price-col-buy {
+  background: rgba(102, 153, 204, 0.18);
+  box-shadow: inset 0 0 0 1px rgba(102, 153, 204, 0.45);
+  color: #99ccff;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.gra-item-list--flip-top10 .gra-item-list__head.col-price-sell,
+.gra-item-list--flip-top10 .gra-item-list__cell.price-col-sell {
+  background: rgba(0, 255, 0, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(0, 255, 0, 0.25);
+  color: var(--green);
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.gra-item-list__head.sortable,
+.gra-item-list__head.sortable[data-xf-sort] {
+  cursor: pointer;
+  user-select: none;
+}
+
+.gra-item-list__head.sortable:hover {
+  color: var(--link);
+}
+
+.gra-item-list__head.sorted-asc::after {
+  content: " ▲";
+  font-size: 0.62rem;
+  opacity: 0.85;
+}
+
+.gra-item-list__head.sorted-desc::after {
+  content: " ▼";
+  font-size: 0.62rem;
+  opacity: 0.85;
+}
+
+.gra-item-list__cell .loading-skeleton {
+  display: block;
+  height: 0.85rem;
+  border-radius: 2px;
+}
+
+/* Skeleton rows */
+.gra-item-list__row.skeleton-row .gra-item-list__cell {
+  padding: 0.35rem;
+}
+
+@media (max-width: 767px) {
+  .gra-item-list .col-hide-narrow {
+    display: none !important;
+  }
+
+  .gra-item-list__header {
+    display: none;
+  }
+
+  .gra-item-list__body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+    padding: 0.35rem;
+  }
+
+  .gra-item-list__row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--border);
+    border-radius: var(--g-radius-sm, 0);
+    background: var(--surface);
+  }
+
+  body.site .gra-item-list__row {
+    border-radius: var(--g-radius-sm, 4px);
+  }
+
+  .gra-item-list__row:hover {
+    background: var(--surface-dark);
+  }
+
+  .gra-item-list__cell--name,
+  .gra-item-list__cell--recipe {
+    padding-bottom: 0.35rem;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 0.15rem;
+  }
+
+  .gra-item-list__cell--name .item-cell a.item-name,
+  .gra-item-list__cell--recipe .recipe-title {
+    max-width: none;
+  }
+
+  .gra-item-list__cell:not(.gra-item-list__cell--name):not(.gra-item-list__cell--recipe):not(.rank-cell) {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding: 0.12rem 0;
+    text-align: right;
+  }
+
+  .gra-item-list__cell:not(.gra-item-list__cell--name):not(.gra-item-list__cell--recipe):not(.rank-cell)::before {
+    content: attr(data-label);
+    color: var(--muted);
+    font-size: 0.72rem;
+    text-align: left;
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .gra-item-list__cell.rank-cell {
+    display: none;
+  }
+
+  .gra-item-list__cell.recipe-io {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .gra-item-list__cell.recipe-io::before {
+    margin-bottom: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .gra-item-list .col-hide-xs {
+    display: none !important;
+  }
+}

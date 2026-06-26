@@ -8,6 +8,7 @@
   <title>Death's Coffer — Graardor</title>
   <script src="/assets/js/theme-init.js"></script>
   <link rel="stylesheet" href="/assets/css/theme.css" />
+  <link rel="stylesheet" href="/assets/css/item-list.css" />
 </head>
 <body class="site ads-off tool-page">
   <header class="site-header">
@@ -84,24 +85,22 @@
       </section>
 
       <p id="cofferMeta" class="results-meta"></p>
-      <div class="table-wrap">
-        <table id="cofferTable">
-          <thead>
-            <tr>
-              <th class="col-item">Item</th>
-              <th class="sortable num" data-sort="buyPrice">Buy price</th>
-              <th class="sortable num col-hide-xs" data-sort="guide">GE guide</th>
-              <th class="sortable num" data-sort="credit">Coffer credit</th>
-              <th class="sortable num" data-sort="profit">Profit</th>
-              <th class="sortable num col-hide-xs" data-sort="roi">ROI</th>
-              <th class="sortable num col-hide-narrow" data-sort="limit">Limit</th>
-              <th class="sortable num col-hide-narrow" data-sort="limitProfit">Profit (limit)</th>
-            </tr>
-          </thead>
-          <tbody id="cofferBody">
-            <tr><td colspan="8" class="loading">Loading…</td></tr>
-          </tbody>
-        </table>
+      <div class="gra-item-list-wrap">
+        <div class="gra-item-list gra-item-list--coffer" id="cofferList">
+          <div class="gra-item-list__header" role="row">
+            <div class="gra-item-list__head gra-item-list__cell--name" role="columnheader">Item</div>
+            <div class="gra-item-list__head gra-item-list__cell--num sortable" data-sort="buyPrice" role="columnheader">Buy price</div>
+            <div class="gra-item-list__head gra-item-list__cell--num sortable col-hide-xs" data-sort="guide" role="columnheader">GE guide</div>
+            <div class="gra-item-list__head gra-item-list__cell--num sortable" data-sort="credit" role="columnheader">Coffer credit</div>
+            <div class="gra-item-list__head gra-item-list__cell--num sortable" data-sort="profit" role="columnheader">Profit</div>
+            <div class="gra-item-list__head gra-item-list__cell--num sortable col-hide-xs" data-sort="roi" role="columnheader">ROI</div>
+            <div class="gra-item-list__head gra-item-list__cell--num sortable col-hide-narrow" data-sort="limit" role="columnheader">Limit</div>
+            <div class="gra-item-list__head gra-item-list__cell--num sortable col-hide-narrow" data-sort="limitProfit" role="columnheader">Profit (limit)</div>
+          </div>
+          <div class="gra-item-list__body" id="cofferBody" role="rowgroup">
+            <div class="gra-item-list__empty loading">Loading…</div>
+          </div>
+        </div>
       </div>
     </main>
   </div>
@@ -112,6 +111,7 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/item-list.js"></script>
   <script src="/assets/js/coffer.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/site-chrome.js"></script>

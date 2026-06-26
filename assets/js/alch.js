@@ -81,6 +81,27 @@
     });
   }
 
+  function alchRowHtml(row) {
+    const profitCls = row.profit >= 0 ? "positive" : "negative";
+    const gpHrCls = row.gpPerHour != null && row.gpPerHour >= 0 ? "highlight-gp" : "";
+    return G.itemListRow(
+      G.itemListNameCell(row) +
+        G.itemListNumCell(G.formatPrice(row.buyPrice), "num price-copyable price-buy", "Buy price", {
+          "data-copy-price": Math.round(row.buyPrice),
+          title: "Click to copy buy price",
+        }) +
+        G.itemListNumCell(G.formatPrice(row.highalch), "num col-hide-xs", "High alch") +
+        G.itemListNumCell(G.formatPrice(natureCost), "num col-hide-xs", "Nature cost") +
+        G.itemListNumCell(G.formatGp(row.profit), `num ${profitCls}`, "Profit") +
+        G.itemListNumCell(row.roi != null ? row.roi.toFixed(1) + "%" : "—", `num col-hide-xs ${profitCls}`, "ROI") +
+        G.itemListNumCell(G.formatDuration(row.buyTimeHours), "num col-hide-narrow", "Est. buy") +
+        G.itemListNumCell(G.formatGp(row.volume5m), "num col-hide-narrow", "5m vol.") +
+        G.itemListNumCell(G.formatGp(row.dailyVolume), "num col-hide-narrow", "Daily vol.") +
+        G.itemListNumCell(row.gpPerHour == null ? "—" : G.formatGp(row.gpPerHour), `num ${gpHrCls}`, "GP / hr") +
+        G.itemListNumCell(row.limit ? G.formatGp(row.limitProfit) : "—", `num col-hide-narrow ${profitCls}`, "Profit (limit)")
+    );
+  }
+
   function render() {
     rows = buildRows();
     const filtered = sortRows(rows.filter(passesFilters));
@@ -90,31 +111,18 @@
       : "No items match your filters.";
 
     if (!filtered.length) {
-      G.el("alchBody").innerHTML = '<tr><td colspan="11" class="loading">No matches.</td></tr>';
+      G.renderItemList("alchBody", { message: "No matches.", loading: true, listId: "alchList", sortKey: sort.key, sortDir: sort.dir });
       if (typeof renderSummaryStrip === "function") renderSummaryStrip("alchSummary", []);
       return;
     }
 
     const shown = filtered.slice(0, 500);
-    G.el("alchBody").innerHTML = shown
-      .map((row) => {
-        const profitCls = row.profit >= 0 ? "positive" : "negative";
-        const gpHrCls = row.gpPerHour != null && row.gpPerHour >= 0 ? "highlight-gp" : "";
-        return `<tr>
-          ${G.itemNameCell(row)}
-          <td class="num price-copyable price-buy" data-copy-price="${Math.round(row.buyPrice)}" title="Click to copy buy price">${G.formatPrice(row.buyPrice)}</td>
-          <td class="num col-hide-xs">${G.formatPrice(row.highalch)}</td>
-          <td class="num col-hide-xs">${G.formatPrice(natureCost)}</td>
-          <td class="num ${profitCls}">${G.formatGp(row.profit)}</td>
-          <td class="num col-hide-xs ${profitCls}">${row.roi != null ? row.roi.toFixed(1) + "%" : "—"}</td>
-          <td class="num col-hide-narrow">${G.formatDuration(row.buyTimeHours)}</td>
-          <td class="num col-hide-narrow">${G.formatGp(row.volume5m)}</td>
-          <td class="num col-hide-narrow">${G.formatGp(row.dailyVolume)}</td>
-          <td class="num ${gpHrCls}">${row.gpPerHour == null ? "—" : G.formatGp(row.gpPerHour)}</td>
-          <td class="num col-hide-narrow ${profitCls}">${row.limit ? G.formatGp(row.limitProfit) : "—"}</td>
-        </tr>`;
-      })
-      .join("");
+    G.renderItemList("alchBody", {
+      rowsHtml: shown.map(alchRowHtml).join(""),
+      listId: "alchList",
+      sortKey: sort.key,
+      sortDir: sort.dir,
+    });
 
     if (filtered.length > 500) {
       G.el("alchMeta").textContent += ` (showing top 500)`;
@@ -138,16 +146,13 @@
   }
 
   function bindSort() {
-    document.querySelectorAll("#alchTable th.sortable").forEach((th) => {
-      th.addEventListener("click", () => {
-        const key = th.dataset.sort;
-        if (sort.key === key) sort.dir = sort.dir === "desc" ? "asc" : "desc";
-        else {
-          sort.key = key;
-          sort.dir = "desc";
-        }
-        render();
-      });
+    G.bindItemListSort("alchList", (key) => {
+      if (sort.key === key) sort.dir = sort.dir === "desc" ? "asc" : "desc";
+      else {
+        sort.key = key;
+        sort.dir = "desc";
+      }
+      render();
     });
   }
 
@@ -180,7 +185,7 @@
     const hasCache = Boolean(G.cachedApiData);
     if (!hasCache || forceRefresh) {
       G.updateStatus("alchStatus", forceRefresh ? "Refreshing price data…" : "Loading price data…", "");
-      G.applyTableSkeleton("alchBody", 11, 10);
+      G.applyItemListSkeleton("alchBody", 11, 10);
     }
     try {
       await G.loadPrices({ useCache: true, force: forceRefresh });
@@ -194,7 +199,7 @@
       render();
     } catch (err) {
       G.updateStatus("alchStatus", `Failed: ${err.message}`, "error");
-      G.el("alchBody").innerHTML = `<tr><td colspan="11" class="loading">${G.escapeHtml(err.message)}</td></tr>`;
+      G.renderItemList("alchBody", { message: G.escapeHtml(err.message), loading: true });
     }
   }
 

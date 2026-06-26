@@ -67,6 +67,23 @@
     });
   }
 
+  function cofferRowHtml(row) {
+    const profitCls = row.profit >= 0 ? "positive" : "negative";
+    return G.itemListRow(
+      G.itemListNameCell(row) +
+        G.itemListNumCell(G.formatPrice(row.buyPrice), "num price-copyable price-buy", "Buy price", {
+          "data-copy-price": Math.round(row.buyPrice),
+          title: "Click to copy",
+        }) +
+        G.itemListNumCell(G.formatPrice(row.guide), "num col-hide-xs", "GE guide") +
+        G.itemListNumCell(G.formatPrice(row.credit), "num", "Coffer credit") +
+        G.itemListNumCell(G.formatGp(row.profit), `num ${profitCls}`, "Profit") +
+        G.itemListNumCell(row.roi != null ? row.roi.toFixed(1) + "%" : "—", `num col-hide-xs ${profitCls}`, "ROI") +
+        G.itemListNumCell(row.limit ? row.limit.toLocaleString() : "—", "num col-hide-narrow", "Limit") +
+        G.itemListNumCell(row.limit ? G.formatGp(row.limitProfit) : "—", `num col-hide-narrow ${profitCls}`, "Profit (limit)")
+    );
+  }
+
   function render() {
     const mode = G.el("cofferMode")?.value || "instant";
     rows = buildRows(mode);
@@ -77,27 +94,18 @@
       : "No items match your filters.";
 
     if (!filtered.length) {
-      G.el("cofferBody").innerHTML = '<tr><td colspan="8" class="loading">No matches.</td></tr>';
+      G.renderItemList("cofferBody", { message: "No matches.", loading: true, listId: "cofferList", sortKey: sort.key, sortDir: sort.dir });
       if (typeof renderSummaryStrip === "function") renderSummaryStrip("cofferSummary", []);
       return;
     }
 
     const shown = filtered.slice(0, 500);
-    G.el("cofferBody").innerHTML = shown
-      .map((row) => {
-        const profitCls = row.profit >= 0 ? "positive" : "negative";
-        return `<tr>
-          ${G.itemNameCell(row)}
-          <td class="num price-copyable price-buy" data-copy-price="${Math.round(row.buyPrice)}" title="Click to copy">${G.formatPrice(row.buyPrice)}</td>
-          <td class="num col-hide-xs">${G.formatPrice(row.guide)}</td>
-          <td class="num">${G.formatPrice(row.credit)}</td>
-          <td class="num ${profitCls}">${G.formatGp(row.profit)}</td>
-          <td class="num col-hide-xs ${profitCls}">${row.roi != null ? row.roi.toFixed(1) + "%" : "—"}</td>
-          <td class="num col-hide-narrow">${row.limit ? row.limit.toLocaleString() : "—"}</td>
-          <td class="num col-hide-narrow ${profitCls}">${row.limit ? G.formatGp(row.limitProfit) : "—"}</td>
-        </tr>`;
-      })
-      .join("");
+    G.renderItemList("cofferBody", {
+      rowsHtml: shown.map(cofferRowHtml).join(""),
+      listId: "cofferList",
+      sortKey: sort.key,
+      sortDir: sort.dir,
+    });
 
     if (filtered.length > 500) {
       G.el("cofferMeta").textContent += ` (showing top 500)`;
@@ -125,16 +133,13 @@
   }
 
   function bindSort() {
-    document.querySelectorAll("#cofferTable th.sortable").forEach((th) => {
-      th.addEventListener("click", () => {
-        const key = th.dataset.sort;
-        if (sort.key === key) sort.dir = sort.dir === "desc" ? "asc" : "desc";
-        else {
-          sort.key = key;
-          sort.dir = "desc";
-        }
-        render();
-      });
+    G.bindItemListSort("cofferList", (key) => {
+      if (sort.key === key) sort.dir = sort.dir === "desc" ? "asc" : "desc";
+      else {
+        sort.key = key;
+        sort.dir = "desc";
+      }
+      render();
     });
   }
 
@@ -167,7 +172,7 @@
     const hasCache = Boolean(G.cachedApiData);
     if (!hasCache || forceRefresh) {
       G.updateStatus("cofferStatus", forceRefresh ? "Refreshing price data…" : "Loading price data…", "");
-      G.applyTableSkeleton("cofferBody", 8, 10);
+      G.applyItemListSkeleton("cofferBody", 8, 10);
     }
     try {
       await G.loadPrices({ useCache: true, force: forceRefresh });
@@ -179,7 +184,7 @@
       render();
     } catch (err) {
       G.updateStatus("cofferStatus", `Failed: ${err.message}`, "error");
-      G.el("cofferBody").innerHTML = `<tr><td colspan="8" class="loading">${G.escapeHtml(err.message)}</td></tr>`;
+      G.renderItemList("cofferBody", { message: G.escapeHtml(err.message), loading: true });
     }
   }
 
