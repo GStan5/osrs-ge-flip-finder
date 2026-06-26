@@ -73,6 +73,27 @@
     boosts: [],
   };
 
+  function applyUrlLoadout() {
+    const slotsParam = params.get("slots");
+    if (slotsParam) {
+      slotsParam.split(",").forEach((pair) => {
+        const [slot, idStr] = pair.split(":");
+        const id = Number(idStr);
+        if (slot && id && SLOT_KEYS.includes(slot)) state.slots[slot] = id;
+      });
+    }
+    SLOT_KEYS.forEach((slot) => {
+      const id = Number(params.get(slot));
+      if (id) state.slots[slot] = id;
+    });
+    const style = params.get("style");
+    if (style && STYLES.some((s) => s.id === style)) state.combatStyle = style;
+    const prayersParam = params.get("prayers");
+    if (prayersParam) state.prayers = prayersParam.split(",").map(Number).filter(Boolean);
+  }
+
+  applyUrlLoadout();
+
   function toast(msg) {
     const el = G.el("toast");
     if (!el) return;

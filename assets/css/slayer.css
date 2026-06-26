@@ -1,0 +1,269 @@
+/* Slayer Guide */
+
+.slayer-app {
+  max-width: var(--g-page-max);
+  margin: 0 auto;
+  padding: 0 var(--g-content-pad) 2rem;
+}
+
+.slayer-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: flex-end;
+  margin-bottom: 0.75rem;
+}
+
+.slayer-search-wrap {
+  position: relative;
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+
+.slayer-quick-pick {
+  margin-bottom: 1rem;
+}
+
+.slayer-hero {
+  display: grid;
+  gap: 1rem;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .slayer-hero {
+    grid-template-columns: auto 1fr;
+    align-items: start;
+  }
+}
+
+.slayer-hero-portrait img {
+  width: 96px;
+  height: 96px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.slayer-hero-name {
+  margin: 0 0 0.35rem;
+  font-size: 1.25rem;
+  font-weight: 600;
+}
+
+.slayer-hero-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+}
+
+.slayer-badge {
+  display: inline-block;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  font-size: 0.72rem;
+  background: var(--surface-dark);
+  border: 1px solid var(--border);
+  color: var(--text-muted, var(--text));
+}
+
+.slayer-hero-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  margin: 0.5rem 0;
+}
+
+.slayer-hero-stat .value {
+  display: block;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.slayer-hero-stat .label {
+  display: block;
+  font-size: 0.72rem;
+  color: var(--text-muted, var(--text));
+  opacity: 0.85;
+}
+
+.slayer-hero-notes {
+  margin: 0.5rem 0 0;
+  font-size: 0.88rem;
+  line-height: 1.45;
+  color: var(--text-muted, var(--text));
+}
+
+.slayer-section {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.slayer-section h2 {
+  margin: 0 0 0.75rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.slayer-notes-grid {
+  display: grid;
+  gap: 0.65rem;
+}
+
+@media (min-width: 640px) {
+  .slayer-notes-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.slayer-note-row dt {
+  font-size: 0.72rem;
+  color: var(--text-muted, var(--text));
+  opacity: 0.85;
+  margin-bottom: 0.15rem;
+}
+
+.slayer-note-row dd {
+  margin: 0;
+  font-size: 0.88rem;
+  line-height: 1.4;
+}
+
+.slayer-bring-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.slayer-bring-chip {
+  display: inline-block;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  font-size: 0.78rem;
+  background: var(--surface-dark);
+  border: 1px solid var(--border);
+}
+
+.slayer-loadouts {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 900px) {
+  .slayer-loadouts {
+    grid-template-columns: repeat(3, 1fr);
+    align-items: start;
+  }
+}
+
+.slayer-loadout-card {
+  background: var(--surface-dark);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.slayer-loadout-card--bis {
+  border-color: var(--accent, #c9a227);
+}
+
+.slayer-loadout-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.slayer-loadout-tier {
+  margin: 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.slayer-loadout-planner {
+  font-size: 0.75rem;
+  white-space: nowrap;
+}
+
+.slayer-loadout-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.slayer-loadout-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  width: 52px;
+  text-align: center;
+}
+
+.slayer-loadout-slot img {
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.slayer-loadout-slot-name {
+  font-size: 0.58rem;
+  line-height: 1.15;
+  color: var(--text-muted, var(--text));
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  max-width: 100%;
+}
+
+.slayer-loadout-prayers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  padding-top: 0.25rem;
+  border-top: 1px solid var(--border);
+}
+
+.slayer-prayer-chip img {
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.slayer-loadout-empty {
+  color: var(--text-muted, var(--text));
+  font-size: 0.85rem;
+}
+
+.slayer-empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-muted, var(--text));
+  font-size: 0.9rem;
+}
+
+.slayer-hero-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+  font-size: 0.82rem;
+}
+
+.slayer-hero-actions a {
+  color: var(--accent);
+}

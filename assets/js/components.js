@@ -369,6 +369,45 @@ window.Graardor = window.Graardor || {};
     </button>`;
   };
 
+  /** Compact read-only gear loadout card for slayer guide. */
+  G.ui.gearLoadoutCard = function gearLoadoutCard({ tier, tierLabel, slots, prayers, getIconUrl, getItemName, plannerHref }) {
+    const slotLabels = {
+      head: "Head", cape: "Cape", amulet: "Amulet", weapon: "Weapon", body: "Body", legs: "Legs",
+      shield: "Shield", gloves: "Gloves", boots: "Boots", ring: "Ring", ammo: "Ammo",
+    };
+    const order = ["head", "cape", "amulet", "ammo", "weapon", "body", "shield", "gloves", "legs", "boots", "ring"];
+    const slotHtml = order
+      .filter((slot) => slots[slot])
+      .map((slot) => {
+        const id = slots[slot];
+        const name = getItemName(id);
+        const icon = getIconUrl(id, name);
+        return `<div class="slayer-loadout-slot" title="${esc(name)}">
+          <img src="${esc(icon)}" alt="" width="32" height="32" loading="lazy" onerror="this.style.visibility='hidden'" />
+          <span class="slayer-loadout-slot-name">${esc(name)}</span>
+        </div>`;
+      })
+      .join("");
+    const prayerHtml = (prayers || [])
+      .map((pid) => {
+        const p = G._slayerPrayersCache?.[String(pid)];
+        if (!p) return "";
+        const icon = G.prayerIconUrl(p);
+        return `<span class="slayer-prayer-chip" title="${esc(p.name)}">
+          <img src="${esc(icon)}" alt="" width="24" height="24" loading="lazy" onerror="this.style.visibility='hidden'" />
+        </span>`;
+      })
+      .join("");
+    return `<article class="slayer-loadout-card slayer-loadout-card--${esc(tier)}">
+      <header class="slayer-loadout-head">
+        <h3 class="slayer-loadout-tier">${esc(tierLabel)}</h3>
+        ${plannerHref ? `<a href="${esc(plannerHref)}" class="slayer-loadout-planner">Plan in Gear Planner</a>` : ""}
+      </header>
+      <div class="slayer-loadout-slots">${slotHtml || `<span class="slayer-loadout-empty">—</span>`}</div>
+      ${prayerHtml ? `<div class="slayer-loadout-prayers" aria-label="Recommended prayers">${prayerHtml}</div>` : ""}
+    </article>`;
+  };
+
   /** Monster row in gear planner search dropdown. */
   G.ui.monsterPickerResult = function monsterPickerResult({ id, name, iconUrl, meta }) {
     return `<a href="#" class="gear-monster-pick-row" data-monster-id="${id}">

@@ -6,6 +6,7 @@
 |-------|---------|
 | `/tools/gear` | Gear planner page |
 | `/tools/gear?monster={id}` | Pre-selected monster (from monster lookup) |
+| `/tools/gear?monster={id}&style=melee&slots=head:24271,weapon:22324&prayers=27` | Prefill from slayer guide |
 | `/tools/gear?share={shareId}` | Load public/shared preset |
 | `/api/gear/presets` | GET list (auth), POST/PUT/DELETE (auth), GET `?share=` public |
 | `/api/gear/profiles` | OSRS username + hiscores cache (auth) |

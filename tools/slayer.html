@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="OSRS slayer task guide — recommended BIS, mid, and budget gear for every task." />
+  <meta name="theme-color" content="#1e1e1e" />
+  <meta property="og:title" content="Slayer Guide — Graardor" />
+  <meta property="og:description" content="Pick your slayer task and see recommended gear loadouts, prayers, and tips." />
+  <title>Slayer Guide — Graardor</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <script src="/assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+  <link rel="stylesheet" href="/assets/css/slayer.css" />
+</head>
+<body class="site ads-off tool-page">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-logo" href="/"><span class="site-logo-text">Graardor</span></a>
+      <nav class="site-nav" aria-label="Main">
+        <span class="nav-label">Tools</span>
+        <a href="/tools/flips">Economy</a>
+        <a href="/tools/dashboard">Track</a>
+        <a href="/tools/prep">Plan</a>
+        <a href="/guides">Guides</a>
+        <a href="/changelog">Changelog</a>
+        <span id="authSlot"></span>
+        <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-hero"><h1>Slayer Guide</h1></div>
+
+  <div class="status-bar">
+    <span id="slayerStatus">Loading…</span>
+  </div>
+
+  <div class="slayer-app">
+    <section class="slayer-toolbar filters">
+      <div class="filter-group">
+        <label for="slayerMasterFilter">Master</label>
+        <select id="slayerMasterFilter">
+          <option value="">All masters</option>
+        </select>
+      </div>
+      <div class="filter-group slayer-search-wrap">
+        <label for="slayerTaskSearch">Task</label>
+        <input id="slayerTaskSearch" type="search" placeholder="Search task…" autocomplete="off" />
+        <div id="slayerTaskPick" class="gear-monster-pick"></div>
+      </div>
+    </section>
+
+    <div id="slayerQuickPick" class="gear-monster-quick slayer-quick-pick" aria-label="Popular tasks"></div>
+
+    <div id="slayerDetailRoot"></div>
+  </div>
+
+  <footer class="site-footer"><p><a href="/">← Graardor home</a> · Not affiliated with Jagex.</p></footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/components.js"></script>
+  <script src="/assets/js/slayer.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/site-chrome.js"></script>
+</body>
+</html>
