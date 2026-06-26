@@ -705,9 +705,7 @@
   }
 
   function setActiveXfPreset(presetId) {
-    document.querySelectorAll("[data-xf-preset]").forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.xfPreset === presetId);
-    });
+    G.ui.setActivePreset("data-xf-preset", presetId);
   }
 
   function applyXfPreset(presetId) {
@@ -775,9 +773,7 @@
   }
 
   function bindPresets() {
-    document.querySelectorAll("[data-xf-preset]").forEach((btn) => {
-      btn.addEventListener("click", () => applyXfPreset(btn.dataset.xfPreset));
-    });
+    G.ui.bindPresetChips({ dataAttr: "data-xf-preset", onSelect: applyXfPreset });
     el("bestDecantsBtn")?.addEventListener("click", applyDecantsPreset);
     el("resetTransformsBtn")?.addEventListener("click", resetTransformFilters);
     el("refreshTransformsBtn")?.addEventListener("click", () => hooks.refreshPrices?.());

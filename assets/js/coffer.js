@@ -149,9 +149,7 @@
   }
 
   function setActivePreset(presetId) {
-    document.querySelectorAll("[data-coffer-preset]").forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.cofferPreset === presetId);
-    });
+    G.ui.setActivePreset("data-coffer-preset", presetId);
   }
 
   function setCofferFilters(values = {}) {
@@ -256,9 +254,7 @@
         bindFilters._timer = setTimeout(render, 150);
       });
     });
-    document.querySelectorAll("[data-coffer-preset]").forEach((btn) => {
-      btn.addEventListener("click", () => applyPreset(btn.dataset.cofferPreset));
-    });
+    G.ui.bindPresetChips({ dataAttr: "data-coffer-preset", onSelect: applyPreset });
   }
 
   async function init() {

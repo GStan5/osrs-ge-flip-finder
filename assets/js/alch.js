@@ -174,9 +174,7 @@
   }
 
   function setActivePreset(presetId) {
-    document.querySelectorAll("[data-alch-preset]").forEach((btn) => {
-      btn.classList.toggle("active", btn.dataset.alchPreset === presetId);
-    });
+    G.ui.setActivePreset("data-alch-preset", presetId);
   }
 
   function setAlchFilters(values = {}) {
@@ -291,9 +289,7 @@
         bindFilters._timer = setTimeout(render, 150);
       });
     });
-    document.querySelectorAll("[data-alch-preset]").forEach((btn) => {
-      btn.addEventListener("click", () => applyPreset(btn.dataset.alchPreset));
-    });
+    G.ui.bindPresetChips({ dataAttr: "data-alch-preset", onSelect: applyPreset });
   }
 
   async function init() {

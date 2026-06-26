@@ -1,0 +1,219 @@
+/*
+ * Graardor UI components — shared building blocks (G.ui.* in components.js)
+ *
+ * Classes:
+ *   .ui-lookup-hero       — item/monster detail header
+ *   .ui-stat-grid         — responsive stat card grid (.ui-stat-card)
+ *   .ui-preset-row        — filter preset chip row (.ui-preset-btn)
+ *   .ui-drop-category     — collapsible drop table section
+ *   .ui-section-card      — generic lookup panel wrapper
+ *   .ui-sim-results       — drop simulator output area
+ *   .ui-disclosure        — collapsed tips/disclaimers
+ *   .ui-empty-state       — empty/error message block
+ *   .ui-skeleton-*        — loading placeholders
+ */
+
+/* —— Lookup hero —— */
+.ui-lookup-hero {
+  /* layout inherited from .item-detail-hero / .monster-detail-hero in theme.css */
+}
+
+.ui-lookup-subtitle {
+  margin: 0 0 0.35rem;
+}
+
+.ui-lookup-actions {
+  /* uses .item-detail-actions */
+}
+
+/* —— Stat grid —— */
+.ui-stat-grid {
+  /* extends .stat-grid */
+}
+
+.ui-stat-card {
+  /* extends .stat-card */
+}
+
+/* —— Preset chips —— */
+.ui-preset-row {
+  /* extends .preset-filters */
+}
+
+.ui-preset-label {
+  /* extends .preset-label */
+}
+
+.ui-preset-btn {
+  /* extends .preset-btn */
+}
+
+/* —— Drop category —— */
+.ui-drop-category {
+  /* extends .monster-drop-category */
+}
+
+.ui-drop-category-head {
+  /* extends .monster-drop-category-head */
+}
+
+/* —— Section card —— */
+.ui-section-card {
+  /* extends .lookup-card */
+}
+
+.ui-section-foot {
+  /* extends .lookup-card-foot */
+}
+
+/* —— Drop simulator —— */
+.ui-sim-controls {
+  /* extends .monster-sim-controls */
+}
+
+.ui-sim-btn {
+  /* extends .monster-sim-btn */
+}
+
+.ui-sim-results {
+  /* extends .monster-sim-results */
+}
+
+.ui-sim-summary {
+  /* extends .monster-sim-summary */
+}
+
+.ui-sim-loot {
+  /* extends .monster-sim-loot */
+}
+
+/* —— Disclosure —— */
+.ui-disclosure {
+  border: 1px solid var(--border);
+  background: var(--surface-dark);
+  margin: 0.75rem 0;
+}
+
+.ui-disclosure-summary {
+  padding: 0.65rem 0.85rem;
+  cursor: pointer;
+  font-weight: bold;
+  color: var(--title);
+  list-style: none;
+  user-select: none;
+}
+
+.ui-disclosure-summary::-webkit-details-marker {
+  display: none;
+}
+
+.ui-disclosure-summary::before {
+  content: "▸";
+  margin-right: 0.45rem;
+  color: var(--accent, #c9a227);
+  transition: transform 0.15s ease;
+}
+
+.ui-disclosure[open] .ui-disclosure-summary::before {
+  transform: rotate(90deg);
+}
+
+.ui-disclosure-body {
+  padding: 0 0.85rem 0.75rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+/* —— Empty state —— */
+.ui-empty-state {
+  padding: 1rem 1.25rem;
+  color: var(--muted);
+  margin: 0;
+}
+
+.ui-empty-state.loading {
+  /* matches .loading */
+}
+
+/* —— Loading skeleton —— */
+.ui-skeleton {
+  padding: 1rem 1.25rem;
+}
+
+.ui-skeleton-block {
+  display: block;
+  background: linear-gradient(90deg, var(--surface2) 25%, var(--surface) 50%, var(--surface2) 75%);
+  background-size: 200% 100%;
+  animation: ui-skeleton-shimmer 1.2s ease-in-out infinite;
+  border-radius: 2px;
+}
+
+@keyframes ui-skeleton-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.ui-skeleton-hero {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.ui-skeleton-icon {
+  width: 64px;
+  height: 64px;
+  flex-shrink: 0;
+}
+
+.ui-skeleton-lines {
+  flex: 1;
+  height: 48px;
+}
+
+.ui-skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.5rem;
+}
+
+.ui-skeleton-stat {
+  height: 52px;
+}
+
+.ui-skeleton-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ui-skeleton-row {
+  height: 36px;
+}
+
+.ui-skeleton-card .ui-skeleton-title {
+  width: 40%;
+  height: 14px;
+  margin-bottom: 0.65rem;
+}
+
+.ui-skeleton-card .ui-skeleton-body {
+  width: 100%;
+  height: 80px;
+}
+
+/* —— Bonus table —— */
+.ui-bonus-table {
+  width: 100%;
+}
+
+.ui-levels-grid {
+  /* extends .monster-levels-grid */
+}
+
+/* —— Responsive —— */
+@media (max-width: 640px) {
+  .ui-skeleton-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

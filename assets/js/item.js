@@ -1,12 +1,11 @@
 (function (G) {
+  const ui = G.ui;
   const params = new URLSearchParams(location.search);
   let itemId = Number(params.get("id"));
   const queryParam = (params.get("q") || "").trim();
   let searchTimer;
   let itemsMeta = null;
   let recipesCatalog = null;
-
-  // Equipment stats from data/items-meta.json — npm run build:items-meta (scripts/build-items-meta.mjs)
 
   function findItemById(id) {
     return G.cachedApiData?.mapping?.find((m) => m.id === id) || null;
@@ -65,80 +64,61 @@
     return hits;
   }
 
-  function statCell(value) {
-    if (value == null || value === 0) return "<td>—</td>";
-    const cls = value > 0 ? "positive-stat" : value < 0 ? "negative-stat" : "";
-    const prefix = value > 0 ? "+" : "";
-    return `<td class="${cls}">${prefix}${value}</td>`;
-  }
-
   function renderEquipmentCard(meta) {
     if (!meta?.slot) return "";
 
     const atk = meta.attack || {};
     const def = meta.defence || {};
-    const hasAttack = Object.values(atk).some((v) => v);
-    const hasDefence = Object.values(def).some((v) => v);
     const extras = [];
     if (meta.strength) extras.push(["Melee str", meta.strength]);
     if (meta.rangedStrength) extras.push(["Ranged str", meta.rangedStrength]);
     if (meta.magicDamage) extras.push(["Magic dmg", meta.magicDamage]);
     if (meta.prayer) extras.push(["Prayer", meta.prayer]);
 
-    let tableRows = "";
-    if (hasAttack || hasDefence) {
-      tableRows += `<tr><th></th><th>Stab</th><th>Slash</th><th>Crush</th><th>Magic</th><th>Ranged</th></tr>`;
-      if (hasAttack) {
-        tableRows += `<tr><td>Attack</td>${statCell(atk.stab)}${statCell(atk.slash)}${statCell(atk.crush)}${statCell(atk.magic)}${statCell(atk.ranged)}</tr>`;
-      }
-      if (hasDefence) {
-        tableRows += `<tr><td>Defence</td>${statCell(def.stab)}${statCell(def.slash)}${statCell(def.crush)}${statCell(def.magic)}${statCell(def.ranged)}</tr>`;
-      }
-    }
-
-    const extrasHtml = extras.length
-      ? `<div class="item-stat-extras">${extras
-          .map(
-            ([label, val]) =>
-              `<div class="item-stat-extra"><span class="label">${G.escapeHtml(label)}</span><span class="value positive-stat">+${val}</span></div>`
-          )
-          .join("")}</div>`
-      : "";
-
-    const body =
-      tableRows || extrasHtml
-        ? `${tableRows ? `<table class="item-stat-table">${tableRows}</table>` : ""}${extrasHtml}`
-        : `<p class="results-meta">Equipable — no combat bonuses listed.</p>`;
-
-    return `<section class="lookup-card item-equipment-card">
-        <h2>Equipment stats</h2>
-        <span class="item-equipment-slot">${G.escapeHtml(meta.slot.replace(/_/g, " "))}</span>
-        ${body}
-      </section>`;
+    return ui.sectionCard({
+      title: "Equipment stats",
+      className: "item-equipment-card",
+      bodyHtml: ui.bonusTable({ offence: atk, defence: def, extras, slot: meta.slot, mode: "equipment" }),
+    });
   }
 
   function renderEconomyCard(mapping, stats, price) {
     const profitCls = stats.profitAfterTax != null && stats.profitAfterTax >= 0 ? "positive" : "negative";
-    return `<section class="lookup-card item-economy-card">
-        <h2>Grand Exchange</h2>
-        <div class="stat-grid item-economy-grid">
-          <div class="stat-card"><span class="label">Buy (instant)</span><span class="value price-buy price-copyable" data-copy-price="${Math.round(stats.buy || 0)}">${G.formatPrice(stats.buy)}</span></div>
-          <div class="stat-card"><span class="label">Sell (instant)</span><span class="value price-sell price-copyable" data-copy-price="${Math.round(stats.sell || 0)}">${G.formatPrice(stats.sell)}</span></div>
-          <div class="stat-card"><span class="label">Margin</span><span class="value ${profitCls}">${stats.marginGp == null ? "—" : G.formatGp(stats.marginGp)}</span></div>
-          <div class="stat-card"><span class="label">After tax</span><span class="value ${profitCls}">${stats.profitAfterTax == null ? "—" : G.formatGp(stats.profitAfterTax)}</span></div>
-          <div class="stat-card"><span class="label">GE limit</span><span class="value">${mapping.limit ? mapping.limit.toLocaleString() : "—"}</span></div>
-          <div class="stat-card"><span class="label">High alch</span><span class="value">${mapping.highalch ? G.formatPrice(mapping.highalch) : "—"}</span></div>
-          <div class="stat-card"><span class="label">5m volume</span><span class="value">${G.formatGp(price?.volume5m ?? 0)}</span></div>
-          <div class="stat-card"><span class="label">Daily volume</span><span class="value">${G.formatGp(price?.dailyVolume ?? 0)}</span></div>
-        </div>
-      </section>`;
+    return ui.sectionCard({
+      title: "Grand Exchange",
+      className: "item-economy-card",
+      bodyHtml: ui.statGrid(
+        [
+          {
+            label: "Buy (instant)",
+            valueHtml: `<span class="price-buy price-copyable" data-copy-price="${Math.round(stats.buy || 0)}">${G.formatPrice(stats.buy)}</span>`,
+          },
+          {
+            label: "Sell (instant)",
+            valueHtml: `<span class="price-sell price-copyable" data-copy-price="${Math.round(stats.sell || 0)}">${G.formatPrice(stats.sell)}</span>`,
+          },
+          {
+            label: "Margin",
+            valueHtml: stats.marginGp == null ? "—" : G.formatGp(stats.marginGp),
+            valueClassName: profitCls,
+          },
+          {
+            label: "After tax",
+            valueHtml: stats.profitAfterTax == null ? "—" : G.formatGp(stats.profitAfterTax),
+            valueClassName: profitCls,
+          },
+          { label: "GE limit", value: mapping.limit ? mapping.limit.toLocaleString() : "—" },
+          { label: "High alch", value: mapping.highalch ? G.formatPrice(mapping.highalch) : "—" },
+          { label: "5m volume", value: G.formatGp(price?.volume5m ?? 0) },
+          { label: "Daily volume", value: G.formatGp(price?.dailyVolume ?? 0) },
+        ],
+        "item-economy-grid"
+      ),
+    });
   }
 
   function renderQuickLinks(transformLinks) {
-    const links = [
-      `<a href="/tools/flips">Find flips</a>`,
-      `<a href="/tools/alch">High alch</a>`,
-    ];
+    const links = [`<a href="/tools/flips">Find flips</a>`, `<a href="/tools/alch">High alch</a>`];
     transformLinks.forEach((t) => {
       links.push(`<a href="${t.href}">${G.escapeHtml(t.label)}</a>`);
     });
@@ -162,7 +142,7 @@
       return;
     }
     if (!results.length) {
-      box.innerHTML = '<p class="loading">No items found.</p>';
+      box.innerHTML = ui.emptyState("No items found.", { loading: true });
       return;
     }
     box.innerHTML = results
@@ -195,7 +175,7 @@
     const mapping = findItemById(itemId);
     const latest = G.cachedApiData?.latest?.[itemId];
     if (!mapping || !latest) {
-      root.innerHTML = '<p class="loading">Item not found. Try searching above.</p>';
+      root.innerHTML = ui.emptyState("Item not found. Try searching above.", { loading: true });
       document.title = "Item lookup — Graardor";
       return;
     }
@@ -218,24 +198,23 @@
 
     root.innerHTML = `
       <article class="item-detail">
-        <header class="item-detail-hero">
-          <img src="${G.iconUrl(mapping.icon)}" alt="" width="64" height="64" />
-          <div class="item-detail-hero-text">
-            <h1>${G.escapeHtml(mapping.name)} ${badge}</h1>
-            <div class="item-detail-actions">
-              <a href="${G.wikiPageUrl(mapping.name)}" target="_blank" rel="noopener">Wiki ↗</a>
-            </div>
-          </div>
-        </header>
+        ${ui.lookupHero({
+          layout: "item",
+          iconUrl: G.iconUrl(mapping.icon),
+          title: mapping.name,
+          badges: [badge],
+          wikiUrl: G.wikiPageUrl(mapping.name),
+        })}
 
         <div class="item-detail-grid${showEquipment ? "" : " item-detail-grid-single"}">
           ${renderEconomyCard(mapping, stats, price)}
           ${showEquipment ? renderEquipmentCard(equipmentMeta) : ""}
         </div>
 
-        <section class="lookup-card item-chart-section">
-          <h2>Price trend</h2>
-          <p class="results-meta chart-subtitle">Last ~6 hours · 5-minute buckets · shaded area = buy/sell spread</p>
+        ${ui.sectionCard({
+          title: "Price trend",
+          className: "item-chart-section",
+          bodyHtml: `<p class="results-meta chart-subtitle">Last ~6 hours · 5-minute buckets · shaded area = buy/sell spread</p>
           <div class="item-chart-block">
             <canvas id="priceSparkline" class="price-sparkline price-sparkline-lg" aria-label="Price chart"></canvas>
             <div class="sparkline-legend">
@@ -243,8 +222,8 @@
               <span class="buy"><span class="legend-swatch"></span> Buy (low)</span>
             </div>
           </div>
-          ${proBlock}
-        </section>
+          ${proBlock}`,
+        })}
 
         ${renderQuickLinks(transformLinks)}
       </article>`;
@@ -288,7 +267,7 @@
 
       if (!itemId || !findItemById(itemId)) {
         if (params.get("id")) {
-          G.el("itemDetailRoot").innerHTML = '<p class="loading">Unknown item ID. Search below.</p>';
+          G.el("itemDetailRoot").innerHTML = ui.emptyState("Unknown item ID. Search below.", { loading: true });
         }
         if (queryParam) renderLookup(queryParam);
         return;
@@ -305,7 +284,7 @@
       renderDetail(isPro, equipmentMeta, transformLinks);
     } catch (err) {
       G.updateStatus("itemStatus", `Failed: ${err.message}`, "error");
-      G.el("itemDetailRoot").innerHTML = `<p class="loading">${G.escapeHtml(err.message)}</p>`;
+      G.el("itemDetailRoot").innerHTML = ui.emptyState(G.escapeHtml(err.message), { loading: true });
     }
   }
 
