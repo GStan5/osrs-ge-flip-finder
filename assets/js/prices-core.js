@@ -219,6 +219,10 @@ window.Graardor = window.Graardor || {};
     return `/tools/monster?id=${id}`;
   };
 
+  G.gearPageUrl = function gearPageUrl(monsterId) {
+    return monsterId ? `/tools/gear?monster=${monsterId}` : "/tools/gear";
+  };
+
   G.fetchTimeseries = async function fetchTimeseries(itemId, timestep) {
     const step = timestep || "5m";
     const res = await G.fetchJson(`/timeseries?timestep=${step}&id=${itemId}`);

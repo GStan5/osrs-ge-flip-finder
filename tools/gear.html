@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Plan OSRS combat gear against any monster — stats, upgrades, and shareable presets." />
+  <meta name="theme-color" content="#1e1e1e" />
+  <title>Gear Planner — Graardor</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <script src="/assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+  <link rel="stylesheet" href="/assets/css/gear.css" />
+</head>
+<body class="site ads-off tool-page">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-logo" href="/"><span class="site-logo-text">Graardor</span></a>
+      <nav class="site-nav" aria-label="Main">
+        <span class="nav-label">Tools</span>
+        <a href="/tools/flips">Economy</a>
+        <a href="/tools/dashboard">Track</a>
+        <a href="/tools/prep">Plan</a>
+        <a href="/guides">Guides</a>
+        <a href="/changelog">Changelog</a>
+        <span id="authSlot"></span>
+        <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-hero"><h1>Gear Planner</h1></div>
+
+  <div class="status-bar">
+    <span id="gearStatus">Loading…</span>
+  </div>
+
+  <div id="gearGate" class="gear-gate" hidden>
+    <p>Sign in with Discord to save presets, link stats, and load upgrades.</p>
+    <a href="/api/auth/discord" class="btn-primary">Sign in</a>
+  </div>
+
+  <div id="gearApp" class="gear-app">
+    <section class="gear-toolbar filters">
+      <div class="filter-group">
+        <label for="gearPresetSelect">Preset</label>
+        <select id="gearPresetSelect"><option value="">New setup</option></select>
+      </div>
+      <div class="filter-group">
+        <label for="gearName">Name</label>
+        <input id="gearName" type="text" maxlength="64" placeholder="My Bandos setup" />
+      </div>
+      <div class="filter-group gear-toolbar-actions">
+        <button type="button" id="gearSaveBtn" class="btn-primary">Save</button>
+        <button type="button" id="gearShareBtn" class="btn-secondary">Copy link</button>
+      </div>
+    </section>
+
+    <div class="gear-layout">
+      <div class="gear-main">
+        <section class="gear-section">
+          <h2>Target</h2>
+          <div class="filter-group">
+            <label for="gearMonsterSearch">Monster</label>
+            <input id="gearMonsterSearch" type="search" placeholder="Search monster…" autocomplete="off" />
+          </div>
+          <div id="gearMonsterPick" class="gear-monster-pick"></div>
+          <div id="gearMonsterSummary" class="gear-monster-summary"></div>
+        </section>
+
+        <section class="gear-section">
+          <h2>Character</h2>
+          <div class="gear-char-row">
+            <div class="filter-group">
+              <label for="gearOsrsName">OSRS username</label>
+              <input id="gearOsrsName" type="text" maxlength="12" placeholder="Username" autocomplete="off" />
+            </div>
+            <button type="button" id="gearLinkStatsBtn" class="btn-secondary">Link stats</button>
+            <button type="button" id="gearImportWomBtn" class="btn-secondary">Import gear</button>
+          </div>
+          <div id="gearStatsRow" class="gear-stats-row"></div>
+        </section>
+
+        <section class="gear-section">
+          <h2>Style &amp; prayers</h2>
+          <div id="gearStyleChips" class="preset-filters"></div>
+          <div id="gearPrayerChips" class="gear-prayer-chips"></div>
+        </section>
+
+        <section class="gear-section">
+          <div class="gear-section-head">
+            <h2>Equipment</h2>
+            <label class="gear-toggle"><input type="checkbox" id="gearIronmanToggle" /> Ironman</label>
+          </div>
+          <div id="gearSlots" class="gear-slots"></div>
+        </section>
+
+        <section class="gear-section">
+          <h2>Upgrades</h2>
+          <div class="gear-upgrade-actions">
+            <button type="button" id="gearLoadUpgradesBtn" class="btn-primary">Load upgrades</button>
+            <span id="gearUpgradeMeta" class="results-meta"></span>
+          </div>
+          <div id="gearUpgrades" class="gear-upgrades"></div>
+        </section>
+      </div>
+
+      <aside class="gear-aside">
+        <section class="gear-section">
+          <h2>Results</h2>
+          <div id="gearResults"></div>
+        </section>
+        <section class="gear-section gear-preset-meta">
+          <label for="gearGoal">Goal</label>
+          <textarea id="gearGoal" rows="2" maxlength="200" placeholder="Optional notes"></textarea>
+          <label class="gear-toggle"><input type="checkbox" id="gearPublicToggle" checked /> Public preset</label>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <footer class="site-footer"><p><a href="/">← Graardor home</a></p></footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/components.js"></script>
+  <script src="/assets/js/gear-calc-client.js"></script>
+  <script src="/assets/js/gear.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/site-chrome.js"></script>
+</body>
+</html>

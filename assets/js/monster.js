@@ -261,6 +261,7 @@
           examine: monster.examine || "",
           wikiUrl: wikiUrl(monster),
           actions: [
+            { href: G.gearPageUrl(monster.id), label: "Plan gear", external: false },
             { href: "/tools/boss", label: "Boss GP/hr", external: false },
             { href: "/tools/prep", label: "Boss prep", external: false },
           ],

@@ -1,0 +1,253 @@
+.gear-gate {
+  max-width: var(--g-page-max);
+  margin: 1.5rem auto;
+  padding: 1.25rem var(--g-content-pad);
+  text-align: center;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.gear-app {
+  max-width: var(--g-page-max);
+  margin: 0 auto;
+  padding: 0 var(--g-content-pad) 2rem;
+}
+
+.gear-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+}
+
+.gear-toolbar-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.gear-layout {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 960px) {
+  .gear-layout {
+    grid-template-columns: 1fr 320px;
+    align-items: start;
+  }
+}
+
+.gear-section {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.gear-section h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.gear-section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.gear-section-head h2 {
+  margin: 0;
+}
+
+.gear-char-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: flex-end;
+  margin-bottom: 0.75rem;
+}
+
+.gear-char-row .filter-group {
+  flex: 1;
+  min-width: 140px;
+}
+
+.gear-stats-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.gear-slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.5rem;
+}
+
+.gear-slot {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.gear-slot label {
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: capitalize;
+}
+
+.gear-slot-input-wrap {
+  position: relative;
+}
+
+.gear-slot input[type="search"] {
+  width: 100%;
+}
+
+.gear-slot-picked {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8rem;
+  min-height: 1.25rem;
+}
+
+.gear-slot-picked img {
+  flex-shrink: 0;
+}
+
+.gear-slot-picked button {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.75rem;
+}
+
+.gear-slot-results {
+  position: absolute;
+  z-index: 20;
+  left: 0;
+  right: 0;
+  top: 100%;
+  max-height: 200px;
+  overflow: auto;
+  background: var(--surface-dark);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+}
+
+.gear-slot-results a {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.5rem;
+  text-decoration: none;
+  color: var(--text);
+  font-size: 0.8rem;
+}
+
+.gear-slot-results a:hover {
+  background: var(--surface2);
+}
+
+.gear-prayer-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.gear-prayer-chips button {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--surface-dark);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.gear-prayer-chips button.active {
+  border-color: var(--accent);
+  background: var(--accent-dim, rgba(100, 160, 255, 0.15));
+}
+
+.gear-monster-pick a {
+  display: block;
+  padding: 0.35rem 0;
+  color: var(--link);
+}
+
+.gear-monster-summary {
+  margin-top: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.gear-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.gear-preset-meta textarea {
+  width: 100%;
+  margin-bottom: 0.5rem;
+  resize: vertical;
+}
+
+.gear-upgrade-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.gear-upgrades table {
+  width: 100%;
+  font-size: 0.85rem;
+}
+
+.gear-upgrades th,
+.gear-upgrades td {
+  padding: 0.35rem 0.5rem;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+
+.gear-upgrade-locked {
+  filter: blur(4px);
+  user-select: none;
+  pointer-events: none;
+  color: transparent;
+  text-shadow: 0 0 8px var(--text);
+}
+
+.gear-upgrade-locked td {
+  background: var(--surface-dark);
+}
+
+.gear-blur-stat {
+  filter: blur(5px);
+  user-select: none;
+}
+
+.gear-aside {
+  position: sticky;
+  top: 1rem;
+}
+
+.gear-prep-link {
+  margin-left: 0.5rem;
+}

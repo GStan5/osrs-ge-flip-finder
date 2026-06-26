@@ -70,9 +70,10 @@
       id: "plan",
       label: "Plan",
       href: "/tools/prep",
-      paths: ["/tools/prep", "/tools/monster"],
+      paths: ["/tools/prep", "/tools/monster", "/tools/gear"],
       tools: [
         { href: "/tools/prep", label: "Boss prep", desc: "Gear & inventory lists" },
+        { href: "/tools/gear", label: "Gear planner", desc: "Combat setups & upgrades" },
         { href: "/tools/monster", label: "Monster lookup", desc: "Stats, slayer & drops" },
         { href: "/guides", label: "Guides", desc: "How-to articles" },
       ],
