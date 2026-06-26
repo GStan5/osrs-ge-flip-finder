@@ -287,6 +287,99 @@ window.Graardor = window.Graardor || {};
     return qty / ratePerHour;
   };
 
+  /** How many recipe cycles fit within GE buy limits (bottleneck input). */
+  G.calcTransformBatchCycles = function calcTransformBatchCycles(inputs) {
+    if (!inputs?.length) return 1;
+    let cycles = Infinity;
+    for (const input of inputs) {
+      const lim = input.limit ?? 0;
+      const qty = input.qty ?? 1;
+      if (lim <= 0 || qty <= 0) continue;
+      cycles = Math.min(cycles, Math.floor(lim / qty));
+    }
+    return Number.isFinite(cycles) && cycles > 0 ? cycles : 1;
+  };
+
+  /**
+   * Scale transform profit/timing to a full GE-limit batch (buy inputs → transform → sell outputs).
+   * Uses effectiveHourlyRate (65% 5m + 35% 1h) via per-item buyRateHour / sellRateHour on the row.
+   */
+  G.enrichTransformRecipeRow = function enrichTransformRecipeRow(row) {
+    const batchCycles = G.calcTransformBatchCycles(row.inputs);
+
+    const inputs = row.inputs.map((input) => {
+      const batchQty = input.qty * batchCycles;
+      return {
+        ...input,
+        limit: input.limit ?? 0,
+        batchQty,
+        buyTimeHours: G.hoursToFillQty(batchQty, input.buyRateHour),
+      };
+    });
+
+    const outputs = row.outputs.map((output) => {
+      const batchQty = output.qty * batchCycles;
+      return {
+        ...output,
+        batchQty,
+        sellTimeHours: G.hoursToFillQty(batchQty, output.sellRateHour),
+      };
+    });
+
+    const buyTimes = inputs.map((i) => i.buyTimeHours).filter((t) => t != null && t > 0);
+    const sellTimes = outputs.map((o) => o.sellTimeHours).filter((t) => t != null && t > 0);
+    const buyTimeHours = buyTimes.length ? Math.max(...buyTimes) : null;
+    const sellTimeHours = sellTimes.length ? Math.max(...sellTimes) : null;
+    const cycleHours =
+      buyTimeHours != null && sellTimeHours != null ? buyTimeHours + sellTimeHours : null;
+
+    const buyCost = row.buyCost * batchCycles;
+    const sellValue = row.sellValue * batchCycles;
+    const profit = row.profit * batchCycles;
+    const gpPerHour = cycleHours && cycleHours > 0 ? profit / cycleHours : null;
+
+    let inputLimit = null;
+    let limitingInputName = null;
+    if (row.inputs.length) {
+      let minCycles = Infinity;
+      for (const input of row.inputs) {
+        const lim = input.limit ?? 0;
+        const qty = input.qty ?? 1;
+        if (lim <= 0 || qty <= 0) continue;
+        const cycles = Math.floor(lim / qty);
+        if (cycles <= minCycles) {
+          minCycles = cycles;
+          inputLimit = lim;
+          limitingInputName = input.name;
+        }
+      }
+      if (inputLimit == null) inputLimit = row.inputs[0].limit ?? null;
+    }
+
+    const vols5m = inputs.map((i) => i.volume5m).filter((v) => v != null);
+    const dailies = inputs.map((i) => i.dailyVolume).filter((v) => v != null);
+
+    return {
+      ...row,
+      inputs,
+      outputs,
+      batchCycles,
+      inputLimit,
+      limitingInputName,
+      buyCost,
+      sellValue,
+      profit,
+      marginPct: buyCost > 0 ? (profit / buyCost) * 100 : null,
+      gpNeeded: buyCost,
+      buyTimeHours,
+      sellTimeHours,
+      cycleHours,
+      gpPerHour,
+      minVolume5m: vols5m.length ? Math.min(...vols5m) : null,
+      minDailyVolume: dailies.length ? Math.min(...dailies) : null,
+    };
+  };
+
   G.parseFilterNum = function parseFilterNum(id) {
     const input = G.el(id);
     if (!input) return null;

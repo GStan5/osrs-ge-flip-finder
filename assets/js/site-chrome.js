@@ -1,4 +1,42 @@
 (function () {
+  const G = (window.Graardor = window.Graardor || {});
+  let toolLayoutDone = false;
+  const toolLayoutWaiters = [];
+  const listRefreshHandlers = [];
+
+  function notifyToolLayoutReady() {
+    if (toolLayoutDone) return;
+    toolLayoutDone = true;
+    document.dispatchEvent(new CustomEvent("graardor:layout-ready"));
+    toolLayoutWaiters.splice(0).forEach((fn) => {
+      try {
+        fn();
+      } catch (err) {
+        console.error(err);
+      }
+    });
+    G.refreshToolLists();
+  }
+
+  G.whenToolLayoutReady = function whenToolLayoutReady(fn) {
+    if (toolLayoutDone) fn();
+    else toolLayoutWaiters.push(fn);
+  };
+
+  G.onToolListRefresh = function onToolListRefresh(fn) {
+    listRefreshHandlers.push(fn);
+  };
+
+  G.refreshToolLists = function refreshToolLists() {
+    listRefreshHandlers.forEach((fn) => {
+      try {
+        fn();
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  };
+
   const NAV_SECTIONS = [
     {
       id: "economy",
@@ -477,8 +515,14 @@
 
   function layoutToolPage() {
     const path = currentPath();
-    if (!path.startsWith("/tools") || path === "/tools") return;
-    if (document.querySelector(".tool-layout-grid")) return;
+    if (!path.startsWith("/tools") || path === "/tools") {
+      notifyToolLayoutReady();
+      return;
+    }
+    if (document.querySelector(".tool-layout-grid")) {
+      notifyToolLayoutReady();
+      return;
+    }
 
     document.querySelectorAll("p.disclaimer, .disclaimer:not(.disclaimer-collapsible)").forEach(convertDisclaimerToDetails);
     document.querySelectorAll(".tool-tip-bar:not(.tool-tip-collapsible)").forEach(compactToolTip);
@@ -488,7 +532,10 @@
     const chromeEls = bodyKids.filter(isToolChromeEl);
     const mainEls = bodyKids.filter(isMainContentEl);
 
-    if (!mainEls.length) return;
+    if (!mainEls.length) {
+      notifyToolLayoutReady();
+      return;
+    }
 
     document.body.classList.add("tool-layout-ready", "tool-page-wide");
 
@@ -543,6 +590,8 @@
 
     if (header) header.insertAdjacentElement("afterend", shell);
     else document.body.insertBefore(shell, document.querySelector(".site-footer"));
+
+    notifyToolLayoutReady();
   }
 
   function unwrapLegacyLayout() {

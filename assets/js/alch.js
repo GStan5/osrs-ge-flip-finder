@@ -338,5 +338,9 @@
     }
   }
 
-  init();
+  G.onToolListRefresh(() => {
+    if (G.cachedApiData) render();
+  });
+
+  G.whenToolLayoutReady(() => init());
 })(window.Graardor);

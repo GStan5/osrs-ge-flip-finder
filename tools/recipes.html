@@ -483,9 +483,10 @@
             <div class="gra-item-list__head col-recipe sortable" data-xf-sort="name" role="columnheader">Recipe</div>
             <div class="gra-item-list__head col-io col-hide-narrow" role="columnheader">Inputs</div>
             <div class="gra-item-list__head col-io col-hide-narrow" role="columnheader">Outputs</div>
-            <div class="gra-item-list__head num sortable" data-xf-sort="buyCost" role="columnheader">Input cost</div>
+            <div class="gra-item-list__head num sortable" data-xf-sort="inputLimit" role="columnheader">Buy limit</div>
+            <div class="gra-item-list__head num sortable" data-xf-sort="gpNeeded" role="columnheader">GP needed</div>
             <div class="gra-item-list__head num sortable" data-xf-sort="sellValue" role="columnheader">Revenue</div>
-            <div class="gra-item-list__head num sortable" data-xf-sort="profit" role="columnheader">Profit</div>
+            <div class="gra-item-list__head num sortable" data-xf-sort="profit" role="columnheader">Profit (limit)</div>
             <div class="gra-item-list__head num col-hide-xs sortable" data-xf-sort="marginPct" role="columnheader">ROI</div>
             <div class="gra-item-list__head num sortable" data-xf-sort="gpPerHour" role="columnheader">GP / hr</div>
             <div class="gra-item-list__head num sortable" data-xf-sort="buyTimeHours" role="columnheader">Est. buy</div>
@@ -1088,24 +1089,7 @@
     }
 
     function enrichRecipeRow(row) {
-      const buyTimes = row.inputs.map((i) => i.buyTimeHours).filter((t) => t != null && t > 0);
-      const sellTimes = row.outputs.map((o) => o.sellTimeHours).filter((t) => t != null && t > 0);
-      const buyTimeHours = buyTimes.length ? Math.max(...buyTimes) : null;
-      const sellTimeHours = sellTimes.length ? Math.max(...sellTimes) : null;
-      const cycleHours =
-        buyTimeHours != null && sellTimeHours != null ? buyTimeHours + sellTimeHours : null;
-      const gpPerHour = cycleHours && cycleHours > 0 ? row.profit / cycleHours : null;
-      const vols5m = row.inputs.map((i) => i.volume5m).filter((v) => v != null);
-      const dailies = row.inputs.map((i) => i.dailyVolume).filter((v) => v != null);
-      return {
-        ...row,
-        buyTimeHours,
-        sellTimeHours,
-        cycleHours,
-        gpPerHour,
-        minVolume5m: vols5m.length ? Math.min(...vols5m) : null,
-        minDailyVolume: dailies.length ? Math.min(...dailies) : null,
-      };
+      return Graardor.enrichTransformRecipeRow(row);
     }
 
     function sellAfterTax(sellPrice, itemId, includeTax) {
@@ -1182,6 +1166,7 @@
         icon: p.icon,
         qty,
         members: p.members,
+        limit: p.limit ?? 0,
         buy: p.buy,
         sell: p.sell,
         buyTimeHours: hoursForQty(qty, p.buyRateHour),
@@ -1471,6 +1456,11 @@
       const priceClass = isBuy ? "price-buy" : "price-sell";
       const time = isBuy ? item.buyTimeHours : item.sellTimeHours;
       const timeLabel = isBuy ? "buy" : "sell";
+      const batchQty = item.batchQty ?? item.qty;
+      const limitLine =
+        isBuy && item.limit
+          ? `<span class="recipe-limit">Limit: ${formatGp(item.limit)}</span>`
+          : "";
       return `<div class="recipe-item recipe-item-detailed">
         <div class="recipe-item-head">
           <img src="${iconUrl(item.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
@@ -1479,8 +1469,9 @@
         </div>
         <div class="recipe-item-meta">
           <span class="${priceClass} price-copyable" data-copy-price="${Math.round(price)}" title="Click to copy ${priceLabel.toLowerCase()} price">${priceLabel}: ${formatPrice(price)}</span>
+          ${limitLine}
           <span class="recipe-vol">5m ${formatGp(item.volume5m ?? 0)} · day ${formatGp(item.dailyVolume ?? 0)}</span>
-          <span class="recipe-time">Est. ${timeLabel}: ${formatDuration(time)}</span>
+          <span class="recipe-time">Est. ${timeLabel} (${formatGp(batchQty)}): ${formatDuration(time)}</span>
         </div>
       </div>`;
     }
@@ -1526,7 +1517,7 @@
         }
         if (profitableOnly && row.profit <= 0) return false;
         if (row.profit < minProfit) return false;
-        if (maxBudget != null && row.buyCost > maxBudget) return false;
+        if (maxBudget != null && row.gpNeeded > maxBudget) return false;
         if (minMargin != null && (row.marginPct == null || row.marginPct < minMargin)) return false;
         if (minGpHour != null && (row.gpPerHour == null || row.gpPerHour < minGpHour)) return false;
         if (!withinMinuteRange(row.cycleHours, null, maxCycleMin)) return false;
@@ -1537,14 +1528,16 @@
 
     function recipeItemTimingTooltip(item, side) {
       const rate = side === "buy" ? item.buyRateHour : item.sellRateHour;
+      const batchQty = item.batchQty ?? item.qty;
       if (!rate || rate <= 0) return `No recent volume at rec. ${side} side`;
       const perMin = rate / 60;
-      return `~${Math.round(rate).toLocaleString()} items/hour at rec. ${side} (65% 5m + 35% 1h) · ~${perMin >= 1 ? perMin.toFixed(1) : perMin.toFixed(2)}/min · ${item.qty}× needed`;
+      return `~${Math.round(rate).toLocaleString()} items/hour at rec. ${side} (65% 5m + 35% 1h) · ~${perMin >= 1 ? perMin.toFixed(1) : perMin.toFixed(2)}/min · ${formatGp(batchQty)} for limit batch`;
     }
 
     function recipeCycleTooltip(row) {
-      if (row.cycleHours == null) return "Need buy and sell volume to estimate full cycle";
-      return `Est. buy + est. sell (${formatDuration(row.buyTimeHours)} + ${formatDuration(row.sellTimeHours)}) — slowest input buy + slowest output sell`;
+      if (row.cycleHours == null) return "Need buy and sell volume to estimate full limit cycle";
+      const batchNote = row.batchCycles > 1 ? `${row.batchCycles.toLocaleString()}× recipe · ` : "";
+      return `${batchNote}Est. buy + est. sell (${formatDuration(row.buyTimeHours)} + ${formatDuration(row.sellTimeHours)}) — slowest input buy + slowest output sell for full limit batch`;
     }
 
     function renderTransforms() {
@@ -1608,9 +1601,10 @@
           );
           return Graardor.itemListRow(
             `${recipeCell}${recipeIoCell(row.inputs, "buy", "Inputs")}${recipeIoCell(row.outputs, "sell", "Outputs")}` +
-              `${Graardor.itemListNumCell(formatGp(row.buyCost), "num", "Input cost")}` +
+              `${Graardor.itemListNumCell(row.inputLimit == null ? "—" : formatGp(row.inputLimit), "num col-hide-xs", "Buy limit", row.limitingInputName ? { title: `Limiting input: ${row.limitingInputName}` } : undefined)}` +
+              `${Graardor.itemListNumCell(formatGp(row.gpNeeded), "num", "GP needed")}` +
               `${Graardor.itemListNumCell(formatGp(row.sellValue), "num", "Revenue")}` +
-              `${Graardor.itemListNumCell(formatGp(row.profit), `num ${marginClass}`, "Profit")}` +
+              `${Graardor.itemListNumCell(formatGp(row.profit), `num ${marginClass}`, "Profit (limit)")}` +
               `${Graardor.itemListNumCell(row.marginPct == null ? "—" : `${row.marginPct.toFixed(2)}%`, `num col-hide-xs ${marginClass}`, "ROI")}` +
               `${Graardor.itemListNumCell(row.gpPerHour == null ? "—" : formatGp(row.gpPerHour), `num ${gpHrClass} highlight-gp`, "GP / hr")}` +
               `${durationCell(row.buyTimeHours, row.inputs.length ? recipeItemTimingTooltip(row.inputs.reduce((a, b) => (a.buyTimeHours ?? 0) >= (b.buyTimeHours ?? 0) ? a : b), "buy") : null, "Est. buy")}` +
@@ -2300,12 +2294,21 @@
     el("resetTop10Btn").addEventListener("click", resetTop10Filters);
     el("resetTransformsBtn").addEventListener("click", resetTransformFilters);
 
-    loadTransformCatalog().then(() => {
-      applyUrlState();
-      const tabParam = new URLSearchParams(location.search).get("tab");
-      if (!tabParam || tabParam === "top10") switchTab("transforms");
-      renderTransforms();
-      loadData();
+    Graardor.onToolListRefresh(() => {
+      if (cachedApiData) {
+        renderAll();
+        renderTransforms();
+      }
+    });
+
+    Graardor.whenToolLayoutReady(() => {
+      loadTransformCatalog().then(() => {
+        applyUrlState();
+        const tabParam = new URLSearchParams(location.search).get("tab");
+        if (!tabParam || tabParam === "top10") switchTab("transforms");
+        renderTransforms();
+        loadData();
+      });
     });
   </script>
 
