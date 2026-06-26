@@ -1,6 +1,6 @@
-@import url("graa-shell.css?v=11");
-@import url("item-list.css?v=6");
-@import url("components.css?v=1");
+@import url("graa-shell.css?v=12");
+@import url("item-list.css?v=7");
+@import url("components.css?v=2");
 
     /* Color tokens: graa-shell.css (data-theme on html) */
 
@@ -272,16 +272,16 @@
       display: grid;
       grid-template-columns: 160px minmax(0, 1fr) 160px;
       gap: 1rem;
-      max-width: 1960px;
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto;
-      padding: 0 0.75rem;
+      padding: 0 var(--g-content-pad, 1.25rem);
       align-items: start;
     }
 
     body.ads-off .content-shell {
       grid-template-columns: minmax(0, 1fr);
-      max-width: var(--g-max);
-      padding: 0 1.5rem;
+      max-width: var(--g-page-max, var(--g-max));
+      padding: 0 var(--g-content-pad, 1.25rem);
     }
 
     body.tool-page-wide .tool-main-column .content-shell {
@@ -813,7 +813,7 @@
     }
 
     .tool-page-main {
-      max-width: var(--g-max);
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto;
       width: 100%;
     }
@@ -854,7 +854,7 @@
     }
 
     .kofi-strip-inner {
-      max-width: 900px;
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto;
       display: flex;
       flex-wrap: wrap;
@@ -1018,9 +1018,9 @@
     }
 
     .economy-subnav {
-      max-width: var(--g-max);
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto;
-      padding: 0 1.25rem 0.75rem;
+      padding: 0 var(--g-content-pad, 1.25rem) 0.75rem;
       display: flex;
       flex-wrap: wrap;
       gap: 0.35rem;
@@ -1099,9 +1099,9 @@
 
     /* ── Item detail ── */
     .item-lookup-bar {
-      max-width: 720px;
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto 1rem;
-      padding: 0 1.25rem;
+      padding: 0 var(--g-content-pad, 1.25rem);
     }
 
     .item-lookup-bar input {
@@ -1115,9 +1115,9 @@
     }
 
     .item-lookup-results {
-      max-width: 720px;
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto;
-      padding: 0 1.25rem 1rem;
+      padding: 0 var(--g-content-pad, 1.25rem) 1rem;
     }
 
     .item-lookup-results a {
@@ -1143,16 +1143,16 @@
     }
 
     .item-detail-card {
-      max-width: 900px;
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto 2rem;
-      padding: 0 1.25rem;
+      padding: 0 var(--g-content-pad, 1.25rem);
     }
 
     .item-detail,
     .monster-detail {
-      max-width: 960px;
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto 2rem;
-      padding: 0 1.25rem;
+      padding: 0 var(--g-content-pad, 1.25rem);
     }
 
     .item-detail-hero {
@@ -1843,9 +1843,9 @@
 
     /* ── Upgrade ── */
     .upgrade-grid {
-      max-width: 900px;
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto;
-      padding: 0 1.25rem 2rem;
+      padding: 0 var(--g-content-pad, 1.25rem) 2rem;
       display: grid;
       gap: 1.25rem;
     }
@@ -2005,9 +2005,9 @@
     }
 
     .guide-article {
-      max-width: 720px;
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto;
-      padding: 2rem 1.25rem 3rem;
+      padding: 2rem var(--g-content-pad, 1.25rem) 3rem;
       line-height: 1.65;
     }
 
@@ -2258,7 +2258,7 @@
 
     .tool-subnav,
     .economy-subnav {
-      max-width: var(--g-max);
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto;
       padding: 0 1.25rem;
       display: flex;
@@ -2338,9 +2338,9 @@
     }
 
     .tools-hub-main {
-      max-width: var(--g-max);
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto;
-      padding: 0 1.25rem 3rem;
+      padding: 0 var(--g-content-pad, 1.25rem) 3rem;
     }
 
     .tools-hub-section {
@@ -2356,7 +2356,7 @@
     }
 
     .tool-summary-strip {
-      max-width: var(--g-max);
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto;
       padding: 0.65rem 1.25rem;
       background: var(--surface-dark);
@@ -2376,7 +2376,7 @@
     }
 
     .tool-tip-bar {
-      max-width: var(--g-max);
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto;
       padding: 0.5rem 1.25rem;
       font-size: 0.78rem;
@@ -2404,7 +2404,7 @@
     }
 
     .disclaimer {
-      max-width: var(--g-max);
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto;
       padding: 0 1.25rem;
       font-size: 0.78rem;
@@ -2634,8 +2634,9 @@
 
     }
 
-    .tool-page-shell {
-      max-width: var(--g-max);
+    .tool-page-shell,
+    .page-shell-wide {
+      max-width: var(--g-page-max, var(--g-max));
       margin: 0 auto;
       width: 100%;
     }

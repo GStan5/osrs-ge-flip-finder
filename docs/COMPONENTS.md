@@ -16,6 +16,8 @@ Internal reference for shared `G.ui.*` helpers in `assets/js/components.js` and 
 
 CSS: `components.css` is imported from `theme.css` — no extra `<link>` on HTML pages.
 
+Page layout tokens and `.page-shell` utilities: see [LAYOUT.md](./LAYOUT.md).
+
 ## Available components
 
 | Helper | Purpose |

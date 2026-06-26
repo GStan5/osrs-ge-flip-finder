@@ -1,6 +1,8 @@
 /*
  * Graardor UI components — shared building blocks (G.ui.* in components.js)
  *
+ * Page width: components fill their parent (.page-shell / --g-page-max). Never set page max-width here.
+ *
  * Classes:
  *   .ui-lookup-hero       — item/monster detail header
  *   .ui-stat-grid         — responsive stat card grid (.ui-stat-card)

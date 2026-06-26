@@ -517,6 +517,18 @@
     return true;
   }
 
+  function applyPageWideClass() {
+    const path = currentPath();
+    const wide =
+      path === "/" ||
+      path === "/tools" ||
+      path.startsWith("/guides") ||
+      path === "/upgrade" ||
+      path === "/changelog" ||
+      (path.startsWith("/tools/") && path !== "/tools");
+    if (wide) document.body.classList.add("page-wide");
+  }
+
   function layoutToolPage() {
     const path = currentPath();
     if (!path.startsWith("/tools") || path === "/tools") {
@@ -541,7 +553,7 @@
       return;
     }
 
-    document.body.classList.add("tool-layout-ready", "tool-page-wide");
+    document.body.classList.add("tool-layout-ready", "tool-page-wide", "page-wide");
 
     const shell = document.createElement("div");
     shell.className = "tool-layout-grid";
@@ -622,6 +634,7 @@
     ensureHeaderActions();
     injectHeaderSubnav();
     injectBreadcrumbs();
+    applyPageWideClass();
     layoutToolPage();
     injectProLink();
     injectThemeToggle();

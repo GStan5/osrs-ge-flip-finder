@@ -496,7 +496,7 @@ body.site .gra-item-list__row:hover {
     --gra-col-timing: minmax(6rem, max-content);
   }
 
-  body.site.tool-page-wide .gra-item-list-wrap {
+  .gra-item-list-wrap {
     overflow-x: visible;
   }
 

@@ -66,6 +66,10 @@ html {
   --g-font: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
   /* Fluid content width — scales up on large/2K displays; padding is per-container */
   --g-max: 1120px;
+  /* Layout tokens — use var(--g-page-max) / .page-shell; never hardcode page max-width */
+  --g-page-max: var(--g-max);
+  --g-content-pad: 1.25rem;
+  --g-wide-breakpoint: 1440px;
   --g-header-h: 56px;
 
   --bg: var(--g-bg);
@@ -108,6 +112,27 @@ body.site {
 
 body.site a {
   color: var(--g-link);
+}
+
+/* ── Page width utilities (all pages should use these or equivalent aliases below) ── */
+.page-shell,
+.page-shell-wide {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--g-page-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--g-content-pad);
+  padding-right: var(--g-content-pad);
+}
+
+.page-shell-wide {
+  /* Tool pages: full width of parent up to --g-page-max (same cap as .page-shell) */
+}
+
+.page-main {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 /* ── Theme toggle ── */
@@ -156,9 +181,9 @@ body.site .chrome-section-bar {
 }
 
 body.site .site-header-inner {
-  max-width: var(--g-max);
+  max-width: var(--g-page-max);
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding: 0 var(--g-content-pad);
   min-height: var(--g-header-h);
   display: flex;
   flex-wrap: wrap;
@@ -477,12 +502,12 @@ body.site .nav-toggle span {
   }
 }
 
-/* ── Page layout ── */
+/* ── Page layout (aliases of .page-shell — keep in sync with layout tokens) ── */
 body.site .tool-layout {
   display: block;
-  max-width: var(--g-max);
+  max-width: var(--g-page-max);
   margin: 0 auto;
-  padding: 0 1.25rem 2.5rem;
+  padding: 0 var(--g-content-pad) 2.5rem;
 }
 
 body.site .tool-sidebar {
@@ -495,20 +520,25 @@ body.site .tools-hub-main {
   min-width: 0;
 }
 
-body.site .tools-hub-main {
-  max-width: var(--g-max);
+body.site .tools-hub-main,
+body.site .home-main {
+  max-width: var(--g-page-max);
   margin: 0 auto;
-  padding: 0 1.25rem 3rem;
+  padding: 0 var(--g-content-pad) 3rem;
 }
 
 body.site .content-shell {
   flex: 1;
+  max-width: var(--g-page-max);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 var(--g-content-pad) 2rem;
 }
 
 body.site .page-hero {
-  max-width: var(--g-max);
+  max-width: var(--g-page-max);
   margin: 0 auto;
-  padding: 1rem 1.25rem 0.5rem;
+  padding: 1rem var(--g-content-pad) 0.5rem;
   background: transparent;
   border: none;
 }
@@ -552,9 +582,9 @@ body.site .breadcrumbs a:hover {
 
 body.site .tool-subnav,
 body.site .economy-subnav {
-  max-width: var(--g-max);
+  max-width: var(--g-page-max);
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding: 0 var(--g-content-pad);
   display: flex;
   flex-wrap: wrap;
   gap: 0.25rem;
@@ -590,7 +620,7 @@ body.site .economy-subnav a.active {
 
 /* ── Tool chrome strips ── */
 body.site .disclaimer {
-  max-width: var(--g-max);
+  max-width: var(--g-page-max);
   margin: 0.75rem auto 0;
   padding: 0.65rem 1rem;
   background: var(--g-disclaimer-bg);
@@ -602,7 +632,7 @@ body.site .disclaimer {
 }
 
 body.site .status-bar {
-  max-width: var(--g-max);
+  max-width: var(--g-page-max);
   margin: 0.75rem auto 0;
   padding: 0.65rem 1rem;
   background: var(--g-surface);
@@ -614,7 +644,7 @@ body.site .status-bar {
 
 body.site .tool-summary-strip,
 body.site .tool-tip-bar {
-  max-width: var(--g-max);
+  max-width: var(--g-page-max);
   margin: 0.75rem auto 0;
   padding: 0.65rem 1rem;
   background: var(--g-surface);
@@ -622,11 +652,6 @@ body.site .tool-tip-bar {
   border-radius: var(--g-radius-sm);
   font-size: 0.8125rem;
   color: var(--g-muted);
-}
-
-body.site .content-shell {
-  max-width: var(--g-max);
-  padding: 0 1.25rem 2rem;
 }
 
 /* ── Cards & panels ── */
@@ -839,12 +864,6 @@ body.site .item-detail-actions a {
 }
 
 /* ── Homepage ── */
-body.site .home-main {
-  max-width: var(--g-max);
-  margin: 0 auto;
-  padding: 0 1.25rem 3rem;
-}
-
 body.site .home-main .page-hero {
   padding-left: 0;
   padding-right: 0;
@@ -1203,15 +1222,45 @@ body.site .hub-tile-icon img {
   image-rendering: pixelated;
 }
 
-/* ── Misc pages ── */
+/* ── Misc pages (page-shell aliases) ── */
+body.site .upgrade-grid,
+body.site .changelog-list {
+  max-width: var(--g-page-max);
+  margin: 0 auto;
+  padding: 0 var(--g-content-pad) 3rem;
+}
+
+body.site .changelog-list {
+  display: grid;
+  gap: 1rem;
+}
+
 body.site .upgrade-card,
-body.site .changelog-entry,
-body.site .guide-article {
+body.site .changelog-entry {
   background: var(--g-surface);
   border: 1px solid var(--g-border);
   border-radius: var(--g-radius);
   padding: 1.25rem;
   text-shadow: none;
+}
+
+body.site .guide-article {
+  max-width: var(--g-page-max);
+  margin: 0 auto;
+  padding: 2rem var(--g-content-pad) 3rem;
+  background: var(--g-surface);
+  border: 1px solid var(--g-border);
+  border-radius: var(--g-radius);
+  text-shadow: none;
+}
+
+#itemDetailRoot,
+#monsterDetailRoot {
+  max-width: var(--g-page-max);
+  margin: 0 auto;
+  padding: 0 var(--g-content-pad);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 body.site .kofi-strip {
@@ -1363,9 +1412,9 @@ body.site.tool-page:not(.tool-layout-ready) > .tool-summary-strip {
 }
 
 body.site.tool-page:not(.tool-layout-ready) > .status-bar {
-  max-width: var(--g-max);
+  max-width: var(--g-page-max);
   margin: 0 auto;
-  padding: 0.35rem 1.25rem;
+  padding: 0.35rem var(--g-content-pad);
   font-size: 0.75rem;
   background: transparent;
   border: none;
@@ -1383,9 +1432,9 @@ body.site.tool-page.tool-layout-ready > details.tool-tip-collapsible {
 
 /* ── Header-merged tool subnav ── */
 body.site .header-tool-subnav {
-  max-width: var(--g-max);
+  max-width: var(--g-page-max);
   margin: 0 auto;
-  padding: 0 1.25rem;
+  padding: 0 var(--g-content-pad);
   display: flex;
   flex-wrap: nowrap;
   align-items: stretch;
@@ -1437,9 +1486,9 @@ body.site.has-header-subnav .site-header {
 
 /* ── Full-width tool layout (site-chrome.js layoutToolPage) ── */
 body.site.tool-page-wide .tool-layout-grid {
-  max-width: min(100%, var(--g-max));
+  max-width: min(100%, var(--g-page-max));
   margin: 0 auto;
-  padding: 0.5rem 1.25rem 2rem;
+  padding: 0.5rem var(--g-content-pad) 2rem;
   min-width: 0;
 }
 
@@ -1751,11 +1800,29 @@ body.site .toast {
   max-width: calc(100vw - 2rem);
 }
 
+/* Standalone tool main (before / outside tool-layout-grid) */
+body.site > .tool-page-main {
+  max-width: var(--g-page-max);
+  margin: 0 auto;
+  width: 100%;
+  padding: 0 var(--g-content-pad) 2rem;
+  box-sizing: border-box;
+}
+
 body.site .content-shell,
-body.site .page-main,
-body.site .tool-page-main {
+body.site .page-main {
   min-width: 0;
+}
+
+body.site .content-shell .page-main,
+body.site.tool-page-wide .tool-main-column .page-main,
+body.site.tool-page-wide .tool-main-column .tool-page-main {
   max-width: 100%;
+}
+
+body.site.tool-page-wide .tool-main-column > .tool-page-main {
+  max-width: none;
+  padding: 0;
 }
 
 body.site .table-wrap {
