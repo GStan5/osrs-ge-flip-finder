@@ -198,6 +198,14 @@ window.Graardor = window.Graardor || {};
     return G.cachedApiData?.mapping?.find((m) => m.id === id) || null;
   };
 
+  /** OSRS wiki prayer icon from bundled meta or prayer name. */
+  G.prayerIconUrl = function prayerIconUrl(prayer) {
+    if (!prayer) return "";
+    if (prayer.icon) return G.iconUrl(prayer.icon);
+    if (prayer.name) return G.iconUrl(`${prayer.name.replace(/ /g, "_")}.png`);
+    return "";
+  };
+
   /** Wiki item icon — mapping icon when prices loaded, else name-based fallback. */
   G.itemIconUrlById = function itemIconUrlById(id, fallbackName) {
     const mapping = G.findMappingById(id);

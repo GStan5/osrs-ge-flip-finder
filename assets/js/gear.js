@@ -34,6 +34,18 @@
     { id: "magic", label: "Magic" },
   ];
   const DEFAULT_MONSTER = 2215;
+  const POPULAR_MONSTERS = [2215, 2205, 3129, 3162, 5862, 2042];
+
+  const BOOST_POTIONS = [
+    { id: "super-combat", name: "Super combat potion(4)" },
+    { id: "ranging", name: "Ranging potion(4)" },
+    { id: "magic", name: "Magic potion(4)" },
+    { id: "bastion", name: "Bastion potion(4)" },
+    { id: "battlemage", name: "Battlemage potion(4)" },
+    { id: "super-attack", name: "Super attack(4)" },
+    { id: "super-strength", name: "Super strength(4)" },
+    { id: "super-defence", name: "Super defence(4)" },
+  ];
 
   const params = new URLSearchParams(location.search);
   let authed = false;
@@ -58,6 +70,7 @@
     stats: null,
     ironman: false,
     isPublic: true,
+    boosts: [],
   };
 
   function toast(msg) {
@@ -171,7 +184,13 @@
       },
     ];
 
-    root.innerHTML = ui.statGrid(cards) + ui.bonusTable({ offence: stats.equipment.attack, defence: stats.equipment.defence, extras: [
+    const monsterHeader = `<div class="gear-results-monster">
+      <img src="${G.monsterIconUrl(monster)}" alt="" width="36" height="36" loading="lazy" onerror="this.style.visibility='hidden'" />
+      <span class="gear-results-monster-name">${G.escapeHtml(monster.name)}</span>
+      <span class="gear-results-monster-cb">Cb-${monster.combatLevel}</span>
+    </div>`;
+
+    root.innerHTML = monsterHeader + ui.statGrid(cards) + ui.bonusTable({ offence: stats.equipment.attack, defence: stats.equipment.defence, extras: [
       ["Melee str", stats.equipment.strength],
       ["Ranged str", stats.equipment.rangedStrength],
       ["Magic dmg", stats.equipment.magicDamage],
@@ -179,30 +198,137 @@
     ].filter(([, v]) => v) });
   }
 
+  function monsterMetaLine(m) {
+    const parts = [`Cb-${m.combatLevel}`, `${m.hitpoints} HP`];
+    if (m.slayer?.level) parts.push(`Slayer ${m.slayer.level}`);
+    return parts.join(" · ");
+  }
+
+  function selectMonster(id) {
+    state.monsterId = id;
+    const pick = G.el("gearMonsterPick");
+    if (pick) pick.innerHTML = "";
+    renderMonsterSummary();
+    renderQuickPicks();
+    renderResults();
+    scheduleUpgrades();
+  }
+
   function renderMonsterSummary() {
     const el = G.el("gearMonsterSummary");
     const m = currentMonster();
     if (!el) return;
     if (!m) {
-      el.textContent = "";
+      el.innerHTML = "";
       return;
     }
     G.el("gearMonsterSearch").value = m.name;
-    el.innerHTML = `Cb-${m.combatLevel} · ${m.hitpoints} HP · <a href="${G.monsterPageUrl(m.id)}">Monster page</a> · <a href="/tools/prep">Boss prep</a>`;
+    const heroStats = [
+      { label: "Hitpoints", value: String(m.hitpoints) },
+      { label: "Max hit", value: String(m.maxHit || "—") },
+    ];
+    if (m.slayer?.level) {
+      heroStats.push({ label: "Slayer", value: String(m.slayer.level) });
+    }
+    const membersBadge = m.members
+      ? '<span class="badge badge-members">Members</span>'
+      : '<span class="badge badge-f2p">Free-to-play</span>';
+    el.innerHTML = ui.gearMonsterTarget({
+      iconUrl: G.monsterIconUrl(m),
+      title: m.name,
+      badges: [`<span class="monster-cb-badge">Combat ${m.combatLevel}</span>`, membersBadge],
+      heroStats,
+      actions: [
+        { href: G.monsterPageUrl(m.id), label: "Monster page", external: false },
+        { href: "/tools/prep", label: "Boss prep", external: false },
+      ],
+    });
+  }
+
+  function renderQuickPicks() {
+    const el = G.el("gearMonsterQuickPick");
+    if (!el || !monstersMeta) return;
+    el.innerHTML = POPULAR_MONSTERS.map((id) => {
+      const m = monstersMeta.monsters[String(id)];
+      if (!m) return "";
+      return ui.monsterQuickChip({
+        id: m.id,
+        name: m.name,
+        iconUrl: G.monsterIconUrl(m),
+        active: state.monsterId === id,
+      });
+    }).join("");
   }
 
   function renderStatsRow() {
     const el = G.el("gearStatsRow");
     if (!el) return;
     const s = primaryStats();
-    el.innerHTML = [
+    const parts = [
       `<span>Atk ${s.attack}</span>`,
       `<span>Str ${s.strength}</span>`,
       `<span>Def ${s.defence}</span>`,
       `<span>Rng ${s.ranged}</span>`,
       `<span>Mag ${s.magic}</span>`,
       `<span>HP ${s.hitpoints}</span>`,
-    ].join("");
+    ];
+    if (s.prayer != null) parts.push(`<span>Pray ${s.prayer}</span>`);
+    el.innerHTML = parts.join("");
+  }
+
+  function canUsePrayer(p) {
+    const s = primaryStats();
+    const req = p.requirements || {};
+    if (req.prayer && (s.prayer ?? 99) < req.prayer) return false;
+    if (req.defence && (s.defence ?? 1) < req.defence) return false;
+    return true;
+  }
+
+  function potionIconUrl(name) {
+    const mapping = G.cachedApiData?.mapping?.find((m) => m.name === name);
+    return G.itemIconUrlById(mapping?.id, name);
+  }
+
+  function renderPrayerChips() {
+    const el = G.el("gearPrayerChips");
+    if (!el) return;
+    el.innerHTML = ui.prayerBook({
+      rows: prayersMeta?.bookRows,
+      prayers: prayersMeta?.prayers,
+      selectedIds: state.prayers,
+      canUse: canUsePrayer,
+      getIconUrl: (p) => G.prayerIconUrl(p),
+    });
+    el.querySelectorAll("[data-prayer-id]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        if (btn.disabled) return;
+        const id = Number(btn.dataset.prayerId);
+        const idx = state.prayers.indexOf(id);
+        if (idx >= 0) state.prayers.splice(idx, 1);
+        else state.prayers.push(id);
+        renderPrayerChips();
+        renderResults();
+        scheduleUpgrades();
+      });
+    });
+  }
+
+  function renderBoostChips() {
+    const el = G.el("gearBoostChips");
+    if (!el) return;
+    el.innerHTML = ui.boostChips({
+      potions: BOOST_POTIONS.map((p) => ({ ...p, iconUrl: potionIconUrl(p.name) })),
+      selectedIds: state.boosts,
+    });
+    el.querySelectorAll("[data-boost-id]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const id = btn.dataset.boostId;
+        const idx = state.boosts.indexOf(id);
+        if (idx >= 0) state.boosts.splice(idx, 1);
+        else state.boosts.push(id);
+        renderBoostChips();
+      });
+    });
   }
 
   function renderStyleChips() {
@@ -221,29 +347,6 @@
         renderResults();
         scheduleUpgrades();
       },
-    });
-  }
-
-  function renderPrayerChips() {
-    const el = G.el("gearPrayerChips");
-    if (!el) return;
-    const list = Object.values(prayersMeta?.prayers || {}).sort((a, b) => a.name.localeCompare(b.name));
-    el.innerHTML = list
-      .map((p) => {
-        const active = state.prayers.includes(p.id) ? " active" : "";
-        return `<button type="button" class="gear-prayer-btn${active}" data-prayer-id="${p.id}">${G.escapeHtml(p.name)}</button>`;
-      })
-      .join("");
-    el.querySelectorAll("[data-prayer-id]").forEach((btn) => {
-      btn.addEventListener("click", () => {
-        const id = Number(btn.dataset.prayerId);
-        const idx = state.prayers.indexOf(id);
-        if (idx >= 0) state.prayers.splice(idx, 1);
-        else state.prayers.push(id);
-        renderPrayerChips();
-        renderResults();
-        scheduleUpgrades();
-      });
     });
   }
 
@@ -413,8 +516,10 @@
     state.ironman = Boolean(p.ironman);
     state.isPublic = p.is_public !== false;
     renderMonsterSummary();
+    renderQuickPicks();
     renderStyleChips();
     renderPrayerChips();
+    renderBoostChips();
     renderSlots();
     renderResults();
   }
@@ -500,6 +605,7 @@
     state.stats = data.profile.combat_stats;
     await loadProfiles();
     renderStatsRow();
+    renderPrayerChips();
     renderResults();
     G.updateStatus("gearStatus", "Stats linked", "ok");
   }
@@ -621,6 +727,7 @@
   function bindMonsterSearch() {
     const input = G.el("gearMonsterSearch");
     const pick = G.el("gearMonsterPick");
+    const quick = G.el("gearMonsterQuickPick");
     if (!input || !pick) return;
     let timer;
     input.addEventListener("input", () => {
@@ -632,9 +739,13 @@
           return;
         }
         pick.innerHTML = hits
-          .map(
-            (m) =>
-              `<a href="#" data-monster-id="${m.id}">${G.escapeHtml(m.name)} <span class="results-meta">Cb-${m.combatLevel}</span></a>`
+          .map((m) =>
+            ui.monsterPickerResult({
+              id: m.id,
+              name: m.name,
+              iconUrl: G.monsterIconUrl(m),
+              meta: monsterMetaLine(m),
+            })
           )
           .join("");
       }, 150);
@@ -643,11 +754,12 @@
       const a = e.target.closest("[data-monster-id]");
       if (!a) return;
       e.preventDefault();
-      state.monsterId = Number(a.dataset.monsterId);
-      pick.innerHTML = "";
-      renderMonsterSummary();
-      renderResults();
-      scheduleUpgrades();
+      selectMonster(Number(a.dataset.monsterId));
+    });
+    quick?.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-monster-id]");
+      if (!btn) return;
+      selectMonster(Number(btn.dataset.monsterId));
     });
   }
 
@@ -704,8 +816,10 @@
       pricesReady = true;
 
       renderMonsterSummary();
+      renderQuickPicks();
       renderStyleChips();
       renderPrayerChips();
+      renderBoostChips();
       renderSlots();
       bindSlotPicker();
       renderStatsRow();

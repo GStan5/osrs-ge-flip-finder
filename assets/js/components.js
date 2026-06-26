@@ -369,6 +369,100 @@ window.Graardor = window.Graardor || {};
     </button>`;
   };
 
+  /** Monster row in gear planner search dropdown. */
+  G.ui.monsterPickerResult = function monsterPickerResult({ id, name, iconUrl, meta }) {
+    return `<a href="#" class="gear-monster-pick-row" data-monster-id="${id}">
+      <img src="${esc(iconUrl)}" alt="" width="28" height="28" loading="lazy" onerror="this.style.visibility='hidden'" />
+      <span class="monster-result-text">
+        <span class="monster-result-name">${esc(name)}</span>
+        <span class="monster-result-meta">${esc(meta)}</span>
+      </span>
+    </a>`;
+  };
+
+  /** Compact monster target card for gear planner. */
+  G.ui.gearMonsterTarget = function gearMonsterTarget({ iconUrl, title, badges = [], heroStats = [], actions = [] }) {
+    const badgeHtml = badges.filter(Boolean).join(" ");
+    const statsHtml = heroStats.length
+      ? `<div class="monster-hero-stats gear-monster-target-stats">${heroStats
+          .map(
+            (s) =>
+              `<div class="monster-hero-stat"><span class="value${s.className ? ` ${s.className}` : ""}">${s.valueHtml ?? esc(s.value)}</span><span class="label">${esc(s.label)}</span></div>`
+          )
+          .join("")}</div>`
+      : "";
+    const actionsHtml = actions
+      .map((a) => `<a href="${esc(a.href)}"${a.external === false ? "" : a.href.startsWith("http") ? ' target="_blank" rel="noopener"' : ""}>${esc(a.label)}</a>`)
+      .join("");
+
+    return `<article class="gear-monster-target">
+      <div class="gear-monster-target-portrait">
+        <img src="${esc(iconUrl)}" alt="" width="96" height="96" loading="lazy" class="gear-monster-target-sprite" onerror="this.style.visibility='hidden'" />
+      </div>
+      <div class="gear-monster-target-info">
+        <div class="monster-hero-badges">${badgeHtml}</div>
+        <h3 class="gear-monster-target-name">${esc(title)}</h3>
+        ${statsHtml}
+        ${actionsHtml ? `<div class="gear-monster-target-actions">${actionsHtml}</div>` : ""}
+      </div>
+    </article>`;
+  };
+
+  /** Popular monster quick-pick chip with wiki sprite. */
+  G.ui.monsterQuickChip = function monsterQuickChip({ id, name, iconUrl, active = false }) {
+    return `<button type="button" class="gear-monster-chip${active ? " active" : ""}" data-monster-id="${id}" title="${esc(name)}">
+      <img src="${esc(iconUrl)}" alt="" width="32" height="32" loading="lazy" onerror="this.style.visibility='hidden'" />
+      <span class="gear-monster-chip-name">${esc(name)}</span>
+    </button>`;
+  };
+
+  /**
+   * OSRS prayer tab — icon grid in game row order.
+   * @param {{ rows: number[][], prayers: Record<string, object>, selectedIds: number[], canUse: (prayer: object) => boolean, getIconUrl: (prayer: object) => string }} opts
+   */
+  G.ui.prayerBook = function prayerBook({ rows, prayers, selectedIds, canUse, getIconUrl }) {
+    const selected = new Set(selectedIds || []);
+    const body = (rows || [])
+      .map((row) => {
+        const cols = row.length > 3 ? " gear-prayer-row--wide" : "";
+        const cells = row
+          .map((id) => {
+            const p = prayers?.[String(id)];
+            if (!p) return `<span class="gear-prayer-cell gear-prayer-cell--empty" aria-hidden="true"></span>`;
+            const active = selected.has(p.id) ? " gear-prayer-btn--active" : "";
+            const locked = canUse && !canUse(p) ? " gear-prayer-btn--locked" : "";
+            const req = p.requirements?.prayer ? ` · Prayer ${p.requirements.prayer}` : "";
+            const def = p.requirements?.defence ? ` · Def ${p.requirements.defence}` : "";
+            const title = `${p.name}${req}${def}`;
+            const icon = getIconUrl(p);
+            return `<button type="button" class="gear-prayer-btn${active}${locked}" data-prayer-id="${p.id}" title="${esc(title)}" aria-label="${esc(title)}"${locked ? " disabled" : ""}>
+              <img src="${esc(icon)}" alt="" width="28" height="28" loading="lazy" onerror="this.style.visibility='hidden'" />
+            </button>`;
+          })
+          .join("");
+        return `<div class="gear-prayer-row${cols}">${cells}</div>`;
+      })
+      .join("");
+    return `<div class="gear-prayer-book" role="group" aria-label="Prayers">${body}</div>`;
+  };
+
+  /**
+   * Combat potion boost chips — wiki item icons, toggle selection.
+   * @param {{ potions: Array<{ id: string, name: string, iconUrl: string }>, selectedIds: string[] }} opts
+   */
+  G.ui.boostChips = function boostChips({ potions, selectedIds }) {
+    const selected = new Set(selectedIds || []);
+    return (potions || [])
+      .map((p) => {
+        const active = selected.has(p.id) ? " gear-boost-chip--active" : "";
+        return `<button type="button" class="gear-boost-chip${active}" data-boost-id="${esc(p.id)}" title="${esc(p.name)}" aria-label="${esc(p.name)}">
+          <img src="${esc(p.iconUrl)}" alt="" width="32" height="32" loading="lazy" onerror="this.style.visibility='hidden'" />
+          <span class="gear-boost-chip-label">${esc(p.name.replace(/\(\d+\)$/, "").trim())}</span>
+        </button>`;
+      })
+      .join("");
+  };
+
   /** Bind drop simulator controls on a container. */
   G.ui.bindDropSimulator = function bindDropSimulator(root, { getMonster, getSellPrice, resultsId = "monsterSimResults", summaryId = "monsterSimSummary", lootId = "monsterSimLoot" }) {
     if (!root || root._simBound) return;

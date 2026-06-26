@@ -14,6 +14,20 @@ const SOURCE =
 
 const COMBAT_KEYS = new Set(["attack", "strength", "defence", "ranged", "magic", "ranged_strength", "magic_strength"]);
 
+/** OSRS prayer tab row order (left → right, top → bottom). */
+const BOOK_ROWS = [
+  [1, 2, 3],
+  [6, 7, 8],
+  [14, 15, 16],
+  [4, 12, 20],
+  [5, 13, 21],
+  [26, 27, 28, 29],
+];
+
+function prayerIconFilename(name) {
+  return `${name.replace(/ /g, "_")}.png`;
+}
+
 async function main() {
   const res = await fetch(SOURCE);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -28,6 +42,7 @@ async function main() {
     prayers[String(p.id)] = {
       id: p.id,
       name: p.name,
+      icon: prayerIconFilename(p.name),
       members: Boolean(p.members),
       drain: p.drain_per_minute ?? 0,
       requirements: p.requirements || {},
@@ -38,6 +53,7 @@ async function main() {
   const payload = {
     generatedAt: new Date().toISOString(),
     count: Object.keys(prayers).length,
+    bookRows: BOOK_ROWS,
     prayers,
   };
 

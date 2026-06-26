@@ -93,10 +93,9 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
 }
 
-.gear-monster-pick a {
+.gear-monster-pick-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 0.5rem;
   padding: 0.45rem 0.65rem;
   text-decoration: none;
@@ -104,17 +103,187 @@
   font-size: 0.85rem;
 }
 
-.gear-monster-pick a:hover {
+.gear-monster-pick-row:hover {
   background: var(--surface2);
 }
 
-.gear-monster-summary {
-  font-size: 0.85rem;
-  color: var(--muted);
+.gear-monster-pick-row img {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }
 
-.gear-monster-summary a {
+.gear-monster-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}
+
+.gear-monster-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  max-width: 100%;
+  padding: 0.3rem 0.55rem 0.3rem 0.35rem;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--surface-dark);
+  color: var(--text);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.gear-monster-chip:hover {
+  border-color: var(--accent);
+}
+
+.gear-monster-chip.active {
+  border-color: var(--accent);
+  background: var(--accent-dim, rgba(100, 160, 255, 0.15));
+}
+
+.gear-monster-chip img {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.gear-monster-chip-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 8rem;
+}
+
+.gear-monster-summary {
+  margin-top: 0.25rem;
+}
+
+.gear-monster-target {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 0.85rem;
+  background: linear-gradient(135deg, var(--surface) 0%, var(--surface-dark) 100%);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent, #c9a227);
+  border-radius: 6px;
+}
+
+.gear-monster-target-portrait {
+  flex-shrink: 0;
+  padding: 0.35rem;
+  background: var(--surface-dark);
+  border: 1px solid var(--border);
+  line-height: 0;
+}
+
+.gear-monster-target-sprite {
+  width: 96px;
+  height: 96px;
+  display: block;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.gear-monster-target-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.gear-monster-target-name {
+  margin: 0 0 0.35rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: var(--title);
+}
+
+.gear-monster-target-stats {
+  margin-bottom: 0.5rem;
+}
+
+.gear-monster-target-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.gear-monster-target-actions a {
   color: var(--link);
+}
+
+.gear-results-monster {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.gear-results-monster img {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.gear-results-monster-name {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--title);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gear-results-monster-cb {
+  margin-left: auto;
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: bold;
+  padding: 0.2rem 0.45rem;
+  background: rgba(201, 162, 39, 0.15);
+  border: 1px solid var(--accent-dim, rgba(201, 162, 39, 0.45));
+  color: var(--accent, #c9a227);
+  border-radius: 4px;
+}
+
+@media (max-width: 480px) {
+  .gear-monster-target {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .gear-monster-target-info {
+    width: 100%;
+  }
+
+  .gear-monster-target-actions {
+    justify-content: center;
+  }
+
+  .gear-monster-chip-name {
+    max-width: 5.5rem;
+  }
+
+  .gear-monster-target-sprite {
+    width: 80px;
+    height: 80px;
+  }
 }
 
 /* —— Setup (character + style) —— */
@@ -158,26 +327,175 @@
   white-space: nowrap;
 }
 
-.gear-prayer-chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
+.gear-subheading {
+  margin: 0.75rem 0 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+/* —— Prayer book (OSRS prayer tab) —— */
+.gear-prayer-book-wrap {
   margin-top: 0.5rem;
 }
 
-.gear-prayer-chips button {
-  font-size: 0.72rem;
-  padding: 0.2rem 0.45rem;
-  border-radius: 4px;
-  border: 1px solid var(--border);
+.gear-prayer-book {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 8px;
   background: var(--surface-dark);
-  color: var(--text);
-  cursor: pointer;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  overflow-x: auto;
 }
 
-.gear-prayer-chips button.active {
+.gear-prayer-row {
+  display: grid;
+  grid-template-columns: repeat(3, 38px);
+  gap: 4px;
+}
+
+.gear-prayer-row--wide {
+  grid-template-columns: repeat(4, 38px);
+}
+
+.gear-prayer-cell--empty {
+  width: 38px;
+  height: 38px;
+}
+
+.gear-prayer-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  padding: 3px;
+  border: 1px solid #3a3a3a;
+  border-radius: 3px;
+  background: linear-gradient(180deg, #2a2a2a 0%, #1e1e1e 100%);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s, opacity 0.15s;
+}
+
+.gear-prayer-btn:hover:not(:disabled) {
   border-color: var(--accent);
-  background: var(--accent-dim, rgba(100, 160, 255, 0.15));
+}
+
+.gear-prayer-btn--active {
+  border-color: #c9a227;
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.55), inset 0 0 0 1px rgba(201, 162, 39, 0.35);
+  background: linear-gradient(180deg, #3a3420 0%, #2a2418 100%);
+}
+
+.gear-prayer-btn--locked {
+  opacity: 0.35;
+  cursor: not-allowed;
+  filter: grayscale(0.85);
+}
+
+.gear-prayer-btn img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.45));
+}
+
+.gear-prayer-btn--active img {
+  filter: drop-shadow(0 0 4px rgba(201, 162, 39, 0.6));
+}
+
+html[data-theme="light"] .gear-prayer-book {
+  background: #c4b89a;
+  border-color: #8a7d5e;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.08);
+}
+
+html[data-theme="light"] .gear-prayer-btn {
+  border-color: #6b5f48;
+  background: linear-gradient(180deg, #d4c8aa 0%, #b8aa88 100%);
+}
+
+html[data-theme="light"] .gear-prayer-btn--active {
+  border-color: #9a7b18;
+  box-shadow: 0 0 6px rgba(154, 123, 24, 0.45);
+  background: linear-gradient(180deg, #e8d898 0%, #c8b060 100%);
+}
+
+/* —— Potion boost chips —— */
+.gear-boost-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.gear-boost-chip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 52px;
+  padding: 4px 2px;
+  border: 1px solid #3a3a3a;
+  border-radius: 4px;
+  background: linear-gradient(180deg, #2a2a2a 0%, #1e1e1e 100%);
+  cursor: pointer;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.gear-boost-chip:hover {
+  border-color: var(--accent);
+}
+
+.gear-boost-chip--active {
+  border-color: #c9a227;
+  box-shadow: 0 0 6px rgba(201, 162, 39, 0.45);
+  background: linear-gradient(180deg, #3a3420 0%, #2a2418 100%);
+}
+
+.gear-boost-chip img {
+  width: 32px;
+  height: 32px;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+.gear-boost-chip-label {
+  font-size: 0.5rem;
+  line-height: 1.1;
+  text-align: center;
+  color: var(--muted);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.gear-boost-chip--active .gear-boost-chip-label {
+  color: #c9a227;
+}
+
+html[data-theme="light"] .gear-boost-chip {
+  border-color: #6b5f48;
+  background: linear-gradient(180deg, #d4c8aa 0%, #b8aa88 100%);
+}
+
+html[data-theme="light"] .gear-boost-chip--active {
+  border-color: #9a7b18;
+  background: linear-gradient(180deg, #e8d898 0%, #c8b060 100%);
+}
+
+@media (max-width: 639px) {
+  .gear-setup-block--combat {
+    grid-column: 1 / -1;
+  }
 }
 
 .gear-toggle {
