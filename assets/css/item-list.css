@@ -299,6 +299,37 @@ body.site .gra-item-list__row:hover {
   }
 }
 
+@media (min-width: 1440px) {
+  .gra-item-list {
+    --gra-col-name: minmax(7rem, 1.5fr);
+    --gra-col-recipe: minmax(10rem, 1.35fr);
+    --gra-col-io: minmax(5.5rem, 0.9fr);
+    --gra-col-num: minmax(5.5rem, max-content);
+    --gra-col-gp: minmax(5.75rem, max-content);
+    --gra-col-price: minmax(6.75rem, max-content);
+    --gra-col-timing: minmax(6rem, max-content);
+  }
+}
+
+@media (min-width: 1920px) {
+  .gra-item-list {
+    --gra-col-name: minmax(9rem, 2fr);
+    --gra-col-recipe: minmax(12rem, 1.6fr);
+    --gra-col-io: minmax(6rem, 1fr);
+    --gra-col-num: minmax(6rem, max-content);
+    --gra-col-gp: minmax(6.25rem, max-content);
+    --gra-col-price: minmax(7rem, max-content);
+  }
+
+  .gra-item-list-wrap {
+    overflow-x: visible;
+  }
+
+  body.site.tool-page-wide .gra-item-list-wrap {
+    overflow-x: visible;
+  }
+}
+
 @media (max-width: 767px) {
   .gra-item-list .col-hide-narrow {
     display: none !important;

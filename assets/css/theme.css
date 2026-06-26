@@ -1,5 +1,5 @@
-@import url("graa-shell.css?v=10");
-@import url("item-list.css?v=3");
+@import url("graa-shell.css?v=11");
+@import url("item-list.css?v=4");
 
     /* Color tokens: graa-shell.css (data-theme on html) */
 
@@ -271,7 +271,7 @@
 
     body.ads-off .content-shell {
       grid-template-columns: minmax(0, 1fr);
-      max-width: 1600px;
+      max-width: var(--g-max);
       padding: 0 1.5rem;
     }
 
@@ -804,7 +804,7 @@
     }
 
     .tool-page-main {
-      max-width: 1600px;
+      max-width: var(--g-max);
       margin: 0 auto;
       width: 100%;
     }
@@ -1009,7 +1009,7 @@
     }
 
     .economy-subnav {
-      max-width: 1400px;
+      max-width: var(--g-max);
       margin: 0 auto;
       padding: 0 1.25rem 0.75rem;
       display: flex;
@@ -1615,7 +1615,7 @@
 
     .tool-subnav,
     .economy-subnav {
-      max-width: 1400px;
+      max-width: var(--g-max);
       margin: 0 auto;
       padding: 0 1.25rem;
       display: flex;
@@ -1695,7 +1695,7 @@
     }
 
     .tools-hub-main {
-      max-width: 1100px;
+      max-width: var(--g-max);
       margin: 0 auto;
       padding: 0 1.25rem 3rem;
     }
@@ -1713,7 +1713,7 @@
     }
 
     .tool-summary-strip {
-      max-width: 1400px;
+      max-width: var(--g-max);
       margin: 0 auto;
       padding: 0.65rem 1.25rem;
       background: var(--surface-dark);
@@ -1733,7 +1733,7 @@
     }
 
     .tool-tip-bar {
-      max-width: 1400px;
+      max-width: var(--g-max);
       margin: 0 auto;
       padding: 0.5rem 1.25rem;
       font-size: 0.78rem;
@@ -1761,7 +1761,7 @@
     }
 
     .disclaimer {
-      max-width: 1400px;
+      max-width: var(--g-max);
       margin: 0 auto;
       padding: 0 1.25rem;
       font-size: 0.78rem;
@@ -1955,7 +1955,7 @@
     }
 
     .tool-page-shell {
-      max-width: 1400px;
+      max-width: var(--g-max);
       margin: 0 auto;
       width: 100%;
     }

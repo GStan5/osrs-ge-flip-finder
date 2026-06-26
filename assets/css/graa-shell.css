@@ -64,6 +64,7 @@ html {
   --g-radius: 8px;
   --g-radius-sm: 6px;
   --g-font: system-ui, -apple-system, "Segoe UI", Tahoma, sans-serif;
+  /* Fluid content width — scales up on large/2K displays; padding is per-container */
   --g-max: 1120px;
   --g-header-h: 56px;
 
@@ -102,6 +103,7 @@ body.site {
   flex-direction: column;
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
 }
 
 body.site a {
@@ -491,6 +493,12 @@ body.site .tool-body,
 body.site .home-main,
 body.site .tools-hub-main {
   min-width: 0;
+}
+
+body.site .tools-hub-main {
+  max-width: var(--g-max);
+  margin: 0 auto;
+  padding: 0 1.25rem 3rem;
 }
 
 body.site .content-shell {
@@ -996,6 +1004,50 @@ body.site .hub-sidebar {
   gap: 0.65rem;
 }
 
+@media (min-width: 1280px) {
+  html {
+    --g-max: 1280px;
+  }
+
+  .tool-grid {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
+}
+
+@media (min-width: 1440px) {
+  html {
+    --g-max: 1680px;
+  }
+
+  .home-featured {
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1600px) {
+  .tool-grid,
+  .hub-tiles {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1920px) {
+  html {
+    --g-max: min(1920px, 90vw);
+  }
+
+  .tool-grid,
+  .hub-tiles {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+@media (min-width: 2560px) {
+  html {
+    --g-max: min(2200px, 90vw);
+  }
+}
+
 .tool-card {
   display: flex;
   align-items: flex-start;
@@ -1385,7 +1437,7 @@ body.site.has-header-subnav .site-header {
 
 /* ── Full-width tool layout (site-chrome.js layoutToolPage) ── */
 body.site.tool-page-wide .tool-layout-grid {
-  max-width: min(100%, 1600px);
+  max-width: min(100%, var(--g-max));
   margin: 0 auto;
   padding: 0.5rem 1.25rem 2rem;
   min-width: 0;
