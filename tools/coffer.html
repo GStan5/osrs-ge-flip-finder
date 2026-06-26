@@ -45,64 +45,141 @@
 
   <div id="cofferSummary" class="tool-summary-strip" hidden></div>
 
-  <div class="tool-page-main tool-page-shell">
-    <main style="padding:1rem 1.25rem 2rem;">
-      <section class="filters">
-        <h2 class="filters-title">Filters</h2>
-        <div class="filter-group wide">
-          <label for="cofferSearch">Search items</label>
-          <input id="cofferSearch" type="text" placeholder="e.g. dragon bones" autocomplete="off" />
-        </div>
-        <div class="filter-group">
-          <label for="cofferMode">Buy mode</label>
-          <select id="cofferMode">
-            <option value="instant">Instant (buy price)</option>
-            <option value="patient">Patient (sell price)</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label for="cofferMembers">Members</label>
-          <select id="cofferMembers">
-            <option value="all">All items</option>
-            <option value="members">Members only</option>
-            <option value="f2p">F2P only</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label for="cofferMinProfit">Min profit / item</label>
-          <input id="cofferMinProfit" type="number" min="0" placeholder="0" />
-        </div>
-        <div class="toggles">
-          <label class="toggle">
-            <input id="cofferProfitableOnly" type="checkbox" checked />
-            Profitable only
-          </label>
-        </div>
-        <div class="actions">
-          <button type="button" id="refreshCofferBtn">Refresh prices</button>
-          <button type="button" id="resetCofferBtn">Reset filters</button>
-        </div>
-      </section>
-
-      <p id="cofferMeta" class="results-meta"></p>
-      <div class="gra-item-list-wrap">
-        <div class="gra-item-list gra-item-list--coffer" id="cofferList">
-          <div class="gra-item-list__header" role="row">
-            <div class="gra-item-list__head col-item" role="columnheader">Item</div>
-            <div class="gra-item-list__head num sortable" data-sort="buyPrice" role="columnheader">Buy price</div>
-            <div class="gra-item-list__head num sortable col-hide-xs" data-sort="guide" role="columnheader">GE guide</div>
-            <div class="gra-item-list__head num sortable" data-sort="credit" role="columnheader">Coffer credit</div>
-            <div class="gra-item-list__head num sortable" data-sort="profit" role="columnheader">Profit</div>
-            <div class="gra-item-list__head num sortable col-hide-xs" data-sort="roi" role="columnheader">ROI</div>
-            <div class="gra-item-list__head num sortable col-hide-narrow" data-sort="limit" role="columnheader">Limit</div>
-            <div class="gra-item-list__head num sortable col-hide-narrow" data-sort="limitProfit" role="columnheader">Profit (limit)</div>
-          </div>
-          <div class="gra-item-list__body" id="cofferBody" role="rowgroup">
-            <div class="gra-item-list__empty loading">Loading…</div>
-          </div>
-        </div>
+  <div class="content-shell">
+    <aside class="ad-rail ad-rail-left" aria-label="Advertisement">
+      <div class="ad-slot" id="ad-slot-left">
+        <span class="ad-slot-placeholder">
+          <span class="ad-slot-label">Advertisement</span>
+          <span class="ad-slot-size">160 × 600</span>
+          <span class="ad-slot-note">Hidden on smaller screens</span>
+        </span>
       </div>
-    </main>
+    </aside>
+
+    <div class="page-main">
+      <main>
+        <section class="filters">
+          <h2 class="filters-title">Death's Coffer filters</h2>
+          <p class="filters-subtitle">Credit is 105% of GE guide price. Instant buy uses rec. buy; patient buy uses rec. sell.</p>
+
+          <div class="preset-filters">
+            <span class="preset-label">Quick</span>
+            <button type="button" class="preset-btn" data-coffer-preset="bestProfit">Best profit</button>
+            <button type="button" class="preset-btn" data-coffer-preset="fastTurnover">Fast turnover</button>
+            <button type="button" class="preset-btn" data-coffer-preset="highRoi">High ROI</button>
+          </div>
+
+          <div class="preset-filters">
+            <span class="preset-label">Budget</span>
+            <button type="button" class="preset-btn" data-coffer-preset="budget1m">Under 1M</button>
+            <button type="button" class="preset-btn" data-coffer-preset="budget10m">Under 10M</button>
+            <button type="button" class="preset-btn" data-coffer-preset="underBudget">Under 5M</button>
+          </div>
+
+          <div class="preset-filters">
+            <span class="preset-label">World</span>
+            <button type="button" class="preset-btn" data-coffer-preset="f2p">F2P</button>
+            <button type="button" class="preset-btn" data-coffer-preset="members">Members</button>
+          </div>
+
+          <div class="filter-group wide">
+            <label for="cofferSearch">Search items</label>
+            <input id="cofferSearch" type="text" placeholder="e.g. dragon bones" autocomplete="off" />
+          </div>
+
+          <div class="filter-group">
+            <label for="cofferMode">Buy mode</label>
+            <select id="cofferMode">
+              <option value="instant">Instant (buy price)</option>
+              <option value="patient">Patient (sell price)</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="cofferMembers">Members</label>
+            <select id="cofferMembers">
+              <option value="all">All items</option>
+              <option value="members">Members only</option>
+              <option value="f2p">F2P only</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="cofferMinProfit">Min profit / item</label>
+            <input id="cofferMinProfit" type="number" min="0" placeholder="0" />
+          </div>
+
+          <div class="filter-group">
+            <label for="cofferMinMargin">Min ROI %</label>
+            <input id="cofferMinMargin" type="number" step="0.1" min="0" placeholder="0" />
+          </div>
+
+          <div class="filter-group">
+            <label for="cofferMaxBuyPrice">Max buy price (gp)</label>
+            <input id="cofferMaxBuyPrice" type="number" min="0" placeholder="Any" />
+          </div>
+
+          <div class="filter-group">
+            <label for="cofferMaxBudget">Max budget (full limit)</label>
+            <input id="cofferMaxBudget" type="number" min="0" placeholder="Any" />
+          </div>
+
+          <div class="filter-group">
+            <label for="cofferMaxBuyMin">Max est. buy (min)</label>
+            <input id="cofferMaxBuyMin" type="number" min="0" placeholder="Any" />
+          </div>
+
+          <div class="filter-group">
+            <label for="cofferMinDailyVol">Min daily volume</label>
+            <input id="cofferMinDailyVol" type="number" min="0" placeholder="0" />
+          </div>
+
+          <div class="toggles">
+            <label class="toggle">
+              <input id="cofferProfitableOnly" type="checkbox" checked />
+              Profitable only
+            </label>
+          </div>
+
+          <div class="actions">
+            <button type="button" id="refreshCofferBtn">Refresh prices</button>
+            <button type="button" id="resetCofferBtn">Reset filters</button>
+          </div>
+        </section>
+
+        <p id="cofferMeta" class="results-meta"></p>
+        <div class="gra-item-list-wrap">
+          <div class="gra-item-list gra-item-list--coffer" id="cofferList" role="table" aria-label="Death's Coffer items">
+            <div class="gra-item-list__header" role="row">
+              <div class="gra-item-list__head col-item sortable" data-sort="name" role="columnheader">Item</div>
+              <div class="gra-item-list__head num sortable" data-sort="buyPrice" role="columnheader">Buy price</div>
+              <div class="gra-item-list__head num sortable col-hide-xs" data-sort="guide" role="columnheader">GE guide</div>
+              <div class="gra-item-list__head num sortable" data-sort="credit" role="columnheader">Coffer credit</div>
+              <div class="gra-item-list__head num sortable" data-sort="profit" role="columnheader">Profit</div>
+              <div class="gra-item-list__head num sortable col-hide-xs" data-sort="roi" role="columnheader">ROI</div>
+              <div class="gra-item-list__head num sortable" data-sort="buyTimeHours" role="columnheader">Est. buy</div>
+              <div class="gra-item-list__head num sortable col-hide-narrow" data-sort="volume5m" role="columnheader">5m vol.</div>
+              <div class="gra-item-list__head num sortable" data-sort="gpPerHour" role="columnheader">GP / hr</div>
+              <div class="gra-item-list__head num sortable col-hide-narrow" data-sort="limit" role="columnheader">Limit</div>
+              <div class="gra-item-list__head num sortable col-hide-narrow" data-sort="limitProfit" role="columnheader">Profit (limit)</div>
+            </div>
+            <div class="gra-item-list__body" id="cofferBody" role="rowgroup">
+              <div class="gra-item-list__empty loading">Loading…</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <aside class="ad-rail ad-rail-right" aria-label="Advertisement">
+      <div class="ad-slot" id="ad-slot-right">
+        <span class="ad-slot-placeholder">
+          <span class="ad-slot-label">Advertisement</span>
+          <span class="ad-slot-size">160 × 600</span>
+          <span class="ad-slot-note">Hidden on smaller screens</span>
+        </span>
+      </div>
+    </aside>
   </div>
 
   <footer class="site-footer">

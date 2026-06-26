@@ -36,7 +36,7 @@
 
   <details class="disclaimer disclaimer-collapsible">
     <summary><strong>Disclaimer</strong> — estimates only; verify in-game · Not affiliated with Jagex</summary>
-    <div class="disclaimer-body">Alch values from wiki mapping. Verify in-game before buying stacks. Not affiliated with Jagex.</div>
+    <div class="disclaimer-body">Alch values from wiki mapping. Fire staff assumed (no rune cost). Verify in-game before buying stacks. Not affiliated with Jagex.</div>
   </details>
 
   <div class="status-bar">
@@ -45,60 +45,142 @@
 
   <div id="alchSummary" class="tool-summary-strip" hidden></div>
 
-  <div class="tool-page-main tool-page-shell">
-    <main style="padding:1rem 1.25rem 2rem;">
-      <section class="filters">
-        <h2 class="filters-title">Filters</h2>
-        <div class="filter-group wide">
-          <label for="alchSearch">Search items</label>
-          <input id="alchSearch" type="text" placeholder="e.g. rune scimitar" autocomplete="off" />
-        </div>
-        <div class="filter-group">
-          <label for="alchMembers">Members</label>
-          <select id="alchMembers">
-            <option value="all">All items</option>
-            <option value="members">Members only</option>
-            <option value="f2p">F2P only</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label for="alchMinProfit">Min profit / alch</label>
-          <input id="alchMinProfit" type="number" min="0" placeholder="0" />
-        </div>
-        <div class="toggles">
-          <label class="toggle">
-            <input id="alchProfitableOnly" type="checkbox" checked />
-            Profitable only
-          </label>
-        </div>
-        <div class="actions">
-          <button type="button" id="refreshAlchBtn">Refresh prices</button>
-          <button type="button" id="resetAlchBtn">Reset filters</button>
-        </div>
-      </section>
-
-      <p id="alchMeta" class="results-meta"></p>
-      <div class="gra-item-list-wrap">
-        <div class="gra-item-list gra-item-list--alch" id="alchList">
-          <div class="gra-item-list__header" role="row">
-            <div class="gra-item-list__head col-item" role="columnheader">Item</div>
-            <div class="gra-item-list__head num sortable" data-sort="buyPrice" role="columnheader">Buy price</div>
-            <div class="gra-item-list__head num sortable col-hide-xs" data-sort="highalch" role="columnheader">High alch</div>
-            <div class="gra-item-list__head num col-hide-xs" role="columnheader">Nature cost</div>
-            <div class="gra-item-list__head num sortable" data-sort="profit" role="columnheader">Profit</div>
-            <div class="gra-item-list__head num sortable col-hide-xs" data-sort="roi" role="columnheader">ROI</div>
-            <div class="gra-item-list__head num sortable" data-sort="buyTimeHours" role="columnheader">Est. buy</div>
-            <div class="gra-item-list__head num sortable col-hide-narrow" data-sort="volume5m" role="columnheader">5m vol.</div>
-            <div class="gra-item-list__head num sortable col-hide-narrow" data-sort="dailyVolume" role="columnheader">Daily vol.</div>
-            <div class="gra-item-list__head num sortable" data-sort="gpPerHour" role="columnheader">GP / hr</div>
-            <div class="gra-item-list__head num sortable col-hide-narrow" data-sort="limitProfit" role="columnheader">Profit (limit)</div>
-          </div>
-          <div class="gra-item-list__body" id="alchBody" role="rowgroup">
-            <div class="gra-item-list__empty loading">Loading…</div>
-          </div>
-        </div>
+  <div class="content-shell">
+    <aside class="ad-rail ad-rail-left" aria-label="Advertisement">
+      <div class="ad-slot" id="ad-slot-left">
+        <span class="ad-slot-placeholder">
+          <span class="ad-slot-label">Advertisement</span>
+          <span class="ad-slot-size">160 × 600</span>
+          <span class="ad-slot-note">Hidden on smaller screens</span>
+        </span>
       </div>
-    </main>
+    </aside>
+
+    <div class="page-main">
+      <main>
+        <section class="filters">
+          <h2 class="filters-title">High alch filters</h2>
+          <p class="filters-subtitle">Profit = high alch − buy price − nature rune cost. GP/hr uses profit (limit) ÷ est. buy time at rec. buy.</p>
+
+          <div class="preset-filters">
+            <span class="preset-label">Quick</span>
+            <button type="button" class="preset-btn" data-alch-preset="bestGpHour">Best GP/hr</button>
+            <button type="button" class="preset-btn" data-alch-preset="cheapItems">Cheap items</button>
+            <button type="button" class="preset-btn" data-alch-preset="highVolume">High volume</button>
+            <button type="button" class="preset-btn" data-alch-preset="highMargin">High margin</button>
+          </div>
+
+          <div class="preset-filters">
+            <span class="preset-label">Budget</span>
+            <button type="button" class="preset-btn" data-alch-preset="budget1m">Under 1M</button>
+            <button type="button" class="preset-btn" data-alch-preset="budget10m">Under 10M</button>
+          </div>
+
+          <div class="preset-filters">
+            <span class="preset-label">World</span>
+            <button type="button" class="preset-btn" data-alch-preset="f2p">F2P</button>
+          </div>
+
+          <div class="filter-group wide">
+            <label for="alchSearch">Search items</label>
+            <input id="alchSearch" type="text" placeholder="e.g. rune scimitar" autocomplete="off" />
+          </div>
+
+          <div class="filter-group">
+            <label for="alchNatureCost">Nature rune cost (gp)</label>
+            <input id="alchNatureCost" type="number" min="0" placeholder="Live GE price" title="Override nature rune cost; blank uses live price" />
+          </div>
+
+          <div class="filter-group">
+            <label for="alchMembers">Members</label>
+            <select id="alchMembers">
+              <option value="all">All items</option>
+              <option value="members">Members only</option>
+              <option value="f2p">F2P only</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="alchMinProfit">Min profit / alch</label>
+            <input id="alchMinProfit" type="number" min="0" placeholder="0" />
+          </div>
+
+          <div class="filter-group">
+            <label for="alchMinMargin">Min ROI %</label>
+            <input id="alchMinMargin" type="number" step="0.1" min="0" placeholder="0" />
+          </div>
+
+          <div class="filter-group">
+            <label for="alchMinGpHour">Min GP / hour</label>
+            <input id="alchMinGpHour" type="number" min="0" placeholder="0" />
+          </div>
+
+          <div class="filter-group">
+            <label for="alchMinBuyPrice">Min buy price (gp)</label>
+            <input id="alchMinBuyPrice" type="number" min="0" placeholder="0" />
+          </div>
+
+          <div class="filter-group">
+            <label for="alchMaxBuyPrice">Max buy price (gp)</label>
+            <input id="alchMaxBuyPrice" type="number" min="0" placeholder="Any" />
+          </div>
+
+          <div class="filter-group">
+            <label for="alchMaxBudget">Max budget (full limit)</label>
+            <input id="alchMaxBudget" type="number" min="0" placeholder="Any" />
+          </div>
+
+          <div class="filter-group">
+            <label for="alchMinDailyVol">Min daily volume</label>
+            <input id="alchMinDailyVol" type="number" min="0" placeholder="0" />
+          </div>
+
+          <div class="toggles">
+            <label class="toggle">
+              <input id="alchProfitableOnly" type="checkbox" checked />
+              Profitable only
+            </label>
+          </div>
+
+          <div class="actions">
+            <button type="button" id="refreshAlchBtn">Refresh prices</button>
+            <button type="button" id="resetAlchBtn">Reset filters</button>
+          </div>
+        </section>
+
+        <p id="alchMeta" class="results-meta"></p>
+        <div class="gra-item-list-wrap">
+          <div class="gra-item-list gra-item-list--alch" id="alchList" role="table" aria-label="High alch items">
+            <div class="gra-item-list__header" role="row">
+              <div class="gra-item-list__head col-item sortable" data-sort="name" role="columnheader">Item</div>
+              <div class="gra-item-list__head num sortable" data-sort="buyPrice" role="columnheader">Buy price</div>
+              <div class="gra-item-list__head num sortable col-hide-xs" data-sort="highalch" role="columnheader">High alch</div>
+              <div class="gra-item-list__head num col-hide-xs" role="columnheader">Nature cost</div>
+              <div class="gra-item-list__head num sortable" data-sort="profit" role="columnheader">Profit</div>
+              <div class="gra-item-list__head num sortable col-hide-xs" data-sort="roi" role="columnheader">ROI</div>
+              <div class="gra-item-list__head num sortable" data-sort="buyTimeHours" role="columnheader">Est. buy</div>
+              <div class="gra-item-list__head num sortable col-hide-narrow" data-sort="volume5m" role="columnheader">5m vol.</div>
+              <div class="gra-item-list__head num sortable col-hide-narrow" data-sort="dailyVolume" role="columnheader">Daily vol.</div>
+              <div class="gra-item-list__head num sortable" data-sort="gpPerHour" role="columnheader">GP / hr</div>
+              <div class="gra-item-list__head num sortable col-hide-narrow" data-sort="limitProfit" role="columnheader">Profit (limit)</div>
+            </div>
+            <div class="gra-item-list__body" id="alchBody" role="rowgroup">
+              <div class="gra-item-list__empty loading">Loading…</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <aside class="ad-rail ad-rail-right" aria-label="Advertisement">
+      <div class="ad-slot" id="ad-slot-right">
+        <span class="ad-slot-placeholder">
+          <span class="ad-slot-label">Advertisement</span>
+          <span class="ad-slot-size">160 × 600</span>
+          <span class="ad-slot-note">Hidden on smaller screens</span>
+        </span>
+      </div>
+    </aside>
   </div>
 
   <footer class="site-footer">

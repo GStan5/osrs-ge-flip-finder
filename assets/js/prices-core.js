@@ -287,6 +287,24 @@ window.Graardor = window.Graardor || {};
     return qty / ratePerHour;
   };
 
+  G.parseFilterNum = function parseFilterNum(id) {
+    const input = G.el(id);
+    if (!input) return null;
+    const v = input.value.trim();
+    if (v === "") return null;
+    const n = Number(v);
+    return Number.isFinite(n) ? n : null;
+  };
+
+  G.withinMinuteRange = function withinMinuteRange(hours, minMinutes, maxMinutes) {
+    if (minMinutes == null && maxMinutes == null) return true;
+    if (hours == null || !Number.isFinite(hours) || hours <= 0) return false;
+    const minutes = hours * 60;
+    if (minMinutes != null && minutes < minMinutes) return false;
+    if (maxMinutes != null && minutes > maxMinutes) return false;
+    return true;
+  };
+
   G.escapeHtml = function escapeHtml(str) {
     return String(str)
       .replace(/&/g, "&amp;")

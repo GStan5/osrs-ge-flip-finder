@@ -376,7 +376,24 @@
 
         <div class="preset-filters">
           <span class="preset-label">Quick</span>
+          <button type="button" class="preset-btn" data-xf-preset="highGpHour">High GP/hr</button>
+          <button type="button" class="preset-btn" data-xf-preset="fastCycle">Fast cycle</button>
+          <button type="button" class="preset-btn" data-xf-preset="highMargin">High margin</button>
           <button type="button" class="preset-btn" id="bestDecantsBtn">Best decants</button>
+        </div>
+
+        <div class="preset-filters">
+          <span class="preset-label">Budget</span>
+          <button type="button" class="preset-btn" data-xf-preset="budget1m">Under 1M</button>
+          <button type="button" class="preset-btn" data-xf-preset="budget10m">Under 10M</button>
+        </div>
+
+        <div class="preset-filters">
+          <span class="preset-label">Type</span>
+          <button type="button" class="preset-btn" data-xf-preset="decantsOnly">Decants only</button>
+          <button type="button" class="preset-btn" data-xf-preset="setsOnly">Sets only</button>
+          <button type="button" class="preset-btn" data-xf-preset="f2p">F2P</button>
+          <button type="button" class="preset-btn" data-xf-preset="members">Members</button>
         </div>
 
         <div class="filter-group wide">
@@ -392,6 +409,7 @@
             <option value="set_combine">Combine set</option>
             <option value="set_split">Split set</option>
             <option value="uncharge">Uncharge</option>
+            <option value="sets">All item sets</option>
           </select>
         </div>
 
@@ -414,6 +432,26 @@
         <div class="filter-group">
           <label for="xfMinProfit">Min profit</label>
           <input id="xfMinProfit" type="number" min="0" placeholder="0" />
+        </div>
+
+        <div class="filter-group">
+          <label for="xfMaxBudget">Max budget (input cost)</label>
+          <input id="xfMaxBudget" type="number" min="0" placeholder="Any" />
+        </div>
+
+        <div class="filter-group">
+          <label for="xfMinMargin">Min ROI %</label>
+          <input id="xfMinMargin" type="number" step="0.1" min="0" placeholder="0" />
+        </div>
+
+        <div class="filter-group">
+          <label for="xfMinGpHour">Min GP / hour</label>
+          <input id="xfMinGpHour" type="number" min="0" placeholder="0" />
+        </div>
+
+        <div class="filter-group">
+          <label for="xfMaxCycleMin">Max cycle (min)</label>
+          <input id="xfMaxCycleMin" type="number" min="0" placeholder="Any" />
         </div>
 
         <div class="toggles">
@@ -686,6 +724,8 @@
         }
 
         if (activeTab === "transforms") {
+          const xfPreset = document.querySelector("[data-xf-preset].active")?.dataset.xfPreset;
+          if (xfPreset) params.set("xf", xfPreset);
           if (getInputValue("xfType") !== "all") params.set("xfType", getInputValue("xfType"));
           if (getInputValue("xfSkill") !== "all") params.set("xfSkill", getInputValue("xfSkill"));
           const xfQ = getInputValue("xfSearch").trim();
@@ -717,18 +757,15 @@
       if (params.get("xfType")) el("xfType").value = params.get("xfType");
       if (params.get("xfSkill")) el("xfSkill").value = params.get("xfSkill");
       if (params.get("xfQ")) el("xfSearch").value = params.get("xfQ");
+      if (params.get("xf") && XF_PRESETS[params.get("xf")]) {
+        applyXfPreset(params.get("xf"));
+      }
 
       suppressUrlSync = false;
     }
 
     function applyDecantsPreset() {
-      switchTab("transforms");
-      el("xfType").value = "decant";
-      el("xfProfitableOnly").checked = true;
-      el("xfMinProfit").value = "";
-      transformsSort = { key: "gpPerHour", dir: "desc" };
-      renderTransforms();
-      syncUrlFromState();
+      applyXfPreset("decantsOnly");
     }
 
     function bindGlobalInteractions() {
@@ -1147,6 +1184,8 @@
         sellTimeHours: hoursForQty(qty, p.sellRateHour),
         volume5m: p.volume5m,
         dailyVolume: p.dailyVolume,
+        buyRateHour: p.buyRateHour,
+        sellRateHour: p.sellRateHour,
       };
     }
 
@@ -1462,10 +1501,16 @@
       const skill = getInputValue("xfSkill");
       const membersFilter = getInputValue("xfMembersFilter");
       const minProfit = parseNum("xfMinProfit") ?? 0;
+      const maxBudget = parseNum("xfMaxBudget");
+      const minMargin = parseNum("xfMinMargin");
+      const minGpHour = parseNum("xfMinGpHour");
+      const maxCycleMin = parseNum("xfMaxCycleMin");
       const profitableOnly = isChecked("xfProfitableOnly");
 
       return rows.filter((row) => {
-        if (type !== "all" && row.type !== type) return false;
+        if (type === "sets") {
+          if (row.type !== "set_combine" && row.type !== "set_split") return false;
+        } else if (type !== "all" && row.type !== type) return false;
         if (skill !== "all" && row.category !== skill) return false;
         if (membersFilter === "members" && !row.members) return false;
         if (membersFilter === "f2p" && row.members) return false;
@@ -1477,9 +1522,25 @@
         }
         if (profitableOnly && row.profit <= 0) return false;
         if (row.profit < minProfit) return false;
+        if (maxBudget != null && row.buyCost > maxBudget) return false;
+        if (minMargin != null && (row.marginPct == null || row.marginPct < minMargin)) return false;
+        if (minGpHour != null && (row.gpPerHour == null || row.gpPerHour < minGpHour)) return false;
+        if (!withinMinuteRange(row.cycleHours, null, maxCycleMin)) return false;
         if (isChecked("favoritesOnly") && !isRecipeFavorite(row)) return false;
         return true;
       });
+    }
+
+    function recipeItemTimingTooltip(item, side) {
+      const rate = side === "buy" ? item.buyRateHour : item.sellRateHour;
+      if (!rate || rate <= 0) return `No recent volume at rec. ${side} side`;
+      const perMin = rate / 60;
+      return `~${Math.round(rate).toLocaleString()} items/hour at rec. ${side} (65% 5m + 35% 1h) · ~${perMin >= 1 ? perMin.toFixed(1) : perMin.toFixed(2)}/min · ${item.qty}× needed`;
+    }
+
+    function recipeCycleTooltip(row) {
+      if (row.cycleHours == null) return "Need buy and sell volume to estimate full cycle";
+      return `Est. buy + est. sell (${formatDuration(row.buyTimeHours)} + ${formatDuration(row.sellTimeHours)}) — slowest input buy + slowest output sell`;
     }
 
     function renderTransforms() {
@@ -1548,9 +1609,9 @@
               `${Graardor.itemListNumCell(formatGp(row.profit), `num ${marginClass}`, "Profit")}` +
               `${Graardor.itemListNumCell(row.marginPct == null ? "—" : `${row.marginPct.toFixed(2)}%`, `num col-hide-xs ${marginClass}`, "ROI")}` +
               `${Graardor.itemListNumCell(row.gpPerHour == null ? "—" : formatGp(row.gpPerHour), `num ${gpHrClass} highlight-gp`, "GP / hr")}` +
-              `${Graardor.itemListNumCell(formatDuration(row.buyTimeHours), "num", "Est. buy")}` +
-              `${Graardor.itemListNumCell(formatDuration(row.sellTimeHours), "num", "Est. sell")}` +
-              `${Graardor.itemListNumCell(formatDuration(row.cycleHours), "num", "Cycle")}` +
+              `${durationCell(row.buyTimeHours, row.inputs.length ? recipeItemTimingTooltip(row.inputs.reduce((a, b) => (a.buyTimeHours ?? 0) >= (b.buyTimeHours ?? 0) ? a : b), "buy") : null, "Est. buy")}` +
+              `${durationCell(row.sellTimeHours, row.outputs.length ? recipeItemTimingTooltip(row.outputs.reduce((a, b) => (a.sellTimeHours ?? 0) >= (b.sellTimeHours ?? 0) ? a : b), "sell") : null, "Est. sell")}` +
+              `${durationCell(row.cycleHours, recipeCycleTooltip(row), "Cycle")}` +
               `${Graardor.itemListNumCell(row.minVolume5m == null ? "—" : formatGp(row.minVolume5m), "num col-hide-narrow", "5m vol.")}` +
               `${Graardor.itemListNumCell(row.minDailyVolume == null ? "—" : formatGp(row.minDailyVolume), "num col-hide-narrow", "Daily vol.")}` +
               `${Graardor.itemListCell(escapeHtml(row.category), "col-hide-narrow", { "data-label": "Category" })}` +
@@ -1577,14 +1638,52 @@
     }
 
     function resetTransformFilters() {
-      el("xfSearch").value = "";
-      el("xfType").value = "all";
-      el("xfSkill").value = "all";
-      el("xfMembersFilter").value = "all";
-      el("xfMinProfit").value = "";
-      el("xfIncludeTax").checked = true;
-      el("xfProfitableOnly").checked = true;
+      setXfFilters({});
       transformsSort = { key: "gpPerHour", dir: "desc" };
+      setActiveXfPreset(null);
+      renderTransforms();
+      syncUrlFromState();
+    }
+
+    function setXfFilters(values = {}) {
+      el("xfSearch").value = values.search ?? "";
+      el("xfType").value = values.type ?? "all";
+      el("xfSkill").value = values.skill ?? "all";
+      el("xfMembersFilter").value = values.membersFilter ?? "all";
+      el("xfMinProfit").value = values.minProfit ?? "";
+      el("xfMaxBudget").value = values.maxBudget ?? "";
+      el("xfMinMargin").value = values.minMargin ?? "";
+      el("xfMinGpHour").value = values.minGpHour ?? "";
+      el("xfMaxCycleMin").value = values.maxCycleMin ?? "";
+      el("xfIncludeTax").checked = values.includeTax ?? true;
+      el("xfProfitableOnly").checked = values.profitableOnly ?? true;
+      if (values.sortKey) transformsSort = { key: values.sortKey, dir: "desc" };
+    }
+
+    const XF_PRESETS = {
+      highGpHour: { minGpHour: 100000, profitableOnly: true, sortKey: "gpPerHour" },
+      fastCycle: { maxCycleMin: 30, profitableOnly: true, sortKey: "gpPerHour" },
+      highMargin: { minMargin: 5, profitableOnly: true, sortKey: "marginPct" },
+      budget1m: { maxBudget: 1_000_000, profitableOnly: true, sortKey: "gpPerHour" },
+      budget10m: { maxBudget: 10_000_000, profitableOnly: true, sortKey: "gpPerHour" },
+      decantsOnly: { type: "decant", profitableOnly: true, sortKey: "gpPerHour" },
+      setsOnly: { type: "sets", profitableOnly: true, sortKey: "profit" },
+      f2p: { membersFilter: "f2p", profitableOnly: true, sortKey: "gpPerHour" },
+      members: { membersFilter: "members", profitableOnly: true, sortKey: "gpPerHour" },
+    };
+
+    function setActiveXfPreset(presetId) {
+      document.querySelectorAll("[data-xf-preset]").forEach((btn) => {
+        btn.classList.toggle("active", btn.dataset.xfPreset === presetId);
+      });
+    }
+
+    function applyXfPreset(presetId) {
+      const preset = XF_PRESETS[presetId];
+      if (!preset) return;
+      switchTab("transforms");
+      setXfFilters(preset);
+      setActiveXfPreset(presetId);
       renderTransforms();
       syncUrlFromState();
     }
@@ -2151,12 +2250,14 @@
       if (transformsPanel) {
         transformsPanel.addEventListener("input", (e) => {
           if (e.target.closest(".filters")) {
+            setActiveXfPreset(null);
             renderTransforms();
             syncUrlFromState();
           }
         });
         transformsPanel.addEventListener("change", (e) => {
           if (e.target.closest(".filters")) {
+            setActiveXfPreset(null);
             renderTransforms();
             syncUrlFromState();
           }
@@ -2178,6 +2279,10 @@
 
     document.querySelectorAll("[data-t10-preset]").forEach((btn) => {
       btn.addEventListener("click", () => applyTop10Preset(btn.dataset.t10Preset));
+    });
+
+    document.querySelectorAll("[data-xf-preset]").forEach((btn) => {
+      btn.addEventListener("click", () => applyXfPreset(btn.dataset.xfPreset));
     });
 
     el("refreshBtn").addEventListener("click", () => loadData(true));

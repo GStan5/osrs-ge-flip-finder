@@ -237,6 +237,9 @@ body.site .gra-item-list__row:hover {
     var(--gra-col-gp)
     var(--gra-col-gp)
     var(--gra-col-num)
+    var(--gra-col-timing)
+    var(--gra-col-num)
+    var(--gra-col-gp)
     var(--gra-col-num)
     var(--gra-col-gp);
 }
