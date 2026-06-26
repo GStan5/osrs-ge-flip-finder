@@ -627,6 +627,32 @@ window.Graardor = window.Graardor || {};
     tb.innerHTML = G.tableSkeletonRows(cols, rows);
   };
 
+  /** Early stubs so tool scripts can register before site-chrome.js loads. */
+  G._toolLayoutDone = false;
+  G._toolLayoutWaiters = [];
+  G._toolListRefreshHandlers = [];
+
+  G.whenToolLayoutReady = function whenToolLayoutReady(fn) {
+    if (typeof fn !== "function") return;
+    if (G._toolLayoutDone) fn();
+    else G._toolLayoutWaiters.push(fn);
+  };
+
+  G.onToolListRefresh = function onToolListRefresh(fn) {
+    if (typeof fn !== "function") return;
+    G._toolListRefreshHandlers.push(fn);
+  };
+
+  G.refreshToolLists = function refreshToolLists() {
+    G._toolListRefreshHandlers.forEach((fn) => {
+      try {
+        fn();
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  };
+
   G.onCacheReady = function onCacheReady(fn) {
     if (typeof fn !== "function") return;
     if (G.cachedApiData) {

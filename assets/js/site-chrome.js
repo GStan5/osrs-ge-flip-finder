@@ -1,14 +1,13 @@
 (function () {
   const G = (window.Graardor = window.Graardor || {});
-  let toolLayoutDone = false;
-  const toolLayoutWaiters = [];
-  const listRefreshHandlers = [];
+  G._toolLayoutWaiters = G._toolLayoutWaiters || [];
+  G._toolListRefreshHandlers = G._toolListRefreshHandlers || [];
 
   function notifyToolLayoutReady() {
-    if (toolLayoutDone) return;
-    toolLayoutDone = true;
+    if (G._toolLayoutDone) return;
+    G._toolLayoutDone = true;
     document.dispatchEvent(new CustomEvent("graardor:layout-ready"));
-    toolLayoutWaiters.splice(0).forEach((fn) => {
+    G._toolLayoutWaiters.splice(0).forEach((fn) => {
       try {
         fn();
       } catch (err) {
@@ -17,25 +16,6 @@
     });
     G.refreshToolLists();
   }
-
-  G.whenToolLayoutReady = function whenToolLayoutReady(fn) {
-    if (toolLayoutDone) fn();
-    else toolLayoutWaiters.push(fn);
-  };
-
-  G.onToolListRefresh = function onToolListRefresh(fn) {
-    listRefreshHandlers.push(fn);
-  };
-
-  G.refreshToolLists = function refreshToolLists() {
-    listRefreshHandlers.forEach((fn) => {
-      try {
-        fn();
-      } catch (err) {
-        console.error(err);
-      }
-    });
-  };
 
   const NAV_SECTIONS = [
     {

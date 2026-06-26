@@ -25,59 +25,57 @@
   }
 
   function buildRows() {
-    if (!catalog?.items || !G.cachedApiData) return [];
+    if (!catalog?.items) return [];
 
-    return catalog.items
-      .map((entry) => {
-        const input = G.getItemPrice(entry.inputId);
-        const output = G.getItemPrice(entry.outputId);
-        if (!input?.buy || input.buy <= 0) return null;
-        if (!output?.sell || output.sell <= 0) return null;
+    return catalog.items.map((entry) => {
+      const input = G.cachedApiData ? G.getItemPrice(entry.inputId) : null;
+      const output = G.cachedApiData ? G.getItemPrice(entry.outputId) : null;
+      const buyCost = input?.buy != null && input.buy > 0 ? input.buy : null;
+      const sellRaw = output?.sell != null && output.sell > 0 ? output.sell : null;
+      const tax = sellRaw != null ? G.calcGeTax(sellRaw, entry.outputId) : null;
+      const sellAfterTax = sellRaw != null ? sellRaw - tax : null;
+      const { total: runeCost, missing: runeMissing } = calcRuneCost(entry.runes);
+      const totalCost = buyCost != null ? buyCost + runeCost : null;
+      const profit = sellAfterTax != null && totalCost != null ? sellAfterTax - totalCost : null;
+      const margin = profit != null && totalCost != null && totalCost > 0 ? (profit / totalCost) * 100 : null;
+      const priceMissing = buyCost == null || sellRaw == null;
 
-        const tax = G.calcGeTax(output.sell, entry.outputId);
-        const sellAfterTax = output.sell - tax;
-        const { total: runeCost, missing: runeMissing } = calcRuneCost(entry.runes);
-        const buyCost = input.buy;
-        const totalCost = buyCost + runeCost;
-        const profit = sellAfterTax - totalCost;
-        const margin = totalCost > 0 ? (profit / totalCost) * 100 : null;
-
-        return {
-          id: entry.id,
-          inputId: entry.inputId,
-          outputId: entry.outputId,
-          inputName: entry.inputName,
-          outputName: entry.outputName,
-          inputIcon: entry.inputIcon,
-          outputIcon: entry.outputIcon,
-          name: entry.inputName,
-          gem: entry.gem,
-          type: entry.type,
-          spellName: entry.spellName,
-          magicLevel: entry.magicLevel,
-          runes: entry.runes,
-          runeCost,
-          runeMissing,
-          buyCost,
-          sellRaw: output.sell,
-          sellAfterTax,
-          tax,
-          profit,
-          margin,
-          members: entry.members,
-          limit: input.limit ?? 0,
-          limitProfit: profit * (input.limit > 0 ? input.limit : 1),
-          searchText: `${entry.inputName} ${entry.outputName} ${entry.spellName} ${entry.gem} ${entry.type}`.toLowerCase(),
-        };
-      })
-      .filter(Boolean);
+      return {
+        id: entry.id,
+        inputId: entry.inputId,
+        outputId: entry.outputId,
+        inputName: entry.inputName,
+        outputName: entry.outputName,
+        inputIcon: entry.inputIcon,
+        outputIcon: entry.outputIcon,
+        name: entry.inputName,
+        gem: entry.gem,
+        type: entry.type,
+        spellName: entry.spellName,
+        magicLevel: entry.magicLevel,
+        runes: entry.runes,
+        runeCost,
+        runeMissing,
+        buyCost,
+        sellRaw,
+        sellAfterTax,
+        tax,
+        profit,
+        margin,
+        priceMissing,
+        members: entry.members,
+        limit: input?.limit ?? 0,
+        limitProfit: profit != null ? profit * (input?.limit > 0 ? input.limit : 1) : null,
+        searchText: `${entry.inputName} ${entry.outputName} ${entry.spellName} ${entry.gem} ${entry.type}`.toLowerCase(),
+      };
+    });
   }
 
   function passesFilters(row) {
-    if (G.el("enchantProfitableOnly")?.checked && row.profit <= 0) return false;
+    if (G.el("enchantProfitableOnly")?.checked && row.profit != null && row.profit <= 0) return false;
 
     const minProfit = G.parseFilterNum("enchantMinProfit");
-    if (minProfit != null && row.profit < minProfit) return false;
+    if (minProfit != null && (row.profit == null || row.profit < minProfit)) return false;
 
     const minMargin = G.parseFilterNum("enchantMinMargin");
     if (minMargin != null && (row.margin == null || row.margin < minMargin)) return false;
@@ -139,21 +137,24 @@
   }
 
   function enchantRowHtml(row) {
-    const profitCls = row.profit >= 0 ? "positive" : "negative";
+    const profitCls =
+      row.profit == null ? "" : row.profit >= 0 ? "positive" : "negative";
     const runeTitle = row.runes.map((r) => `${r.qty}× ${r.name}`).join(", ");
     return G.itemListRow(
       enchantPairCell(row) +
         G.itemListCell(G.escapeHtml(row.spellName), "col-hide-xs spell-col", { "data-label": "Spell", title: row.spellName }) +
         G.itemListNumCell(String(row.magicLevel), "num col-hide-narrow", "Magic") +
         G.itemListNumCell(runeCostLabel(row), "num", "Rune cost", { title: runeTitle + (row.runeMissing ? " · some rune prices missing" : "") }) +
-        G.itemListNumCell(G.formatPrice(row.buyCost), "num price-buy price-col-buy price-copyable", "Buy cost", {
-          "data-copy-price": Math.round(row.buyCost),
-          title: "Click to copy buy price",
+        G.itemListNumCell(row.buyCost != null ? G.formatPrice(row.buyCost) : "—", "num price-buy price-col-buy price-copyable", "Buy cost", {
+          ...(row.buyCost != null ? { "data-copy-price": Math.round(row.buyCost), title: "Click to copy buy price" } : { title: "Buy price unavailable" }),
         }) +
-        G.itemListNumCell(G.formatPrice(row.sellAfterTax), "num col-hide-xs", "Sell (after tax)", {
-          title: `Inst. sell ${G.formatPrice(row.sellRaw)} − ${G.formatPrice(row.tax)} tax`,
+        G.itemListNumCell(row.sellAfterTax != null ? G.formatPrice(row.sellAfterTax) : "—", "num col-hide-xs", "Sell (after tax)", {
+          title:
+            row.sellRaw != null
+              ? `Inst. sell ${G.formatPrice(row.sellRaw)} − ${G.formatPrice(row.tax)} tax`
+              : "Sell price unavailable",
         }) +
-        G.itemListNumCell(G.formatGp(row.profit), `num ${profitCls}`, "Profit") +
+        G.itemListNumCell(row.profit != null ? G.formatGp(row.profit) : "—", `num ${profitCls}`, "Profit") +
         G.itemListNumCell(row.margin != null ? row.margin.toFixed(1) + "%" : "—", `num col-hide-xs ${profitCls}`, "Margin")
     );
   }
@@ -184,17 +185,25 @@
   function render() {
     rows = buildRows();
     const filtered = sortRows(rows.filter(passesFilters));
+    const pricedCount = rows.filter((r) => !r.priceMissing).length;
+    const missingPrices = rows.length > 0 && pricedCount === 0;
 
     G.el("enchantMeta").textContent = filtered.length
-      ? `${filtered.length.toLocaleString()} of ${catalog?.itemCount ?? rows.length} enchantable items · profit = sell after GE tax − buy − runes`
+      ? `${filtered.length.toLocaleString()} of ${catalog?.itemCount ?? rows.length} enchantable items · profit = sell after GE tax − buy − runes${missingPrices ? " · some prices missing — refresh or turn off Profitable only" : ""}`
       : rows.length
         ? "No items match your filters."
-        : "No price data available.";
+        : catalog?.items?.length
+          ? "Catalog loaded — waiting for GE prices."
+          : "No enchant data available.";
 
     if (!filtered.length) {
       G.renderItemList("enchantBody", {
-        message: rows.length ? "No matches — try loosening filters." : "Couldn't calculate profits — refresh prices.",
-        loading: true,
+        message: rows.length
+          ? "No matches — try loosening filters or turn off Profitable only."
+          : catalog?.items?.length
+            ? "Prices not loaded yet — click Refresh prices or wait a moment."
+            : "Couldn't load enchant catalog — try refreshing the page.",
+        loading: !rows.length,
         listId: "enchantList",
         sortKey: sort.key,
         sortDir: sort.dir,
@@ -210,18 +219,18 @@
       sortDir: sort.dir,
     });
 
-    const best = filtered[0];
-    if (typeof renderSummaryStrip === "function") {
+    const best = filtered.find((r) => r.profit != null) ?? filtered[0];
+    if (typeof renderSummaryStrip === "function" && best) {
       G.el("enchantSummary")?.removeAttribute("hidden");
       renderSummaryStrip("enchantSummary", [
         {
           label: "Best profit",
-          value: G.formatGp(best.profit),
-          className: best.profit >= 0 ? "highlight-gp" : "",
+          value: best.profit != null ? G.formatGp(best.profit) : "—",
+          className: best.profit != null && best.profit >= 0 ? "highlight-gp" : "",
           hint: best.outputName,
           link: G.itemPageUrl(best.outputId),
         },
-        { label: "Profitable", value: filtered.filter((r) => r.profit > 0).length.toLocaleString() },
+        { label: "Profitable", value: filtered.filter((r) => r.profit != null && r.profit > 0).length.toLocaleString() },
         { label: "Rune cost", value: runeCostLabel(best) + " gp", hint: best.spellName },
         { label: "Showing", value: filtered.length.toLocaleString() },
       ]);
