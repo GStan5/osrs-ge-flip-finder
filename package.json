@@ -11,6 +11,7 @@
     "build:prayers-meta": "node scripts/build-prayers-meta.mjs",
     "build:gear-pools": "node scripts/build-gear-upgrade-pools.mjs",
     "build:slayer-tasks": "node scripts/build-slayer-tasks-meta.mjs",
+    "build:enchant-jewelry": "node scripts/build-enchant-jewelry.mjs",
     "build:transforms": "node scripts/build-recipes.mjs"
   },
   "dependencies": {

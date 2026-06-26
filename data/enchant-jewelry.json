@@ -1,0 +1,1082 @@
+{
+  "generatedAt": "2026-06-26T16:36:16.936Z",
+  "spellCount": 7,
+  "itemCount": 33,
+  "spells": {
+    "1": {
+      "name": "Enchant Level-1 Jewellery",
+      "magicLevel": 7,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 555,
+          "name": "Water rune",
+          "qty": 1
+        }
+      ]
+    },
+    "2": {
+      "name": "Enchant Level-2 Jewellery",
+      "magicLevel": 27,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 556,
+          "name": "Air rune",
+          "qty": 3
+        }
+      ]
+    },
+    "3": {
+      "name": "Enchant Level-3 Jewellery",
+      "magicLevel": 49,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 554,
+          "name": "Fire rune",
+          "qty": 5
+        }
+      ]
+    },
+    "4": {
+      "name": "Enchant Level-4 Jewellery",
+      "magicLevel": 57,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 10
+        }
+      ]
+    },
+    "5": {
+      "name": "Enchant Level-5 Jewellery",
+      "magicLevel": 68,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 15
+        },
+        {
+          "id": 555,
+          "name": "Water rune",
+          "qty": 15
+        }
+      ]
+    },
+    "6": {
+      "name": "Enchant Level-6 Jewellery",
+      "magicLevel": 87,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 554,
+          "name": "Fire rune",
+          "qty": 20
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 20
+        }
+      ]
+    },
+    "7": {
+      "name": "Enchant Level-7 Jewellery",
+      "magicLevel": 93,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 20
+        },
+        {
+          "id": 565,
+          "name": "Blood rune",
+          "qty": 20
+        },
+        {
+          "id": 566,
+          "name": "Soul rune",
+          "qty": 20
+        }
+      ]
+    }
+  },
+  "items": [
+    {
+      "id": "1637-2550",
+      "inputId": 1637,
+      "outputId": 2550,
+      "inputName": "Sapphire ring",
+      "outputName": "Ring of recoil",
+      "inputIcon": "Sapphire ring.png",
+      "outputIcon": "Ring of recoil.png",
+      "gem": "sapphire",
+      "type": "ring",
+      "spellLevel": 1,
+      "spellName": "Enchant Level-1 Jewellery",
+      "magicLevel": 7,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 555,
+          "name": "Water rune",
+          "qty": 1
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "1656-3853",
+      "inputId": 1656,
+      "outputId": 3853,
+      "inputName": "Sapphire necklace",
+      "outputName": "Games necklace(8)",
+      "inputIcon": "Sapphire necklace.png",
+      "outputIcon": "Games necklace(8).png",
+      "gem": "sapphire",
+      "type": "necklace",
+      "spellLevel": 1,
+      "spellName": "Enchant Level-1 Jewellery",
+      "magicLevel": 7,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 555,
+          "name": "Water rune",
+          "qty": 1
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "1694-1727",
+      "inputId": 1694,
+      "outputId": 1727,
+      "inputName": "Sapphire amulet",
+      "outputName": "Amulet of magic",
+      "inputIcon": "Sapphire amulet.png",
+      "outputIcon": "Amulet of magic.png",
+      "gem": "sapphire",
+      "type": "amulet",
+      "spellLevel": 1,
+      "spellName": "Enchant Level-1 Jewellery",
+      "magicLevel": 7,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 555,
+          "name": "Water rune",
+          "qty": 1
+        }
+      ],
+      "members": false
+    },
+    {
+      "id": "21090-21143",
+      "inputId": 21090,
+      "outputId": 21143,
+      "inputName": "Opal necklace",
+      "outputName": "Dodgy necklace",
+      "inputIcon": "Opal necklace.png",
+      "outputIcon": "Dodgy necklace.png",
+      "gem": "opal",
+      "type": "necklace",
+      "spellLevel": 1,
+      "spellName": "Enchant Level-1 Jewellery",
+      "magicLevel": 7,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 555,
+          "name": "Water rune",
+          "qty": 1
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "21108-21160",
+      "inputId": 21108,
+      "outputId": 21160,
+      "inputName": "Opal amulet",
+      "outputName": "Amulet of bounty",
+      "inputIcon": "Opal amulet.png",
+      "outputIcon": "Amulet of bounty.png",
+      "gem": "opal",
+      "type": "amulet",
+      "spellLevel": 1,
+      "spellName": "Enchant Level-1 Jewellery",
+      "magicLevel": 7,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 555,
+          "name": "Water rune",
+          "qty": 1
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "21117-21177",
+      "inputId": 21117,
+      "outputId": 21177,
+      "inputName": "Opal bracelet",
+      "outputName": "Expeditious bracelet",
+      "inputIcon": "Opal bracelet.png",
+      "outputIcon": "Expeditious bracelet.png",
+      "gem": "opal",
+      "type": "bracelet",
+      "spellLevel": 1,
+      "spellName": "Enchant Level-1 Jewellery",
+      "magicLevel": 7,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 555,
+          "name": "Water rune",
+          "qty": 1
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "21081-21126",
+      "inputId": 21081,
+      "outputId": 21126,
+      "inputName": "Opal ring",
+      "outputName": "Ring of pursuit",
+      "inputIcon": "Opal ring.png",
+      "outputIcon": "Ring of pursuit.png",
+      "gem": "opal",
+      "type": "ring",
+      "spellLevel": 2,
+      "spellName": "Enchant Level-2 Jewellery",
+      "magicLevel": 27,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 556,
+          "name": "Air rune",
+          "qty": 3
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "21120-21180",
+      "inputId": 21120,
+      "outputId": 21180,
+      "inputName": "Jade bracelet",
+      "outputName": "Flamtaer bracelet",
+      "inputIcon": "Jade bracelet.png",
+      "outputIcon": "Flamtaer bracelet.png",
+      "gem": "jade",
+      "type": "bracelet",
+      "spellLevel": 2,
+      "spellName": "Enchant Level-2 Jewellery",
+      "magicLevel": 27,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 556,
+          "name": "Air rune",
+          "qty": 3
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "1639-2552",
+      "inputId": 1639,
+      "outputId": 2552,
+      "inputName": "Emerald ring",
+      "outputName": "Ring of dueling(8)",
+      "inputIcon": "Emerald ring.png",
+      "outputIcon": "Ring of dueling(8).png",
+      "gem": "emerald",
+      "type": "ring",
+      "spellLevel": 2,
+      "spellName": "Enchant Level-2 Jewellery",
+      "magicLevel": 27,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 556,
+          "name": "Air rune",
+          "qty": 3
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "1658-5521",
+      "inputId": 1658,
+      "outputId": 5521,
+      "inputName": "Emerald necklace",
+      "outputName": "Binding necklace",
+      "inputIcon": "Emerald necklace.png",
+      "outputIcon": "Binding necklace.png",
+      "gem": "emerald",
+      "type": "necklace",
+      "spellLevel": 2,
+      "spellName": "Enchant Level-2 Jewellery",
+      "magicLevel": 27,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 556,
+          "name": "Air rune",
+          "qty": 3
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "1696-1729",
+      "inputId": 1696,
+      "outputId": 1729,
+      "inputName": "Emerald amulet",
+      "outputName": "Amulet of defence",
+      "inputIcon": "Emerald amulet.png",
+      "outputIcon": "Amulet of defence.png",
+      "gem": "emerald",
+      "type": "amulet",
+      "spellLevel": 2,
+      "spellName": "Enchant Level-2 Jewellery",
+      "magicLevel": 27,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 556,
+          "name": "Air rune",
+          "qty": 3
+        }
+      ],
+      "members": false
+    },
+    {
+      "id": "21096-21146",
+      "inputId": 21096,
+      "outputId": 21146,
+      "inputName": "Topaz necklace",
+      "outputName": "Necklace of passage(5)",
+      "inputIcon": "Topaz necklace.png",
+      "outputIcon": "Necklace of passage.png",
+      "gem": "topaz",
+      "type": "necklace",
+      "spellLevel": 2,
+      "spellName": "Enchant Level-2 Jewellery",
+      "magicLevel": 27,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 556,
+          "name": "Air rune",
+          "qty": 3
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "21114-21160",
+      "inputId": 21114,
+      "outputId": 21160,
+      "inputName": "Topaz amulet",
+      "outputName": "Amulet of bounty",
+      "inputIcon": "Topaz amulet.png",
+      "outputIcon": "Amulet of bounty.png",
+      "gem": "topaz",
+      "type": "amulet",
+      "spellLevel": 2,
+      "spellName": "Enchant Level-2 Jewellery",
+      "magicLevel": 27,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 556,
+          "name": "Air rune",
+          "qty": 3
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "21087-21140",
+      "inputId": 21087,
+      "outputId": 21140,
+      "inputName": "Topaz ring",
+      "outputName": "Efaritay's aid",
+      "inputIcon": "Topaz ring.png",
+      "outputIcon": "Efaritay's aid.png",
+      "gem": "topaz",
+      "type": "ring",
+      "spellLevel": 3,
+      "spellName": "Enchant Level-3 Jewellery",
+      "magicLevel": 49,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 554,
+          "name": "Fire rune",
+          "qty": 5
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "21123-21183",
+      "inputId": 21123,
+      "outputId": 21183,
+      "inputName": "Topaz bracelet",
+      "outputName": "Bracelet of slaughter",
+      "inputIcon": "Topaz bracelet.png",
+      "outputIcon": "Bracelet of slaughter.png",
+      "gem": "topaz",
+      "type": "bracelet",
+      "spellLevel": 3,
+      "spellName": "Enchant Level-3 Jewellery",
+      "magicLevel": 49,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 554,
+          "name": "Fire rune",
+          "qty": 5
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "1641-2568",
+      "inputId": 1641,
+      "outputId": 2568,
+      "inputName": "Ruby ring",
+      "outputName": "Ring of forging",
+      "inputIcon": "Ruby ring.png",
+      "outputIcon": "Ring of forging.png",
+      "gem": "ruby",
+      "type": "ring",
+      "spellLevel": 3,
+      "spellName": "Enchant Level-3 Jewellery",
+      "magicLevel": 49,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 554,
+          "name": "Fire rune",
+          "qty": 5
+        }
+      ],
+      "members": false
+    },
+    {
+      "id": "1698-1725",
+      "inputId": 1698,
+      "outputId": 1725,
+      "inputName": "Ruby amulet",
+      "outputName": "Amulet of strength",
+      "inputIcon": "Ruby amulet.png",
+      "outputIcon": "Amulet of strength.png",
+      "gem": "ruby",
+      "type": "amulet",
+      "spellLevel": 3,
+      "spellName": "Enchant Level-3 Jewellery",
+      "magicLevel": 49,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 554,
+          "name": "Fire rune",
+          "qty": 5
+        }
+      ],
+      "members": false
+    },
+    {
+      "id": "11085-11088",
+      "inputId": 11085,
+      "outputId": 11088,
+      "inputName": "Ruby bracelet",
+      "outputName": "Inoculation bracelet",
+      "inputIcon": "Ruby bracelet.png",
+      "outputIcon": "Inoculation bracelet.png",
+      "gem": "ruby",
+      "type": "bracelet",
+      "spellLevel": 3,
+      "spellName": "Enchant Level-3 Jewellery",
+      "magicLevel": 49,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 554,
+          "name": "Fire rune",
+          "qty": 5
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "1643-2570",
+      "inputId": 1643,
+      "outputId": 2570,
+      "inputName": "Diamond ring",
+      "outputName": "Ring of life",
+      "inputIcon": "Diamond ring.png",
+      "outputIcon": "Ring of life.png",
+      "gem": "diamond",
+      "type": "ring",
+      "spellLevel": 4,
+      "spellName": "Enchant Level-4 Jewellery",
+      "magicLevel": 57,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 10
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "1662-11090",
+      "inputId": 1662,
+      "outputId": 11090,
+      "inputName": "Diamond necklace",
+      "outputName": "Phoenix necklace",
+      "inputIcon": "Diamond necklace.png",
+      "outputIcon": "Phoenix necklace.png",
+      "gem": "diamond",
+      "type": "necklace",
+      "spellLevel": 4,
+      "spellName": "Enchant Level-4 Jewellery",
+      "magicLevel": 57,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 10
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "1700-1731",
+      "inputId": 1700,
+      "outputId": 1731,
+      "inputName": "Diamond amulet",
+      "outputName": "Amulet of power",
+      "inputIcon": "Diamond amulet.png",
+      "outputIcon": "Amulet of power.png",
+      "gem": "diamond",
+      "type": "amulet",
+      "spellLevel": 4,
+      "spellName": "Enchant Level-4 Jewellery",
+      "magicLevel": 57,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 10
+        }
+      ],
+      "members": false
+    },
+    {
+      "id": "11092-21817",
+      "inputId": 11092,
+      "outputId": 21817,
+      "inputName": "Diamond bracelet",
+      "outputName": "Bracelet of ethereum (uncharged)",
+      "inputIcon": "Diamond bracelet.png",
+      "outputIcon": "Bracelet of ethereum.png",
+      "gem": "diamond",
+      "type": "bracelet",
+      "spellLevel": 4,
+      "spellName": "Enchant Level-4 Jewellery",
+      "magicLevel": 57,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 10
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "1645-2572",
+      "inputId": 1645,
+      "outputId": 2572,
+      "inputName": "Dragonstone ring",
+      "outputName": "Ring of wealth",
+      "inputIcon": "Dragonstone ring.png",
+      "outputIcon": "Ring of wealth.png",
+      "gem": "dragonstone",
+      "type": "ring",
+      "spellLevel": 5,
+      "spellName": "Enchant Level-5 Jewellery",
+      "magicLevel": 68,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 15
+        },
+        {
+          "id": 555,
+          "name": "Water rune",
+          "qty": 15
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "1664-11968",
+      "inputId": 1664,
+      "outputId": 11968,
+      "inputName": "Dragon necklace",
+      "outputName": "Skills necklace(6)",
+      "inputIcon": "Dragon necklace.png",
+      "outputIcon": "Skills necklace(6).png",
+      "gem": "dragonstone",
+      "type": "necklace",
+      "spellLevel": 5,
+      "spellName": "Enchant Level-5 Jewellery",
+      "magicLevel": 68,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 15
+        },
+        {
+          "id": 555,
+          "name": "Water rune",
+          "qty": 15
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "1702-1712",
+      "inputId": 1702,
+      "outputId": 1712,
+      "inputName": "Dragonstone amulet",
+      "outputName": "Amulet of glory(4)",
+      "inputIcon": "Dragonstone amulet.png",
+      "outputIcon": "Amulet of glory(4).png",
+      "gem": "dragonstone",
+      "type": "amulet",
+      "spellLevel": 5,
+      "spellName": "Enchant Level-5 Jewellery",
+      "magicLevel": 68,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 15
+        },
+        {
+          "id": 555,
+          "name": "Water rune",
+          "qty": 15
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "11115-11972",
+      "inputId": 11115,
+      "outputId": 11972,
+      "inputName": "Dragonstone bracelet",
+      "outputName": "Combat bracelet(6)",
+      "inputIcon": "Dragonstone bracelet.png",
+      "outputIcon": "Combat bracelet(6).png",
+      "gem": "dragonstone",
+      "type": "bracelet",
+      "spellLevel": 5,
+      "spellName": "Enchant Level-5 Jewellery",
+      "magicLevel": 68,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 15
+        },
+        {
+          "id": 555,
+          "name": "Water rune",
+          "qty": 15
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "6575-6583",
+      "inputId": 6575,
+      "outputId": 6583,
+      "inputName": "Onyx ring",
+      "outputName": "Ring of stone",
+      "inputIcon": "Onyx ring.png",
+      "outputIcon": "Ring of stone.png",
+      "gem": "onyx",
+      "type": "ring",
+      "spellLevel": 6,
+      "spellName": "Enchant Level-6 Jewellery",
+      "magicLevel": 87,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 554,
+          "name": "Fire rune",
+          "qty": 20
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 20
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "6581-6585",
+      "inputId": 6581,
+      "outputId": 6585,
+      "inputName": "Onyx amulet",
+      "outputName": "Amulet of fury",
+      "inputIcon": "Onyx amulet.png",
+      "outputIcon": "Amulet of fury.png",
+      "gem": "onyx",
+      "type": "amulet",
+      "spellLevel": 6,
+      "spellName": "Enchant Level-6 Jewellery",
+      "magicLevel": 87,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 554,
+          "name": "Fire rune",
+          "qty": 20
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 20
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "11130-11133",
+      "inputId": 11130,
+      "outputId": 11133,
+      "inputName": "Onyx bracelet",
+      "outputName": "Regen bracelet",
+      "inputIcon": "Onyx bracelet.png",
+      "outputIcon": "Regen bracelet.png",
+      "gem": "onyx",
+      "type": "bracelet",
+      "spellLevel": 6,
+      "spellName": "Enchant Level-6 Jewellery",
+      "magicLevel": 87,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 554,
+          "name": "Fire rune",
+          "qty": 20
+        },
+        {
+          "id": 557,
+          "name": "Earth rune",
+          "qty": 20
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "19538-19550",
+      "inputId": 19538,
+      "outputId": 19550,
+      "inputName": "Zenyte ring",
+      "outputName": "Ring of suffering",
+      "inputIcon": "Zenyte ring.png",
+      "outputIcon": "Ring of suffering.png",
+      "gem": "zenyte",
+      "type": "ring",
+      "spellLevel": 7,
+      "spellName": "Enchant Level-7 Jewellery",
+      "magicLevel": 93,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 20
+        },
+        {
+          "id": 565,
+          "name": "Blood rune",
+          "qty": 20
+        },
+        {
+          "id": 566,
+          "name": "Soul rune",
+          "qty": 20
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "19535-19547",
+      "inputId": 19535,
+      "outputId": 19547,
+      "inputName": "Zenyte necklace",
+      "outputName": "Necklace of anguish",
+      "inputIcon": "Zenyte necklace.png",
+      "outputIcon": "Necklace of anguish.png",
+      "gem": "zenyte",
+      "type": "necklace",
+      "spellLevel": 7,
+      "spellName": "Enchant Level-7 Jewellery",
+      "magicLevel": 93,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 20
+        },
+        {
+          "id": 565,
+          "name": "Blood rune",
+          "qty": 20
+        },
+        {
+          "id": 566,
+          "name": "Soul rune",
+          "qty": 20
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "19541-19553",
+      "inputId": 19541,
+      "outputId": 19553,
+      "inputName": "Zenyte amulet",
+      "outputName": "Amulet of torture",
+      "inputIcon": "Zenyte amulet.png",
+      "outputIcon": "Amulet of torture.png",
+      "gem": "zenyte",
+      "type": "amulet",
+      "spellLevel": 7,
+      "spellName": "Enchant Level-7 Jewellery",
+      "magicLevel": 93,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 20
+        },
+        {
+          "id": 565,
+          "name": "Blood rune",
+          "qty": 20
+        },
+        {
+          "id": 566,
+          "name": "Soul rune",
+          "qty": 20
+        }
+      ],
+      "members": true
+    },
+    {
+      "id": "19532-19544",
+      "inputId": 19532,
+      "outputId": 19544,
+      "inputName": "Zenyte bracelet",
+      "outputName": "Tormented bracelet",
+      "inputIcon": "Zenyte bracelet.png",
+      "outputIcon": "Tormented bracelet.png",
+      "gem": "zenyte",
+      "type": "bracelet",
+      "spellLevel": 7,
+      "spellName": "Enchant Level-7 Jewellery",
+      "magicLevel": 93,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 20
+        },
+        {
+          "id": 565,
+          "name": "Blood rune",
+          "qty": 20
+        },
+        {
+          "id": 566,
+          "name": "Soul rune",
+          "qty": 20
+        }
+      ],
+      "members": true
+    }
+  ]
+}

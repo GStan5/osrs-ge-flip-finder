@@ -398,6 +398,80 @@ body.site .gra-item-list__row:hover {
 .gra-item-list--coffer .gra-item-list__header > :nth-child(12),
 .gra-item-list--coffer .gra-item-list__row > :nth-child(12) { grid-column: 12; }
 
+.gra-item-list--enchant .gra-item-list__header,
+.gra-item-list--enchant .gra-item-list__row {
+  grid-template-columns:
+    minmax(8rem, 1.35fr)
+    minmax(5.5rem, 0.9fr)
+    var(--gra-col-num)
+    var(--gra-col-price)
+    var(--gra-col-price)
+    var(--gra-col-price)
+    var(--gra-col-gp)
+    var(--gra-col-num);
+}
+
+.gra-item-list--enchant .gra-item-list__header > :nth-child(1),
+.gra-item-list--enchant .gra-item-list__row > :nth-child(1) { grid-column: 1; }
+.gra-item-list--enchant .gra-item-list__header > :nth-child(2),
+.gra-item-list--enchant .gra-item-list__row > :nth-child(2) { grid-column: 2; }
+.gra-item-list--enchant .gra-item-list__header > :nth-child(3),
+.gra-item-list--enchant .gra-item-list__row > :nth-child(3) { grid-column: 3; }
+.gra-item-list--enchant .gra-item-list__header > :nth-child(4),
+.gra-item-list--enchant .gra-item-list__row > :nth-child(4) { grid-column: 4; }
+.gra-item-list--enchant .gra-item-list__header > :nth-child(5),
+.gra-item-list--enchant .gra-item-list__row > :nth-child(5) { grid-column: 5; }
+.gra-item-list--enchant .gra-item-list__header > :nth-child(6),
+.gra-item-list--enchant .gra-item-list__row > :nth-child(6) { grid-column: 6; }
+.gra-item-list--enchant .gra-item-list__header > :nth-child(7),
+.gra-item-list--enchant .gra-item-list__row > :nth-child(7) { grid-column: 7; }
+.gra-item-list--enchant .gra-item-list__header > :nth-child(8),
+.gra-item-list--enchant .gra-item-list__row > :nth-child(8) { grid-column: 8; }
+
+.enchant-pair {
+  flex-wrap: wrap;
+  gap: 0.35rem 0.5rem;
+}
+
+.enchant-pair-icons {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  flex-shrink: 0;
+}
+
+.enchant-arrow {
+  color: var(--muted);
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.enchant-pair-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  gap: 0.1rem;
+}
+
+.enchant-pair-out {
+  font-size: 0.72rem;
+  color: var(--muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.enchant-pair-out a {
+  color: inherit;
+}
+
+.gra-item-list--enchant .spell-col {
+  font-size: 0.72rem;
+  line-height: 1.25;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .gra-item-list--flip-log .gra-item-list__header,
 .gra-item-list--flip-log .gra-item-list__row {
   grid-template-columns:

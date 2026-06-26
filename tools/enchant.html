@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="OSRS jewellery enchant profit calculator — live GE prices, rune costs, margin after tax. Graardor." />
+  <meta name="theme-color" content="#1e1e1e" />
+  <title>Enchant Jewellery — Graardor</title>
+  <script src="/assets/js/theme-init.js"></script>
+  <link rel="stylesheet" href="/assets/css/theme.css" />
+  <link rel="stylesheet" href="/assets/css/item-list.css" />
+</head>
+<body class="site ads-off tool-page">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="site-logo" href="/">
+        <span class="site-logo-text">Graardor</span>
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <span class="nav-label">Tools</span>
+        <a href="/tools/flips">Economy</a>
+        <a href="/tools/dashboard">Track</a>
+        <a href="/tools/prep">Plan</a>
+        <a href="/guides">Guides</a>
+        <a href="/changelog">Changelog</a>
+        <span id="authSlot"></span>
+        <a href="https://ko-fi.com/greatblue" class="kofi-nav-cta" target="_blank" rel="noopener">Support</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="page-hero">
+    <h1>Enchant Jewellery</h1>
+  </div>
+
+  <details class="disclaimer disclaimer-collapsible">
+    <summary><strong>Disclaimer</strong> — estimates only; verify in-game · Not affiliated with Jagex</summary>
+  </details>
+
+  <div class="status-bar">
+    <span id="enchantStatus">Loading…</span>
+  </div>
+
+  <div id="enchantSummary" class="tool-summary-strip" hidden></div>
+
+  <div class="content-shell">
+    <aside class="ad-rail ad-rail-left" aria-label="Advertisement">
+      <div class="ad-slot" id="ad-slot-left">
+        <span class="ad-slot-placeholder">
+          <span class="ad-slot-label">Advertisement</span>
+          <span class="ad-slot-size">160 × 600</span>
+          <span class="ad-slot-note">Hidden on smaller screens</span>
+        </span>
+      </div>
+    </aside>
+
+    <div class="page-main">
+      <main>
+        <section class="filters">
+          <h2 class="filters-title">Enchant filters</h2>
+
+          <div class="preset-filters">
+            <span class="preset-label">Quick</span>
+            <button type="button" class="preset-btn" data-enchant-preset="bestProfit">Best profit</button>
+            <button type="button" class="preset-btn" data-enchant-preset="highMargin">High margin</button>
+            <button type="button" class="preset-btn" data-enchant-preset="dragonstone">Dragonstone</button>
+            <button type="button" class="preset-btn" data-enchant-preset="zenyte">Zenyte</button>
+          </div>
+
+          <div class="filter-group wide">
+            <label for="enchantSearch">Search items</label>
+            <input id="enchantSearch" type="text" placeholder="e.g. ring of wealth" autocomplete="off" />
+          </div>
+
+          <div class="filter-group">
+            <label for="enchantGem">Gem tier</label>
+            <select id="enchantGem">
+              <option value="all">All gems</option>
+              <option value="sapphire">Sapphire</option>
+              <option value="opal">Opal</option>
+              <option value="jade">Jade</option>
+              <option value="emerald">Emerald</option>
+              <option value="topaz">Topaz</option>
+              <option value="ruby">Ruby</option>
+              <option value="diamond">Diamond</option>
+              <option value="dragonstone">Dragonstone</option>
+              <option value="onyx">Onyx</option>
+              <option value="zenyte">Zenyte</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="enchantType">Item type</label>
+            <select id="enchantType">
+              <option value="all">All types</option>
+              <option value="ring">Ring</option>
+              <option value="necklace">Necklace</option>
+              <option value="amulet">Amulet</option>
+              <option value="bracelet">Bracelet</option>
+            </select>
+          </div>
+
+          <div class="filter-group">
+            <label for="enchantMinProfit">Min profit / cast</label>
+            <input id="enchantMinProfit" type="number" min="0" placeholder="0" />
+          </div>
+
+          <div class="filter-group">
+            <label for="enchantMinMargin">Min margin %</label>
+            <input id="enchantMinMargin" type="number" step="0.1" min="0" placeholder="0" />
+          </div>
+
+          <div class="filter-group">
+            <label for="enchantMaxBuy">Max buy cost (gp)</label>
+            <input id="enchantMaxBuy" type="number" min="0" placeholder="Any" />
+          </div>
+
+          <div class="toggles">
+            <label class="toggle">
+              <input id="enchantProfitableOnly" type="checkbox" checked />
+              Profitable only
+            </label>
+          </div>
+
+          <div class="actions">
+            <button type="button" id="refreshEnchantBtn">Refresh prices</button>
+            <button type="button" id="resetEnchantBtn">Reset filters</button>
+          </div>
+        </section>
+
+        <p id="enchantMeta" class="results-meta"></p>
+        <div class="gra-item-list-wrap">
+          <div class="gra-item-list gra-item-list--enchant" id="enchantList" role="table" aria-label="Enchant jewellery items">
+            <div class="gra-item-list__header" role="row">
+              <div class="gra-item-list__head col-item sortable" data-sort="name" role="columnheader">Item</div>
+              <div class="gra-item-list__head col-hide-xs sortable" data-sort="spellName" role="columnheader">Spell</div>
+              <div class="gra-item-list__head num col-hide-narrow sortable" data-sort="magicLevel" role="columnheader">Magic</div>
+              <div class="gra-item-list__head num sortable" data-sort="runeCost" role="columnheader">Rune cost</div>
+              <div class="gra-item-list__head num sortable" data-sort="buyCost" role="columnheader">Buy cost</div>
+              <div class="gra-item-list__head num sortable col-hide-xs" data-sort="sellAfterTax" role="columnheader">Sell (tax)</div>
+              <div class="gra-item-list__head num sortable" data-sort="profit" role="columnheader">Profit</div>
+              <div class="gra-item-list__head num sortable col-hide-xs" data-sort="margin" role="columnheader">Margin</div>
+            </div>
+            <div class="gra-item-list__body" id="enchantBody" role="rowgroup">
+              <div class="gra-item-list__empty loading">Loading…</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <aside class="ad-rail ad-rail-right" aria-label="Advertisement">
+      <div class="ad-slot" id="ad-slot-right">
+        <span class="ad-slot-placeholder">
+          <span class="ad-slot-label">Advertisement</span>
+          <span class="ad-slot-size">160 × 600</span>
+          <span class="ad-slot-note">Hidden on smaller screens</span>
+        </span>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <p><a href="/">Graardor home</a> · Not affiliated with Jagex</p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/components.js"></script>
+  <script src="/assets/js/item-list.js"></script>
+  <script src="/assets/js/enchant.js"></script>
+  <script src="/assets/js/auth.js"></script>
+  <script src="/assets/js/site-chrome.js"></script>
+</body>
+</html>
