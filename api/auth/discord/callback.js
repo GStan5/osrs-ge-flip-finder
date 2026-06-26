@@ -1,5 +1,5 @@
 const { createSessionToken, setSessionCookie } = require("../../../lib/session.js");
-const { getBaseUrl } = require("../../../lib/url.js");
+const { getDiscordRedirectUri } = require("../../../lib/url.js");
 
 module.exports = async function handler(req, res) {
   const code = req.query?.code;
@@ -15,7 +15,7 @@ module.exports = async function handler(req, res) {
     return;
   }
 
-  const redirectUri = `${getBaseUrl(req)}/api/auth/discord/callback`;
+  const redirectUri = getDiscordRedirectUri(req);
 
   try {
     const tokenRes = await fetch("https://discord.com/api/oauth2/token", {

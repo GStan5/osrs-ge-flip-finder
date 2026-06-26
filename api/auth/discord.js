@@ -1,4 +1,4 @@
-const { getBaseUrl } = require("../../lib/url.js");
+const { getDiscordRedirectUri } = require("../../lib/url.js");
 
 module.exports = function handler(req, res) {
   const clientId = process.env.DISCORD_CLIENT_ID;
@@ -7,7 +7,7 @@ module.exports = function handler(req, res) {
     return;
   }
 
-  const redirectUri = encodeURIComponent(`${getBaseUrl(req)}/api/auth/discord/callback`);
+  const redirectUri = encodeURIComponent(getDiscordRedirectUri(req));
   const scope = encodeURIComponent("identify email");
   const url = `https://discord.com/api/oauth2/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&response_type=code&scope=${scope}`;
   res.redirect(302, url);

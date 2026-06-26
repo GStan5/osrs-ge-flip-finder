@@ -49,7 +49,7 @@ Generates `data/monsters-meta.json` from osrsbox-db — combat levels, HP, slaye
 ## Deploy (Vercel)
 
 - Import **GStan5/osrs-ge-flip-finder** — **no build command**, output `/`, production branch **`main`**
-- Env vars: `DATABASE_URL`, `SESSION_SECRET`, `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `KO_FI_VERIFICATION_TOKEN`, `CRON_SECRET`
+- Env vars: `DATABASE_URL`, `SESSION_SECRET`, `DISCORD_CLIENT_ID`, `DISCORD_CLIENT_SECRET`, `DISCORD_REDIRECT_URI` (optional; see [docs/DISCORD_OAUTH.md](docs/DISCORD_OAUTH.md)), `KO_FI_VERIFICATION_TOKEN`, `CRON_SECRET`
 - Ko-fi webhook URL: `https://www.graardor.com/api/kofi-webhook`
 - **Git auto-deploy:** Project → Settings → Git → connect this repo. Pushes to `main` should appear under Deployments within ~1 min.
 - **Price alert cron (Hobby plan):** Vercel free only allows once-daily crons, so use [cron-job.org](https://cron-job.org) (free) every 15 min:
