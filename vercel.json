@@ -1,6 +1,12 @@
 {
   "version": 2,
   "cleanUrls": true,
+  "rewrites": [
+    { "source": "/api/gear/presets", "destination": "/api/gear?route=presets" },
+    { "source": "/api/gear/profiles", "destination": "/api/gear?route=profiles" },
+    { "source": "/api/gear/upgrades", "destination": "/api/gear?route=upgrades" },
+    { "source": "/api/gear/import-wom", "destination": "/api/gear?route=import-wom" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
