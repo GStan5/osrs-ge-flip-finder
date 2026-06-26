@@ -38,6 +38,14 @@ npm run build:items-meta
 
 Generates `data/items-meta.json` from [osrsbox-db](https://github.com/osrsbox/osrsbox-db) — no live API at runtime.
 
+## Regenerate monster stats (bundled on monster pages)
+
+```bash
+npm run build:monsters-meta
+```
+
+Generates `data/monsters-meta.json` from osrsbox-db — combat levels, HP, slayer info, and bonuses.
+
 ## Deploy (Vercel)
 
 - Import **GStan5/osrs-ge-flip-finder** — **no build command**, output `/`, production branch **`main`**

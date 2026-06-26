@@ -1147,6 +1147,231 @@
       padding: 0 1.25rem;
     }
 
+    .item-detail,
+    .monster-detail {
+      max-width: 960px;
+      margin: 0 auto 2rem;
+      padding: 0 1.25rem;
+    }
+
+    .item-detail-hero {
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+      padding: 1.25rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      margin-bottom: 1rem;
+    }
+
+    .item-detail-hero img {
+      width: 64px;
+      height: 64px;
+      image-rendering: pixelated;
+      flex-shrink: 0;
+    }
+
+    .item-detail-hero-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .item-detail-hero h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.25rem;
+      font-weight: bold;
+      color: var(--title);
+    }
+
+    .item-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+
+    .item-detail-grid-single {
+      grid-template-columns: 1fr;
+    }
+
+    .lookup-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 1rem 1.15rem;
+    }
+
+    .lookup-card h2 {
+      margin: 0 0 0.85rem;
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: var(--title);
+    }
+
+    .lookup-card-foot {
+      margin: 0.75rem 0 0;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .item-economy-grid {
+      margin-bottom: 0;
+    }
+
+    .item-chart-section {
+      margin-bottom: 1rem;
+    }
+
+    .item-chart-section > h2 {
+      margin: 0 0 0.25rem;
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: var(--title);
+    }
+
+    .chart-subtitle {
+      margin: 0 0 0.75rem;
+    }
+
+    .item-chart-block {
+      margin-top: 0.5rem;
+    }
+
+    .item-chart-pro {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .item-chart-pro h3 {
+      margin: 0 0 0.65rem;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: var(--title);
+    }
+
+    .chart-badge {
+      font-size: 0.72rem;
+      font-weight: normal;
+      color: var(--link);
+    }
+
+    .chart-pro-upsell {
+      margin: 0.75rem 0 0;
+    }
+
+    .item-quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .item-quick-links a {
+      font-size: 0.82rem;
+      padding: 0.35rem 0.65rem;
+      border: 1px solid var(--border);
+      color: var(--text-bright);
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .item-quick-links a:hover {
+      color: var(--link);
+    }
+
+    .item-stat-extras {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+      margin-top: 0.75rem;
+    }
+
+    .item-stat-extra {
+      background: var(--surface-dark);
+      border: 1px solid var(--border);
+      padding: 0.5rem 0.75rem;
+      min-width: 100px;
+    }
+
+    .item-stat-extra .label {
+      display: block;
+      font-size: 0.68rem;
+      color: var(--title);
+      font-weight: bold;
+      margin-bottom: 0.15rem;
+    }
+
+    .item-stat-extra .value {
+      font-size: 1rem;
+      font-weight: bold;
+    }
+
+    .item-stat-table .negative-stat {
+      color: #e07070;
+    }
+
+    .price-sparkline-lg {
+      height: 140px;
+    }
+
+    .sparkline-legend .legend-swatch {
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      margin-right: 0.25rem;
+      vertical-align: middle;
+    }
+
+    .sparkline-legend .sell .legend-swatch {
+      background: var(--green);
+    }
+
+    .sparkline-legend .buy .legend-swatch {
+      background: var(--blue);
+    }
+
+    .monster-icon-placeholder {
+      width: 64px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      background: var(--surface-dark);
+      border: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .monster-lookup-results a {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.15rem;
+    }
+
+    .monster-result-name {
+      font-weight: bold;
+      color: var(--text-bright);
+    }
+
+    .monster-result-meta {
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
+    .monster-stat-text {
+      font-size: 0.85rem;
+      line-height: 1.35;
+    }
+
+    .monster-stats-card {
+      margin-bottom: 1rem;
+    }
+
+    .monster-levels-table td {
+      font-weight: bold;
+      color: var(--text-bright);
+    }
+
     .item-detail-header img {
       width: 48px;
       height: 48px;
@@ -1992,9 +2217,15 @@
 
       .item-lookup-bar,
       .item-lookup-results,
-      .item-detail-card {
+      .item-detail-card,
+      .item-detail,
+      .monster-detail {
         padding-left: max(1rem, env(safe-area-inset-left));
         padding-right: max(1rem, env(safe-area-inset-right));
+      }
+
+      .item-detail-grid {
+        grid-template-columns: 1fr;
       }
 
       .guide-article {

@@ -70,9 +70,10 @@
       id: "plan",
       label: "Plan",
       href: "/tools/prep",
-      paths: ["/tools/prep"],
+      paths: ["/tools/prep", "/tools/monster"],
       tools: [
         { href: "/tools/prep", label: "Boss prep", desc: "Gear & inventory lists" },
+        { href: "/tools/monster", label: "Monster lookup", desc: "Combat & slayer stats" },
         { href: "/guides", label: "Guides", desc: "How-to articles" },
       ],
     },
@@ -266,7 +267,7 @@
     nav.setAttribute("aria-label", `${section.label} tools`);
     nav.innerHTML = section.tools
       .map((t) => {
-        const active = path === t.href || (t.href === "/tools/item" && path.startsWith("/tools/item"));
+        const active = path === t.href || (t.href === "/tools/item" && path.startsWith("/tools/item")) || (t.href === "/tools/monster" && path.startsWith("/tools/monster"));
         const badge = t.pro ? '<span class="nav-badge">Pro</span>' : "";
         return `<a href="${t.href}" class="${active ? "active" : ""}">${t.label}${badge}</a>`;
       })
@@ -499,8 +500,11 @@
       cls.contains("tool-page-main") ||
       cls.contains("page-main") ||
       cls.contains("item-lookup-bar") ||
+      cls.contains("monster-lookup-bar") ||
       el.id === "itemLookupResults" ||
-      el.id === "itemDetailRoot"
+      el.id === "itemDetailRoot" ||
+      el.id === "monsterLookupResults" ||
+      el.id === "monsterDetailRoot"
     );
   }
 

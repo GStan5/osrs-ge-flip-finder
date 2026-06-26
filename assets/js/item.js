@@ -4,6 +4,7 @@
   const queryParam = (params.get("q") || "").trim();
   let searchTimer;
   let itemsMeta = null;
+  let recipesCatalog = null;
 
   function findItemById(id) {
     return G.cachedApiData?.mapping?.find((m) => m.id === id) || null;
@@ -21,14 +22,55 @@
     }
   }
 
+  async function loadRecipesCatalog() {
+    if (recipesCatalog !== null) return recipesCatalog;
+    try {
+      const res = await fetch("/data/recipes.json");
+      if (!res.ok) return null;
+      recipesCatalog = await res.json();
+      return recipesCatalog;
+    } catch {
+      recipesCatalog = null;
+      return null;
+    }
+  }
+
+  function findTransformLinks(catalog, id) {
+    if (!catalog) return [];
+    const hits = [];
+    const seen = new Set();
+
+    function scan(list, type) {
+      if (!list?.length) return;
+      for (const recipe of list) {
+        const inputs = recipe.inputs || [];
+        const outputs = recipe.outputs || [];
+        const inRecipe = inputs.some((x) => x.id === id) || outputs.some((x) => x.id === id);
+        if (!inRecipe) continue;
+        const key = `${type}:${recipe.name || recipe.set?.name || ""}:${recipe.variant || ""}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
+        const label = [recipe.name || recipe.set?.name, recipe.variant].filter(Boolean).join(" — ");
+        hits.push({ label, href: `/tools/recipes?xfQ=${encodeURIComponent(label.split(" — ")[0])}` });
+        if (hits.length >= 5) return;
+      }
+    }
+
+    scan(catalog.skilling, "skill");
+    scan(catalog.decants, "decant");
+    scan(catalog.sets, "set");
+    scan(catalog.uncharges, "uncharge");
+    return hits;
+  }
+
   function statCell(value) {
     if (value == null || value === 0) return "<td>—</td>";
-    const cls = value > 0 ? "positive-stat" : "";
+    const cls = value > 0 ? "positive-stat" : value < 0 ? "negative-stat" : "";
     const prefix = value > 0 ? "+" : "";
     return `<td class="${cls}">${prefix}${value}</td>`;
   }
 
-  function renderEquipmentPanel(meta) {
+  function renderEquipmentCard(meta) {
     if (!meta?.slot) return "";
 
     const atk = meta.attack || {};
@@ -53,25 +95,53 @@
     }
 
     const extrasHtml = extras.length
-      ? `<div class="stat-grid" style="margin-top:0.75rem">${extras
+      ? `<div class="item-stat-extras">${extras
           .map(
             ([label, val]) =>
-              `<div class="stat-card"><span class="label">${G.escapeHtml(label)}</span><span class="value positive-stat">+${val}</span></div>`
+              `<div class="item-stat-extra"><span class="label">${G.escapeHtml(label)}</span><span class="value positive-stat">+${val}</span></div>`
           )
           .join("")}</div>`
       : "";
 
-    if (!tableRows && !extrasHtml) {
-      return `<div class="item-equipment-panel"><h2>Equipment</h2><span class="item-equipment-slot">${G.escapeHtml(meta.slot)}</span><p class="results-meta">Equipable — no combat bonuses.</p></div>`;
-    }
+    const body =
+      tableRows || extrasHtml
+        ? `${tableRows ? `<table class="item-stat-table">${tableRows}</table>` : ""}${extrasHtml}`
+        : `<p class="results-meta">Equipable — no combat bonuses listed.</p>`;
 
-    return `<div class="item-equipment-panel">
+    return `<section class="lookup-card item-equipment-card">
         <h2>Equipment stats</h2>
         <span class="item-equipment-slot">${G.escapeHtml(meta.slot.replace(/_/g, " "))}</span>
-        ${tableRows ? `<table class="item-stat-table">${tableRows}</table>` : ""}
-        ${extrasHtml}
-        <p class="results-meta" style="margin-top:0.5rem">Bundled game data — regenerate with <code>npm run build:items-meta</code></p>
-      </div>`;
+        ${body}
+        <p class="lookup-card-foot">Bundled game data · <code>npm run build:items-meta</code></p>
+      </section>`;
+  }
+
+  function renderEconomyCard(mapping, stats, price) {
+    const profitCls = stats.profitAfterTax != null && stats.profitAfterTax >= 0 ? "positive" : "negative";
+    return `<section class="lookup-card item-economy-card">
+        <h2>Grand Exchange</h2>
+        <div class="stat-grid item-economy-grid">
+          <div class="stat-card"><span class="label">Buy (instant)</span><span class="value price-buy price-copyable" data-copy-price="${Math.round(stats.buy || 0)}">${G.formatPrice(stats.buy)}</span></div>
+          <div class="stat-card"><span class="label">Sell (instant)</span><span class="value price-sell price-copyable" data-copy-price="${Math.round(stats.sell || 0)}">${G.formatPrice(stats.sell)}</span></div>
+          <div class="stat-card"><span class="label">Margin</span><span class="value ${profitCls}">${stats.marginGp == null ? "—" : G.formatGp(stats.marginGp)}</span></div>
+          <div class="stat-card"><span class="label">After tax</span><span class="value ${profitCls}">${stats.profitAfterTax == null ? "—" : G.formatGp(stats.profitAfterTax)}</span></div>
+          <div class="stat-card"><span class="label">GE limit</span><span class="value">${mapping.limit ? mapping.limit.toLocaleString() : "—"}</span></div>
+          <div class="stat-card"><span class="label">High alch</span><span class="value">${mapping.highalch ? G.formatPrice(mapping.highalch) : "—"}</span></div>
+          <div class="stat-card"><span class="label">5m volume</span><span class="value">${G.formatGp(price?.volume5m ?? 0)}</span></div>
+          <div class="stat-card"><span class="label">Daily volume</span><span class="value">${G.formatGp(price?.dailyVolume ?? 0)}</span></div>
+        </div>
+      </section>`;
+  }
+
+  function renderQuickLinks(transformLinks) {
+    const links = [
+      `<a href="/tools/flips">Find flips</a>`,
+      `<a href="/tools/alch">High alch</a>`,
+    ];
+    transformLinks.forEach((t) => {
+      links.push(`<a href="${t.href}">${G.escapeHtml(t.label)}</a>`);
+    });
+    return `<nav class="item-quick-links" aria-label="Related tools">${links.join("")}</nav>`;
   }
 
   function searchItems(q) {
@@ -117,7 +187,7 @@
     return { marginGp, marginPct, profitAfterTax, tax, buy, sell };
   }
 
-  function renderDetail(isPro, equipmentMeta) {
+  function renderDetail(isPro, equipmentMeta, transformLinks) {
     const root = G.el("itemDetailRoot");
     if (!root) return;
 
@@ -134,49 +204,49 @@
     const badge = mapping.members
       ? '<span class="badge badge-members">P2P</span>'
       : '<span class="badge badge-f2p">F2P</span>';
-    const profitCls = stats.profitAfterTax != null && stats.profitAfterTax >= 0 ? "positive" : "negative";
+    const showEquipment = equipmentMeta?.slot;
     const proBlock = isPro
-      ? `<div class="sparkline-wrap">
-          <h2>Extended trend (Pro — ~7 days, 1h buckets)</h2>
-          <canvas id="priceSparklinePro" class="price-sparkline" style="height:100px" aria-label="Extended price chart"></canvas>
+      ? `<div class="item-chart-block item-chart-pro">
+          <h3>Extended trend <span class="chart-badge">Pro · ~7 days</span></h3>
+          <canvas id="priceSparklinePro" class="price-sparkline price-sparkline-lg" aria-label="Extended price chart"></canvas>
         </div>`
-      : `<p class="results-meta"><a href="/upgrade">Graardor Pro</a> unlocks extended 7-day price charts.</p>`;
+      : `<p class="results-meta chart-pro-upsell"><a href="/upgrade">Graardor Pro</a> unlocks extended 7-day price charts.</p>`;
 
     document.title = `${mapping.name} — Graardor`;
     G.el("itemPageTitle").textContent = mapping.name;
 
     root.innerHTML = `
-      <div class="item-detail-card">
-        <div class="item-detail-header">
-          <img src="${G.iconUrl(mapping.icon)}" alt="" />
-          <h1>${G.escapeHtml(mapping.name)} ${badge}</h1>
-          <div class="item-detail-actions">
-            <a href="${G.wikiPageUrl(mapping.name)}" target="_blank" rel="noopener">Wiki ↗</a>
-            <a href="/tools/flips">Find flips</a>
-            <a href="/tools/alch">High alch</a>
+      <article class="item-detail">
+        <header class="item-detail-hero">
+          <img src="${G.iconUrl(mapping.icon)}" alt="" width="64" height="64" />
+          <div class="item-detail-hero-text">
+            <h1>${G.escapeHtml(mapping.name)} ${badge}</h1>
+            <div class="item-detail-actions">
+              <a href="${G.wikiPageUrl(mapping.name)}" target="_blank" rel="noopener">Wiki ↗</a>
+            </div>
           </div>
+        </header>
+
+        <div class="item-detail-grid${showEquipment ? "" : " item-detail-grid-single"}">
+          ${renderEconomyCard(mapping, stats, price)}
+          ${showEquipment ? renderEquipmentCard(equipmentMeta) : ""}
         </div>
-        <div class="stat-grid">
-          <div class="stat-card"><span class="label">Buy (instant)</span><span class="value price-buy price-copyable" data-copy-price="${Math.round(stats.buy || 0)}">${G.formatPrice(stats.buy)}</span></div>
-          <div class="stat-card"><span class="label">Sell (instant)</span><span class="value price-sell price-copyable" data-copy-price="${Math.round(stats.sell || 0)}">${G.formatPrice(stats.sell)}</span></div>
-          <div class="stat-card"><span class="label">Margin</span><span class="value ${profitCls}">${stats.marginGp == null ? "—" : G.formatGp(stats.marginGp)}</span></div>
-          <div class="stat-card"><span class="label">After tax</span><span class="value ${profitCls}">${stats.profitAfterTax == null ? "—" : G.formatGp(stats.profitAfterTax)}</span></div>
-          <div class="stat-card"><span class="label">GE limit</span><span class="value">${mapping.limit ? mapping.limit.toLocaleString() : "—"}</span></div>
-          <div class="stat-card"><span class="label">High alch</span><span class="value">${mapping.highalch ? G.formatPrice(mapping.highalch) : "—"}</span></div>
-          <div class="stat-card"><span class="label">5m volume</span><span class="value">${G.formatGp(price?.volume5m ?? 0)}</span></div>
-          <div class="stat-card"><span class="label">Daily volume</span><span class="value">${G.formatGp(price?.dailyVolume ?? 0)}</span></div>
-        </div>
-        <div class="sparkline-wrap">
-          <h2>Price trend (last ~6 hours, 5m buckets)</h2>
-          <canvas id="priceSparkline" class="price-sparkline" aria-label="Price chart"></canvas>
-          <div class="sparkline-legend">
-            <span class="sell">● Sell (high)</span>
-            <span class="buy">● Buy (low)</span>
+
+        <section class="lookup-card item-chart-section">
+          <h2>Price trend</h2>
+          <p class="results-meta chart-subtitle">Last ~6 hours · 5-minute buckets · shaded area = buy/sell spread</p>
+          <div class="item-chart-block">
+            <canvas id="priceSparkline" class="price-sparkline price-sparkline-lg" aria-label="Price chart"></canvas>
+            <div class="sparkline-legend">
+              <span class="sell"><span class="legend-swatch"></span> Sell (high)</span>
+              <span class="buy"><span class="legend-swatch"></span> Buy (low)</span>
+            </div>
           </div>
-        </div>
-        ${proBlock}
-        ${renderEquipmentPanel(equipmentMeta)}
-      </div>`;
+          ${proBlock}
+        </section>
+
+        ${renderQuickLinks(transformLinks)}
+      </article>`;
 
     loadSparkline(isPro);
   }
@@ -228,9 +298,10 @@
         const me = await fetch("/api/me", { credentials: "same-origin" }).then((r) => r.json());
         isPro = Boolean(me.pro);
       } catch { /* ignore */ }
-      const metaBundle = await loadItemsMeta();
+      const [metaBundle, catalog] = await Promise.all([loadItemsMeta(), loadRecipesCatalog()]);
       const equipmentMeta = metaBundle?.items?.[String(itemId)] || null;
-      renderDetail(isPro, equipmentMeta);
+      const transformLinks = findTransformLinks(catalog, itemId);
+      renderDetail(isPro, equipmentMeta, transformLinks);
     } catch (err) {
       G.updateStatus("itemStatus", `Failed: ${err.message}`, "error");
       G.el("itemDetailRoot").innerHTML = `<p class="loading">${G.escapeHtml(err.message)}</p>`;

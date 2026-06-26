@@ -196,6 +196,10 @@ window.Graardor = window.Graardor || {};
     return `/tools/item?id=${id}`;
   };
 
+  G.monsterPageUrl = function monsterPageUrl(id) {
+    return `/tools/monster?id=${id}`;
+  };
+
   G.fetchTimeseries = async function fetchTimeseries(itemId, timestep) {
     const step = timestep || "5m";
     const res = await G.fetchJson(`/timeseries?timestep=${step}&id=${itemId}`);
@@ -211,7 +215,7 @@ window.Graardor = window.Graardor || {};
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
     const ctx = canvas.getContext("2d");
-    ctx.scale(dpr, dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const tail = series.slice(-Math.min(series.length, opts.maxPoints || 72));
     const highs = tail.map((p) => p.avgHighPrice).filter((v) => v != null);
@@ -224,33 +228,99 @@ window.Graardor = window.Graardor || {};
     const pad = (max - min) * 0.08 || 1;
     const yMin = min - pad;
     const yMax = max + pad;
-    const plotW = width - 8;
-    const plotH = height - 8;
+    const labelW = opts.showLabels !== false ? 52 : 0;
+    const left = 4 + labelW;
+    const top = 8;
+    const bottom = 18;
+    const plotW = width - left - 8;
+    const plotH = height - top - bottom;
+
+    const themeLight = document.documentElement.getAttribute("data-theme") === "light";
+    const gridColor = themeLight ? "rgba(0,0,0,0.08)" : "rgba(255,255,255,0.08)";
+    const labelColor = themeLight ? "rgba(0,0,0,0.45)" : "rgba(255,255,255,0.45)";
+    const sellColor = "#5cb85c";
+    const buyColor = "#6ba3c7";
 
     ctx.clearRect(0, 0, width, height);
-    ctx.fillStyle = "rgba(201, 162, 39, 0.06)";
-    ctx.fillRect(4, 4, plotW, plotH);
+    ctx.fillStyle = themeLight ? "rgba(201, 162, 39, 0.05)" : "rgba(201, 162, 39, 0.06)";
+    ctx.fillRect(left, top, plotW, plotH);
 
-    function drawLine(values, color) {
+    function yFor(val) {
+      return top + plotH - ((val - yMin) / (yMax - yMin)) * plotH;
+    }
+
+    function xFor(i) {
+      return left + (i / Math.max(tail.length - 1, 1)) * plotW;
+    }
+
+    function formatAxis(n) {
+      if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
+      if (n >= 1_000) return Math.round(n / 1_000) + "K";
+      return String(Math.round(n));
+    }
+
+    if (opts.showGrid !== false) {
+      ctx.strokeStyle = gridColor;
+      ctx.lineWidth = 1;
+      for (let i = 0; i <= 4; i++) {
+        const y = top + (plotH / 4) * i;
+        ctx.beginPath();
+        ctx.moveTo(left, y);
+        ctx.lineTo(left + plotW, y);
+        ctx.stroke();
+      }
+    }
+
+    if (opts.showLabels !== false) {
+      ctx.fillStyle = labelColor;
+      ctx.font = "10px system-ui, sans-serif";
+      ctx.textAlign = "right";
+      ctx.textBaseline = "middle";
+      for (let i = 0; i <= 4; i++) {
+        const val = yMax - ((yMax - yMin) / 4) * i;
+        const y = top + (plotH / 4) * i;
+        ctx.fillText(formatAxis(val), left - 6, y);
+      }
+    }
+
+    function collectPts(kind) {
       const pts = [];
       tail.forEach((row, i) => {
-        const val = values === "high" ? row.avgHighPrice : row.avgLowPrice;
+        const val = kind === "high" ? row.avgHighPrice : row.avgLowPrice;
         if (val == null) return;
-        const x = 4 + (i / Math.max(tail.length - 1, 1)) * plotW;
-        const y = 4 + plotH - ((val - yMin) / (yMax - yMin)) * plotH;
-        pts.push({ x, y });
+        pts.push({ x: xFor(i), y: yFor(val) });
       });
+      return pts;
+    }
+
+    if (opts.fillSpread !== false) {
+      const hi = collectPts("high");
+      const lo = collectPts("low");
+      if (hi.length >= 2 && lo.length >= 2) {
+        ctx.beginPath();
+        ctx.moveTo(hi[0].x, hi[0].y);
+        for (let i = 1; i < hi.length; i++) ctx.lineTo(hi[i].x, hi[i].y);
+        for (let i = lo.length - 1; i >= 0; i--) ctx.lineTo(lo[i].x, lo[i].y);
+        ctx.closePath();
+        ctx.fillStyle = themeLight ? "rgba(92, 184, 92, 0.08)" : "rgba(92, 184, 92, 0.12)";
+        ctx.fill();
+      }
+    }
+
+    function drawLine(kind, color) {
+      const pts = collectPts(kind);
       if (pts.length < 2) return;
       ctx.beginPath();
       ctx.strokeStyle = color;
-      ctx.lineWidth = 1.5;
+      ctx.lineWidth = 2;
+      ctx.lineJoin = "round";
       ctx.moveTo(pts[0].x, pts[0].y);
       for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
       ctx.stroke();
     }
 
-    drawLine("high", "#5cb85c");
-    drawLine("low", "#6ba3c7");
+    drawLine("high", sellColor);
+    drawLine("low", buyColor);
   };
 
   G.formatGp = function formatGp(n) {

@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="OSRS item price lookup — live GE buy/sell, margin, volume, equipment stats, and price charts. Graardor." />
+  <meta name="description" content="OSRS monster lookup — combat levels, hitpoints, slayer info, and combat bonuses. Graardor." />
   <meta name="theme-color" content="#1e1e1e" />
-  <meta property="og:title" content="Item lookup — Graardor" />
-  <meta property="og:description" content="Live GE prices, margins, and sparklines for any OSRS item." />
-  <title>Item lookup — Graardor</title>
+  <meta property="og:title" content="Monster lookup — Graardor" />
+  <meta property="og:description" content="Search OSRS monsters by name — bundled combat stats from game data." />
+  <title>Monster lookup — Graardor</title>
   <script src="/assets/js/theme-init.js"></script>
   <link rel="stylesheet" href="/assets/css/theme.css" />
 </head>
@@ -31,30 +31,29 @@
   </header>
 
   <div class="page-hero">
-    <h1 id="itemPageTitle">Item lookup</h1>
-    <p>Live GE buy/sell, margin after tax, volume, and a recent price chart.</p>
+    <h1 id="monsterPageTitle">Monster lookup</h1>
+    <p>Combat levels, HP, slayer info, and offence/defence bonuses — bundled game data.</p>
   </div>
 
   <div class="status-bar">
-    <span id="itemStatus">Loading…</span>
+    <span id="monsterStatus">Loading…</span>
   </div>
 
-  <div class="item-lookup-bar">
-    <label for="itemSearch" class="visually-hidden">Search items</label>
-    <input id="itemSearch" type="search" placeholder="Search any item… e.g. abyssal whip" autocomplete="off" />
+  <div class="item-lookup-bar monster-lookup-bar">
+    <label for="monsterSearch" class="visually-hidden">Search monsters</label>
+    <input id="monsterSearch" type="search" placeholder="Search any monster… e.g. General Graardor" autocomplete="off" />
   </div>
-  <div id="itemLookupResults" class="item-lookup-results"></div>
+  <div id="monsterLookupResults" class="item-lookup-results monster-lookup-results"></div>
 
-  <div id="itemDetailRoot"></div>
+  <div id="monsterDetailRoot"></div>
 
   <footer class="site-footer">
-    <p><a href="https://oldschool.runescape.wiki/w/RuneScape:Real-time_Prices" target="_blank" rel="noopener">Price data</a> from the OSRS Wiki · <a href="/">Graardor home</a></p>
+    <p>Monster stats from bundled <a href="https://github.com/osrsbox/osrsbox-db" target="_blank" rel="noopener">osrsbox-db</a> · <a href="/">Graardor home</a></p>
   </footer>
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="/assets/js/prices-core.js"></script>
-  <script src="/assets/js/sync.js"></script>
-  <script src="/assets/js/item.js"></script>
+  <script src="/assets/js/monster.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/site-chrome.js"></script>
 </body>
