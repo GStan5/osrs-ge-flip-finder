@@ -13,9 +13,9 @@ Internal spec for `/tools/enchant`.
 | File | Purpose |
 |------|---------|
 | `data/enchant-jewelry.json` | Bundled catalog of enchantable jewellery pairs |
-| `scripts/build-enchant-jewelry.mjs` | Resolves GE item IDs from mapping API |
+| `scripts/build-enchant-jewelry.mjs` | Builds catalog from OSRS enchant pairs + GE mapping + osrsbox tradeability |
 
-Rebuild after changing curated pairs:
+Rebuild after changing enchant pairs or exclusions:
 
 ```bash
 npm run build:enchant-jewelry
@@ -28,11 +28,13 @@ npm run build:enchant-jewelry
 - `type` — `ring`, `necklace`, `amulet`, `bracelet`
 - `spellName`, `magicLevel`, `runes[]` — spell cost (cosmic + elemental or zenyte runes)
 
-### Exclusions (not standard Lvl 1–7 enchant spells or not GE-tradeable)
+### Exclusions (enchant exists but not GE-tradeable both ways)
 
-- **Diamond bracelet** — no enchant spell; Bracelet of ethereum is from Revenants + ether attachment.
-- **Ruby necklace → Digsite pendant** — enchant exists but output is untradeable (not on GE).
-- **Onyx necklace → Berserker necklace** — enchant exists but output is untradeable (not on GE).
+- **Ruby necklace → Digsite pendant** — output not on GE.
+- **Emerald amulet → Amulet of nature** — alternate Lvl-2 result; output not on GE.
+- **Bracelet of ethereum** — not from enchant spell (Revenants + ether attachment).
+
+Excluded pairs are listed in `data/enchant-jewelry.json` → `excluded`.
 
 ## Profit calculation
 
