@@ -210,8 +210,7 @@
     return ui.sectionCard({
       title: "Drops",
       className: "monster-drops-card",
-      bodyHtml: `<p class="results-meta">Grouped like the OSRS Wiki. Rates are per kill roll.</p>
-        <div class="monster-drop-categories">${sections}</div>`,
+      bodyHtml: `<div class="monster-drop-categories">${sections}</div>`,
     });
   }
 

@@ -63,6 +63,8 @@ Data attributes by page:
 
 - **No user-facing dev text** — no npm/build instructions, script names, or “component library” copy on live pages.
 - **No npm/build on user pages** — build scripts live in repo only; runtime is static JS/CSS.
+- **User-facing copy** — see [graardor-copy rule](../.cursor/rules/graardor-copy.mdc): no AI filler, no wiki/data-source meta, no default footers or hint bars.
+- **`G.ui.sectionCard`** — omit `footHtml` unless required; never ship default explanatory footers from helpers.
 - **Theme** — components use `--g-*` / graa-shell tokens (`var(--surface)`, `var(--border)`, etc.) for dark/light compatibility.
 - **Extend, don’t fork** — add new helpers to `components.js` rather than copy-pasting markup in page scripts.
 

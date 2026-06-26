@@ -55,7 +55,7 @@
   }
 
   async function init() {
-    G.updateStatus("lootStatus", "Load prices when parsing loot", "");
+    G.updateStatus("lootStatus", "Refresh prices first.", "");
     bind();
   }
 

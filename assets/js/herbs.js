@@ -44,7 +44,7 @@
         <div class="stat-card"><span class="label">Profit / run</span><span class="value ${cls}">${G.formatGp(calc.profit)}</span></div>
         <div class="stat-card"><span class="label">GP / hr</span><span class="value ${cls}">${G.formatGp(calc.gpPerHour)}</span></div>
       </div>
-      <p class="results-meta">${G.escapeHtml(calc.run.notes || "")} Magic secateurs (+10%) included.</p>
+      ${calc.run.notes ? `<p class="results-meta">${G.escapeHtml(calc.run.notes)}</p>` : ""}
       <div class="table-wrap">
         <table>
           <thead><tr><th>Item</th><th class="num">Cost</th></tr></thead>

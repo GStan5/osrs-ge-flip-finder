@@ -23,23 +23,16 @@
 
       if (!data.database) {
         box.className = "alerts-cron-status alerts-cron-warn";
-        box.innerHTML =
-          '<strong>Server alerts unavailable</strong> — DATABASE_URL is not configured. Price alerts require a deployed backend.';
+        box.innerHTML = "Alerts unavailable right now.";
         return;
       }
 
-      parts.push("Alerts checked every ~15 min when cron is configured.");
-
       if (data.lastRun?.at) {
         const status = data.lastRun.ok ? "OK" : "Error";
-        parts.push(
-          `Last cron run: ${formatTimeAgo(data.lastRun.at)} (${status}${data.lastRun.checked != null ? ` · ${data.lastRun.checked} alerts checked` : ""}${data.lastRun.fired ? ` · ${data.lastRun.fired} fired` : ""}).`
-        );
+        parts.push(`Last check: ${formatTimeAgo(data.lastRun.at)} (${status})`);
         box.className = "alerts-cron-status";
       } else {
-        parts.push(
-          'No cron run recorded yet. Set up an external cron (every 15 min) — see <a href="https://github.com/GStan5/osrs-ge-flip-finder#deploy-vercel">README cron section</a>.'
-        );
+        parts.push("No recent check recorded.");
         box.className = "alerts-cron-status alerts-cron-warn";
       }
 
@@ -47,14 +40,13 @@
 
       if (alertCount > 0 && (!data.lastRun?.at || Date.now() - new Date(data.lastRun.at).getTime() > 30 * 60 * 1000)) {
         box.className = "alerts-cron-status alerts-cron-warn alerts-cron-critical";
-        box.innerHTML +=
-          ' <strong>Warning:</strong> You have active alerts but the cron job may not be running — alerts will not fire until cron is set up.';
+        box.innerHTML += " Active alerts may not fire until checks resume.";
       } else if (!data.configured && alertCount > 0) {
         box.className = "alerts-cron-status alerts-cron-warn";
       }
     } catch {
       box.className = "alerts-cron-status alerts-cron-warn";
-      box.textContent = "Could not load cron status. Alerts need a configured cron job — see README.";
+      box.textContent = "Couldn't load alert status.";
     }
   }
 

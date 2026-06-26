@@ -1,0 +1,19 @@
+---
+description: User-facing copy rules for Graardor — no AI filler, no dev/build text on live pages
+globs:
+  - "**/*.html"
+  - "assets/js/**/*.js"
+---
+
+## User-facing copy rules (Graardor)
+
+- Never mention npm, build scripts, bundled data sources, osrsbox, GitHub, file paths, or README on pages users see
+- No "like the OSRS Wiki" or meta explanations of how data is organized (e.g. grouping, kill rolls, volume blends)
+- No AI filler: avoid "Grouped like…", "Rates are per…", "fun feature", "game changer", long hero subtitles, filter formula blurbs
+- Labels only — let UI speak for itself; use column headers and form labels instead of explanatory paragraphs
+- Disclaimers: one line max where legally needed (collapsible summary is enough; no duplicate disclaimer bodies)
+- Components must not render footer/hint text by default — pass `footHtml` only when truly necessary
+- Error/status messages: brief ("Couldn't load prices." / "Please try again later.") — no stack traces or env var names
+- Remove tool-tip bars and "Tips for this page" blocks unless they contain non-obvious, non-filler guidance
+
+See also `docs/COMPONENTS.md` and `docs/LAYOUT.md`.

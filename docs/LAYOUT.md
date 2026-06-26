@@ -49,3 +49,7 @@ These selectors already apply the layout system — prefer them over duplicating
 | ≥2560px | min(2200px, 90vw) |
 
 Mobile: full width minus `--g-content-pad` (safe-area aware in media queries).
+
+## User-facing copy
+
+Internal rules for all pages and `G.ui` output: [graardor-copy.mdc](../.cursor/rules/graardor-copy.mdc). Keep hero titles, labels, and one-line disclaimers only — no filler subtitles or table footnotes.

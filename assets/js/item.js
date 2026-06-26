@@ -191,7 +191,7 @@
           <h3>Extended trend <span class="chart-badge">Pro · ~7 days</span></h3>
           <canvas id="priceSparklinePro" class="price-sparkline price-sparkline-lg" aria-label="Extended price chart"></canvas>
         </div>`
-      : `<p class="results-meta chart-pro-upsell"><a href="/upgrade">Graardor Pro</a> unlocks extended 7-day price charts.</p>`;
+      : `<p class="results-meta chart-pro-upsell"><a href="/upgrade">Graardor Pro</a> — 7-day charts</p>`;
 
     document.title = `${mapping.name} — Graardor`;
     G.el("itemPageTitle").textContent = mapping.name;
@@ -214,8 +214,7 @@
         ${ui.sectionCard({
           title: "Price trend",
           className: "item-chart-section",
-          bodyHtml: `<p class="results-meta chart-subtitle">Last ~6 hours · 5-minute buckets · shaded area = buy/sell spread</p>
-          <div class="item-chart-block">
+          bodyHtml: `<div class="item-chart-block">
             <canvas id="priceSparkline" class="price-sparkline price-sparkline-lg" aria-label="Price chart"></canvas>
             <div class="sparkline-legend">
               <span class="sell"><span class="legend-swatch"></span> Sell (high)</span>

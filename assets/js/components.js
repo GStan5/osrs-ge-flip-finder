@@ -204,7 +204,6 @@ window.Graardor = window.Graardor || {};
   G.ui.dropSimulator = function dropSimulator({ monsterId, resultsId = "monsterSimResults", summaryId = "monsterSimSummary", lootId = "monsterSimLoot" } = {}) {
     return `<section class="ui-section-card lookup-card monster-sim-card"${monsterId ? ` data-monster-id="${monsterId}"` : ""}>
       <h2>Simulate drops</h2>
-      <p class="results-meta">Roll the drop table — see what loot you might get.</p>
       <div class="ui-sim-controls monster-sim-controls">
         <button type="button" class="ui-sim-btn monster-sim-btn" data-kills="1">Roll 1 kill</button>
         <button type="button" class="ui-sim-btn monster-sim-btn" data-kills="10">Roll 10 kills</button>

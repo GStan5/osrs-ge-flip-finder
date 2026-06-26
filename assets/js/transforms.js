@@ -566,12 +566,12 @@
     if (!el("transformsBody")) return;
 
     if (!transformCatalog) {
-      G.renderItemList("transformsBody", { message: "Recipe catalog not loaded.", loading: true });
+      G.renderItemList("transformsBody", { message: "Recipes not loaded.", loading: true });
       return;
     }
 
     if (!G.cachedApiData) {
-      G.renderItemList("transformsBody", { message: "Load prices with Refresh prices.", loading: true });
+      G.renderItemList("transformsBody", { message: "Refresh prices to load.", loading: true });
       const meta = el("transformsMeta");
       if (meta) meta.textContent = catalogMetaLine();
       return;
@@ -583,7 +583,7 @@
     G.updateItemListSort("transformsList", transformsSort.key, transformsSort.dir, "data-xf-sort");
 
     const label = includeSkillRecipes ? "recipes" : "transforms";
-    el("transformsMeta").textContent = `Showing ${sorted.length.toLocaleString()} of ${transformRows.length.toLocaleString()} ${label} · catalog updated ${transformCatalog.generatedAt.slice(0, 10)} · click column headers to sort`;
+    el("transformsMeta").textContent = `${sorted.length.toLocaleString()} of ${transformRows.length.toLocaleString()} ${label}`;
 
     if (!sorted.length) {
       G.renderItemList("transformsBody", { message: "No recipes match your filters.", loading: true });
@@ -598,7 +598,7 @@
       if (best) {
         banner.hidden = false;
         const gpHr = best.gpPerHour != null ? ` · ${G.formatGp(best.gpPerHour)}/hr` : "";
-        banner.innerHTML = `Best match: <strong>${G.escapeHtml(recipeDisplayName(best))}</strong> — ${G.formatGp(best.profit)} profit${best.marginPct != null ? ` (${best.marginPct.toFixed(1)}% ROI)` : ""}${gpHr}. Verify in-game before buying.`;
+        banner.innerHTML = `Best match: <strong>${G.escapeHtml(recipeDisplayName(best))}</strong> — ${G.formatGp(best.profit)} profit${best.marginPct != null ? ` (${best.marginPct.toFixed(1)}% ROI)` : ""}${gpHr}`;
       } else {
         banner.hidden = true;
       }
@@ -664,10 +664,10 @@
       transformCatalog = null;
       const body = el("transformsBody");
       if (body) {
-        body.innerHTML = G.itemListEmpty(`Could not load recipe catalog: ${G.escapeHtml(err.message)}`, true);
+        body.innerHTML = G.itemListEmpty("Couldn't load recipes.", true);
       }
       const meta = el("transformsMeta");
-      if (meta) meta.textContent = "Recipe catalog unavailable. Please try again later.";
+      if (meta) meta.textContent = "Couldn't load recipes.";
     }
   }
 
