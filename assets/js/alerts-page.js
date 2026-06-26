@@ -1,20 +1,83 @@
 (function (G) {
+  let alertCount = 0;
+
+  function formatTimeAgo(iso) {
+    if (!iso) return "never";
+    const sec = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
+    if (sec < 60) return `${sec}s ago`;
+    const min = Math.floor(sec / 60);
+    if (min < 60) return `${min}m ago`;
+    const hr = Math.floor(min / 60);
+    if (hr < 48) return `${hr}h ago`;
+    return `${Math.floor(hr / 24)}d ago`;
+  }
+
+  async function loadCronStatus() {
+    const box = G.el("alertsCronStatus");
+    if (!box) return;
+
+    try {
+      const res = await fetch("/api/cron/status");
+      const data = await res.json();
+      const parts = [];
+
+      if (!data.database) {
+        box.className = "alerts-cron-status alerts-cron-warn";
+        box.innerHTML =
+          '<strong>Server alerts unavailable</strong> — DATABASE_URL is not configured. Price alerts require a deployed backend.';
+        return;
+      }
+
+      parts.push("Alerts checked every ~15 min when cron is configured.");
+
+      if (data.lastRun?.at) {
+        const status = data.lastRun.ok ? "OK" : "Error";
+        parts.push(
+          `Last cron run: ${formatTimeAgo(data.lastRun.at)} (${status}${data.lastRun.checked != null ? ` · ${data.lastRun.checked} alerts checked` : ""}${data.lastRun.fired ? ` · ${data.lastRun.fired} fired` : ""}).`
+        );
+        box.className = "alerts-cron-status";
+      } else {
+        parts.push(
+          'No cron run recorded yet. Set up an external cron (every 15 min) — see <a href="https://github.com/GStan5/osrs-ge-flip-finder#deploy-vercel">README cron section</a>.'
+        );
+        box.className = "alerts-cron-status alerts-cron-warn";
+      }
+
+      box.innerHTML = parts.join(" ");
+
+      if (alertCount > 0 && (!data.lastRun?.at || Date.now() - new Date(data.lastRun.at).getTime() > 30 * 60 * 1000)) {
+        box.className = "alerts-cron-status alerts-cron-warn alerts-cron-critical";
+        box.innerHTML +=
+          ' <strong>Warning:</strong> You have active alerts but the cron job may not be running — alerts will not fire until cron is set up.';
+      } else if (!data.configured && alertCount > 0) {
+        box.className = "alerts-cron-status alerts-cron-warn";
+      }
+    } catch {
+      box.className = "alerts-cron-status alerts-cron-warn";
+      box.textContent = "Could not load cron status. Alerts need a configured cron job — see README.";
+    }
+  }
+
   async function loadAlerts() {
     const res = await fetch("/api/alerts", { credentials: "same-origin" });
     if (res.status === 403) {
       G.el("alertsGate").hidden = false;
       G.el("alertsContent").hidden = true;
+      loadCronStatus();
       return;
     }
     if (!res.ok) {
       G.el("alertsGate").hidden = false;
       G.el("alertsGate").textContent = "Sign in with Discord and subscribe to Graardor Pro to use price alerts.";
+      loadCronStatus();
       return;
     }
     G.el("alertsGate").hidden = true;
     G.el("alertsContent").hidden = false;
     const data = await res.json();
+    alertCount = (data.alerts || []).filter((a) => a.active).length;
     renderAlerts(data.alerts || []);
+    loadCronStatus();
   }
 
   function renderAlerts(alerts) {

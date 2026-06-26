@@ -30,6 +30,14 @@ Open http://localhost:3500
 npm run build:recipes
 ```
 
+## Regenerate item equipment stats (bundled on item pages)
+
+```bash
+npm run build:items-meta
+```
+
+Generates `data/items-meta.json` from [osrsbox-db](https://github.com/osrsbox/osrsbox-db) — no live API at runtime.
+
 ## Deploy (Vercel)
 
 - Import **GStan5/osrs-ge-flip-finder** — **no build command**, output `/`, production branch **`main`**

@@ -1,4 +1,4 @@
-const { getActiveAlerts, markAlertTriggered } = require("../lib/db.js");
+const { getActiveAlerts, markAlertTriggered, recordCronRun } = require("../../lib/db.js");
 
 const WIKI_API = "https://prices.runescape.wiki/api/v1/osrs";
 const USER_AGENT = "Graardor - alert cron (graardor.com)";
@@ -65,8 +65,10 @@ module.exports = async function handler(req, res) {
     }
 
     res.status(200).json({ ok: true, checked: alerts.length, fired });
+    await recordCronRun("check-alerts", { ok: true, checked: alerts.length, fired });
   } catch (err) {
     console.error("check-alerts error:", err);
+    await recordCronRun("check-alerts", { ok: false, error: err.message }).catch(() => {});
     res.status(500).json({ error: err.message });
   }
 };

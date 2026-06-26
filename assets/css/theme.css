@@ -149,6 +149,14 @@
       line-height: 1.2;
     }
 
+    @media (min-width: 1440px) {
+      body.site.tool-page-wide .item-cell a.item-name,
+      body.site.tool-page-wide .recipe-name,
+      body.site.tool-page-wide .recipe-title {
+        max-width: none;
+      }
+    }
+
     /* Wiki + member badge bloat item col width; available on item detail page */
     .col-item .item-wiki-link,
     .col-item .badge {
@@ -1311,6 +1319,81 @@
       border: 2px solid var(--green-dim);
       color: var(--green);
       margin-bottom: 1rem;
+    }
+
+    .alerts-cron-status {
+      padding: 0.75rem 1rem;
+      margin-bottom: 1rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    .alerts-cron-status a {
+      color: var(--link);
+    }
+
+    .alerts-cron-warn {
+      border-color: rgba(201, 162, 39, 0.45);
+      background: rgba(201, 162, 39, 0.08);
+      color: var(--text);
+    }
+
+    .alerts-cron-critical {
+      border-color: rgba(255, 120, 80, 0.5);
+      background: rgba(255, 120, 80, 0.1);
+    }
+
+    .item-equipment-panel {
+      margin-top: 1.25rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .item-equipment-panel h2 {
+      font-size: 1rem;
+      margin: 0 0 0.75rem;
+    }
+
+    .item-equipment-slot {
+      display: inline-block;
+      margin-bottom: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      font-size: 0.75rem;
+      text-transform: capitalize;
+      background: var(--surface-dark);
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    .item-stat-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.82rem;
+    }
+
+    .item-stat-table th,
+    .item-stat-table td {
+      padding: 0.35rem 0.5rem;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+
+    .item-stat-table th {
+      background: var(--surface-dark);
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .item-stat-table td:first-child,
+    .item-stat-table th:first-child {
+      text-align: left;
+    }
+
+    .item-stat-table .positive-stat {
+      color: var(--green);
     }
 
     .home-live-stats {

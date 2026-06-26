@@ -9,7 +9,7 @@
   <script src="/assets/js/theme-init.js"></script>
   <link rel="stylesheet" href="/assets/css/theme.css" />
   <link rel="stylesheet" href="/assets/css/item-list.css" />
-  </head>
+</head>
 <body class="site ads-off recipes-only-page tool-page">
   <header class="site-header">
     <div class="site-header-inner">
@@ -46,21 +46,15 @@
     <span id="status">Loading price data…</span>
     <span id="lastUpdated"></span>
     <div class="status-bar-tools">
-      <label for="flipQty">Flip qty</label>
-      <input id="flipQty" type="number" min="1" placeholder="Optional" title="Profit for your stack size (uses buy limit if higher)" />
       <label class="status-toggle">
         <input id="favoritesOnly" type="checkbox" />
         Favorites only
       </label>
-      <button type="button" id="copyLinkBtn" title="Copy link with current tab and filters">Copy link</button>
+      <button type="button" id="copyLinkBtn" title="Copy link with current filters">Copy link</button>
     </div>
   </div>
 
   <div class="content-shell">
-    <!--
-      Left sidebar ad: replace inner HTML with your ad network code (e.g. AdSense ins.adsbygoogle).
-      Recommended size: 160×600 skyscraper. Add class "has-ad" to .ad-slot when live.
-    -->
     <aside class="ad-rail ad-rail-left" aria-label="Advertisement">
       <div class="ad-slot" id="ad-slot-left">
         <span class="ad-slot-placeholder">
@@ -72,439 +66,142 @@
     </aside>
 
     <div class="page-main">
-  <main>
-    <nav class="tabs">
-      <button type="button" class="tab active" data-tab="top10">Top 10 Flips</button>
-      <button type="button" class="tab" data-tab="search">Search</button>
-      <button type="button" class="tab" data-tab="transforms">Recipes</button>
-    </nav>
+      <main>
+        <div id="transformsPanel">
+          <section class="filters">
+            <h2 class="filters-title">GE transform profit</h2>
+            <p class="filters-subtitle">
+              Buy inputs and sell outputs on the GE — click prices to copy. Est. buy/sell uses 65% 5m + 35% 1h volume. Skilling recipes (e.g. cannonballs) are on the <a href="/tools/flips?tab=transforms">Flips → Transforms</a> tab.
+            </p>
 
-    <div id="searchPanel" class="tab-panel">
-    <section class="filters">
-      <div class="filter-group wide">
-        <label for="searchText">Item name</label>
-        <input id="searchText" type="text" placeholder="e.g. dragon, rune scimitar" autocomplete="off" />
-      </div>
+            <div class="preset-filters">
+              <span class="preset-label">Quick</span>
+              <button type="button" class="preset-btn" data-xf-preset="highGpHour">High GP/hr</button>
+              <button type="button" class="preset-btn" data-xf-preset="fastCycle">Fast cycle</button>
+              <button type="button" class="preset-btn" data-xf-preset="highMargin">High margin</button>
+              <button type="button" class="preset-btn" id="bestDecantsBtn">Best decants</button>
+            </div>
 
-      <div class="filter-group">
-        <label for="minPrice">Min buy price (gp)</label>
-        <input id="minPrice" type="number" min="0" placeholder="0" />
-      </div>
+            <div class="preset-filters">
+              <span class="preset-label">Budget</span>
+              <button type="button" class="preset-btn" data-xf-preset="budget1m">Under 1M</button>
+              <button type="button" class="preset-btn" data-xf-preset="budget10m">Under 10M</button>
+              <button type="button" class="preset-btn" data-xf-preset="budget50m">Under 50M</button>
+              <button type="button" class="preset-btn" data-xf-preset="budget100m">Under 100M</button>
+              <button type="button" class="preset-btn" data-xf-preset="budget250m">Under 250M</button>
+              <button type="button" class="preset-btn" data-xf-preset="budget500m">Under 500M</button>
+            </div>
 
-      <div class="filter-group">
-        <label for="maxPrice">Max buy price (gp)</label>
-        <input id="maxPrice" type="number" min="0" placeholder="Any" />
-      </div>
+            <div class="preset-filters">
+              <span class="preset-label">Type</span>
+              <button type="button" class="preset-btn" data-xf-preset="decantsOnly">Decants only</button>
+              <button type="button" class="preset-btn" data-xf-preset="setsOnly">Sets only</button>
+              <button type="button" class="preset-btn" data-xf-preset="f2p">F2P</button>
+              <button type="button" class="preset-btn" data-xf-preset="members">Members</button>
+            </div>
 
-      <div class="filter-group">
-        <label for="minMargin">Min margin %</label>
-        <input id="minMargin" type="number" step="0.1" placeholder="0" />
-      </div>
+            <div class="filter-group wide">
+              <label for="xfSearch">Search transforms or items</label>
+              <input id="xfSearch" type="text" placeholder="e.g. super combat, dragon bones" autocomplete="off" />
+            </div>
 
-      <div class="filter-group">
-        <label for="minDailyVol">Min daily volume</label>
-        <input id="minDailyVol" type="number" min="0" placeholder="0" />
-      </div>
+            <div class="filter-group">
+              <label for="xfType">Category</label>
+              <select id="xfType">
+                <option value="all">All transforms</option>
+                <option value="decant">Decant potions</option>
+                <option value="set_combine">Combine set</option>
+                <option value="set_split">Split set</option>
+                <option value="uncharge">Uncharge</option>
+                <option value="sets">All item sets</option>
+              </select>
+            </div>
 
-      <div class="filter-group">
-        <label for="minLimit">Min buy limit</label>
-        <input id="minLimit" type="number" min="0" placeholder="0" />
-      </div>
+            <div class="filter-group" hidden>
+              <label for="xfSkill">Skill</label>
+              <select id="xfSkill"><option value="all">All skills</option></select>
+            </div>
 
-      <div class="filter-group">
-        <label for="minCycleMin">Min cycle (min)</label>
-        <input id="minCycleMin" type="number" min="0" placeholder="Any" />
-      </div>
+            <div class="filter-group">
+              <label for="xfMembersFilter">Members</label>
+              <select id="xfMembersFilter">
+                <option value="all">All recipes</option>
+                <option value="members">Members only</option>
+                <option value="f2p">F2P only</option>
+              </select>
+            </div>
 
-      <div class="filter-group">
-        <label for="maxCycleMin">Max cycle (min)</label>
-        <input id="maxCycleMin" type="number" min="0" placeholder="Any" />
-      </div>
+            <div class="filter-group">
+              <label for="xfMinProfit">Min profit</label>
+              <input id="xfMinProfit" type="number" min="0" placeholder="0" />
+            </div>
 
-      <div class="filter-group">
-        <label for="membersFilter">Members</label>
-        <select id="membersFilter">
-          <option value="all">All items</option>
-          <option value="members">Members only</option>
-          <option value="f2p">F2P only</option>
-        </select>
-      </div>
+            <div class="filter-group">
+              <label for="xfMaxBudget">Max budget (input cost)</label>
+              <input id="xfMaxBudget" type="number" min="0" placeholder="Any" />
+            </div>
 
-      <div class="filter-group">
-        <label for="sortBy">Sort by</label>
-        <select id="sortBy">
-          <option value="profitAfterTax">Potential profit (after tax)</option>
-          <option value="marginPct">Margin %</option>
-          <option value="marginGp">Margin (gp/item)</option>
-          <option value="volume5m">5m volume</option>
-          <option value="dailyVolume">Daily volume</option>
-          <option value="gpNeeded">GP needed (full limit)</option>
-          <option value="buyTime">Est. time to buy</option>
-          <option value="sellTime">Est. time to sell</option>
-          <option value="buyPrice">Buy price</option>
-          <option value="name">Name</option>
-        </select>
-      </div>
+            <div class="filter-group">
+              <label for="xfMinMargin">Min ROI %</label>
+              <input id="xfMinMargin" type="number" step="0.1" min="0" placeholder="0" />
+            </div>
 
-      <div class="filter-group">
-        <label for="sortDir">Order</label>
-        <select id="sortDir">
-          <option value="desc">High → low</option>
-          <option value="asc">Low → high</option>
-        </select>
-      </div>
+            <div class="filter-group">
+              <label for="xfMinGpHour">Min GP / hour</label>
+              <input id="xfMinGpHour" type="number" min="0" placeholder="0" />
+            </div>
 
-      <div class="toggles">
-        <label class="toggle">
-          <input id="includeTax" type="checkbox" checked />
-          Include 2% GE tax on sells (max 5M/item; bonds exempt)
-        </label>
-        <label class="toggle">
-          <input id="profitableOnly" type="checkbox" checked />
-          Profitable flips only (name search always shows matches)
-        </label>
-      </div>
+            <div class="filter-group">
+              <label for="xfMaxCycleMin">Max cycle (min)</label>
+              <input id="xfMaxCycleMin" type="number" min="0" placeholder="Any" />
+            </div>
 
-      <div class="actions">
-        <button type="button" id="refreshBtn">Refresh prices</button>
-        <button type="button" id="resetBtn">Reset filters</button>
-      </div>
-    </section>
+            <div class="toggles">
+              <label class="toggle">
+                <input id="xfIncludeTax" type="checkbox" checked />
+                Include 2% GE tax on sells
+              </label>
+              <label class="toggle">
+                <input id="xfProfitableOnly" type="checkbox" checked />
+                Profitable only
+              </label>
+            </div>
 
-    <div class="results-meta" id="resultsMeta"></div>
+            <div class="filter-actions">
+              <button type="button" id="refreshTransformsBtn">Refresh prices</button>
+              <button type="button" id="resetTransformsBtn">Reset filters</button>
+            </div>
+          </section>
 
-    <div class="gra-item-list-wrap">
-      <div id="searchList" class="gra-item-list gra-item-list--flip-search" role="table" aria-label="Search results">
-        <div class="gra-item-list__header" role="row">
-          <div class="gra-item-list__head col-item sortable" data-sort="name" role="columnheader">Item</div>
-          <div class="gra-item-list__head num col-price-buy sortable" data-sort="buy" role="columnheader">Rec. buy</div>
-          <div class="gra-item-list__head num col-price-sell sortable" data-sort="sell" role="columnheader">Rec. sell</div>
-          <div class="gra-item-list__head num sortable" data-sort="marginGp" role="columnheader">Margin / item</div>
-          <div class="gra-item-list__head num col-hide-xs sortable" data-sort="marginPct" role="columnheader">Margin %</div>
-          <div class="gra-item-list__head num col-hide-narrow col-hide-mid sortable" data-sort="taxPerItem" role="columnheader">Tax / item</div>
-          <div class="gra-item-list__head num col-hide-narrow col-hide-mid sortable" data-sort="taxLostLimit" role="columnheader">Tax (limit)</div>
-          <div class="gra-item-list__head num sortable" data-sort="profitAfterTax" role="columnheader">Profit (limit)</div>
-          <div class="gra-item-list__head num col-hide-narrow col-hide-mid sortable" data-sort="profitAtQty" role="columnheader">Profit (qty)</div>
-          <div class="gra-item-list__head num col-hide-narrow col-hide-mid sortable" data-sort="gpNeeded" role="columnheader">GP needed</div>
-          <div class="gra-item-list__head num col-hide-narrow sortable" data-sort="volume5m" role="columnheader">5m vol.</div>
-          <div class="gra-item-list__head num col-hide-narrow sortable" data-sort="dailyVolume" role="columnheader">Daily vol.</div>
-          <div class="gra-item-list__head num sortable" data-sort="buyTimeHours" role="columnheader">Est. buy</div>
-          <div class="gra-item-list__head num sortable" data-sort="sellTimeHours" role="columnheader">Est. sell</div>
-          <div class="gra-item-list__head num col-hide-narrow sortable" data-sort="limit" role="columnheader">Limit</div>
-        </div>
-        <div id="resultsBody" class="gra-item-list__body" role="rowgroup">
-          <div class="gra-item-list__empty loading">Loading…</div>
-        </div>
-      </div>
-    </div>
-    </div>
-
-    <div id="top10Panel" class="tab-panel active">
-      <section class="filters">
-        <h2 class="filters-title">Top 10 recommendation filters</h2>
-        <p class="filters-subtitle">Independent from Search — set your GP budget, volume minimums, and flip constraints here.</p>
-
-        <div class="preset-filters">
-          <span class="preset-label">Timeframe</span>
-          <button type="button" class="preset-btn" data-t10-preset="quickFlips">Quick flips</button>
-        </div>
-
-        <div class="preset-filters">
-          <span class="preset-label">Budget</span>
-          <button type="button" class="preset-btn" data-t10-preset="budget1m">1M GP</button>
-          <button type="button" class="preset-btn" data-t10-preset="budget10m">10M GP</button>
-          <button type="button" class="preset-btn" data-t10-preset="budget50m">50M GP</button>
-          <button type="button" class="preset-btn" data-t10-preset="budget100m">100M GP</button>
-        </div>
-
-        <div class="preset-filters">
-          <span class="preset-label">Style</span>
-          <button type="button" class="preset-btn" data-t10-preset="highVolume">High volume</button>
-          <button type="button" class="preset-btn" data-t10-preset="safeMargin">Safe margin</button>
-          <button type="button" class="preset-btn" data-t10-preset="highGpHour">High GP / hour</button>
-          <button type="button" class="preset-btn" data-t10-preset="bigProfit">Big profit</button>
-          <button type="button" class="preset-btn" data-t10-preset="f2pFlips">F2P</button>
-        </div>
-
-        <div class="filter-group wide">
-          <label for="t10Search">Item name</label>
-          <input id="t10Search" type="text" placeholder="Optional name filter" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MaxGp">Max GP budget</label>
-          <input id="t10MaxGp" type="number" min="0" placeholder="e.g. 5000000" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MinPrice">Min rec. buy (gp)</label>
-          <input id="t10MinPrice" type="number" min="0" placeholder="0" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MaxPrice">Max rec. buy (gp)</label>
-          <input id="t10MaxPrice" type="number" min="0" placeholder="Any" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MinMargin">Min margin %</label>
-          <input id="t10MinMargin" type="number" step="0.1" placeholder="0" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MinProfit">Min profit (limit)</label>
-          <input id="t10MinProfit" type="number" min="0" placeholder="0" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MinGpHour">Min GP / hour</label>
-          <input id="t10MinGpHour" type="number" min="0" placeholder="0" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10Min5mVol">Min 5m volume</label>
-          <input id="t10Min5mVol" type="number" min="0" placeholder="0" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MinDailyVol">Min daily volume</label>
-          <input id="t10MinDailyVol" type="number" min="0" placeholder="0" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MinLimit">Min buy limit</label>
-          <input id="t10MinLimit" type="number" min="0" placeholder="0" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MaxLimit">Max buy limit</label>
-          <input id="t10MaxLimit" type="number" min="0" placeholder="Any" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MinCycleMin">Min cycle (min)</label>
-          <input id="t10MinCycleMin" type="number" min="0" placeholder="Any" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MaxCycleMin">Max cycle (min)</label>
-          <input id="t10MaxCycleMin" type="number" min="0" placeholder="Any" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MinBuyMin">Min est. buy (min)</label>
-          <input id="t10MinBuyMin" type="number" min="0" placeholder="Any" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MaxBuyMin">Max est. buy (min)</label>
-          <input id="t10MaxBuyMin" type="number" min="0" placeholder="Any" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MinSellMin">Min est. sell (min)</label>
-          <input id="t10MinSellMin" type="number" min="0" placeholder="Any" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MaxSellMin">Max est. sell (min)</label>
-          <input id="t10MaxSellMin" type="number" min="0" placeholder="Any" />
-        </div>
-
-        <div class="filter-group">
-          <label for="t10MembersFilter">Members</label>
-          <select id="t10MembersFilter">
-            <option value="all">All items</option>
-            <option value="members">Members only</option>
-            <option value="f2p">F2P only</option>
-          </select>
-        </div>
-
-        <div class="toggles">
-          <label class="toggle">
-            <input id="t10IncludeTax" type="checkbox" checked />
-            Include 2% GE tax on sells (max 5M/item; bonds exempt)
-          </label>
-        </div>
-
-        <div class="actions">
-          <button type="button" id="refreshTop10Btn">Refresh prices</button>
-          <button type="button" id="resetTop10Btn">Reset top 10 filters</button>
-        </div>
-      </section>
-
-      <p class="top10-note">
-        Ranked by estimated GP/hour (click column headers to sort). <strong>Rec. buy</strong> (blue) and <strong>Rec. sell</strong> (green) are right after the item name — click a price to copy it.
-        Est. buy/sell/cycle use a 65% recent 5m + 35% 1h volume blend at each price side.
-      </p>
-      <div class="results-meta" id="top10Meta"></div>
-      <div class="gra-item-list-wrap">
-        <div id="top10List" class="gra-item-list gra-item-list--flip-top10" role="table" aria-label="Top 10 flips">
-          <div class="gra-item-list__header" role="row">
-            <div class="gra-item-list__head num" role="columnheader">#</div>
-            <div class="gra-item-list__head col-item sortable" data-sort="name" role="columnheader">Item</div>
-            <div class="gra-item-list__head num col-price-buy sortable" data-sort="buy" role="columnheader">Rec. buy</div>
-            <div class="gra-item-list__head num col-price-sell sortable" data-sort="sell" role="columnheader">Rec. sell</div>
-            <div class="gra-item-list__head num sortable" data-sort="gpPerHour" role="columnheader">GP / hour</div>
-            <div class="gra-item-list__head num sortable" data-sort="marginGp" role="columnheader">Margin / item</div>
-            <div class="gra-item-list__head num col-hide-xs sortable" data-sort="marginPct" role="columnheader">Margin %</div>
-            <div class="gra-item-list__head num col-hide-narrow col-hide-mid sortable" data-sort="taxPerItem" role="columnheader">Tax / item</div>
-            <div class="gra-item-list__head num col-hide-narrow col-hide-mid sortable" data-sort="taxLostLimit" role="columnheader">Tax (limit)</div>
-            <div class="gra-item-list__head num sortable" data-sort="profitAfterTax" role="columnheader">Profit (limit)</div>
-            <div class="gra-item-list__head num col-hide-narrow col-hide-mid sortable" data-sort="profitAtQty" role="columnheader">Profit (qty)</div>
-            <div class="gra-item-list__head num col-hide-narrow col-hide-mid sortable" data-sort="gpNeeded" role="columnheader">GP needed</div>
-            <div class="gra-item-list__head num col-hide-narrow sortable" data-sort="volume5m" role="columnheader">5m vol.</div>
-            <div class="gra-item-list__head num col-hide-narrow sortable" data-sort="dailyVolume" role="columnheader">Daily vol.</div>
-            <div class="gra-item-list__head num sortable" data-sort="buyTimeHours" role="columnheader">Est. buy</div>
-            <div class="gra-item-list__head num sortable" data-sort="sellTimeHours" role="columnheader">Est. sell</div>
-            <div class="gra-item-list__head num sortable" data-sort="flipCycleHours" role="columnheader">Cycle</div>
-            <div class="gra-item-list__head num col-hide-narrow sortable" data-sort="limit" role="columnheader">Limit</div>
-          </div>
-          <div id="top10Body" class="gra-item-list__body" role="rowgroup">
-            <div class="gra-item-list__empty loading">Loading…</div>
+          <div id="recipeBestBanner" class="recipe-best-banner" hidden></div>
+          <p id="transformsMeta" class="results-meta"></p>
+          <div class="gra-item-list-wrap">
+            <div id="transformsList" class="gra-item-list gra-item-list--transforms" role="table" aria-label="Recipe transforms">
+              <div class="gra-item-list__header" role="row">
+                <div class="gra-item-list__head col-recipe sortable" data-xf-sort="name" role="columnheader">Recipe</div>
+                <div class="gra-item-list__head col-io col-hide-narrow" role="columnheader">Inputs</div>
+                <div class="gra-item-list__head col-io col-hide-narrow" role="columnheader">Outputs</div>
+                <div class="gra-item-list__head num sortable" data-xf-sort="inputLimit" role="columnheader">Buy limit</div>
+                <div class="gra-item-list__head num sortable" data-xf-sort="gpNeeded" role="columnheader">GP needed</div>
+                <div class="gra-item-list__head num sortable" data-xf-sort="sellValue" role="columnheader">Revenue</div>
+                <div class="gra-item-list__head num sortable" data-xf-sort="profit" role="columnheader">Profit (limit)</div>
+                <div class="gra-item-list__head num col-hide-xs sortable" data-xf-sort="marginPct" role="columnheader">ROI</div>
+                <div class="gra-item-list__head num sortable" data-xf-sort="gpPerHour" role="columnheader">GP / hr</div>
+                <div class="gra-item-list__head num sortable" data-xf-sort="buyTimeHours" role="columnheader">Est. buy</div>
+                <div class="gra-item-list__head num sortable" data-xf-sort="sellTimeHours" role="columnheader">Est. sell</div>
+                <div class="gra-item-list__head num sortable" data-xf-sort="cycleHours" role="columnheader">Cycle</div>
+                <div class="gra-item-list__head num col-hide-narrow sortable" data-xf-sort="minVolume5m" role="columnheader">5m vol.</div>
+                <div class="gra-item-list__head num col-hide-narrow sortable" data-xf-sort="minDailyVolume" role="columnheader">Daily vol.</div>
+                <div class="gra-item-list__head col-hide-narrow sortable" data-xf-sort="category" role="columnheader">Category</div>
+                <div class="gra-item-list__head col-hide-narrow sortable" data-xf-sort="members" role="columnheader">Members</div>
+              </div>
+              <div id="transformsBody" class="gra-item-list__body" role="rowgroup">
+                <div class="gra-item-list__empty loading">Loading recipe catalog…</div>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <div id="transformsPanel" class="tab-panel">
-      <section class="filters">
-        <h2 class="filters-title">GE transform profit</h2>
-        <p class="filters-subtitle">
-          Buy inputs and sell outputs on the GE — click prices to copy. Est. buy/sell uses 65% 5m + 35% 1h volume. Skilling recipes (e.g. cannonballs) are excluded.
-        </p>
-
-        <div class="preset-filters">
-          <span class="preset-label">Quick</span>
-          <button type="button" class="preset-btn" data-xf-preset="highGpHour">High GP/hr</button>
-          <button type="button" class="preset-btn" data-xf-preset="fastCycle">Fast cycle</button>
-          <button type="button" class="preset-btn" data-xf-preset="highMargin">High margin</button>
-          <button type="button" class="preset-btn" id="bestDecantsBtn">Best decants</button>
-        </div>
-
-        <div class="preset-filters">
-          <span class="preset-label">Budget</span>
-          <button type="button" class="preset-btn" data-xf-preset="budget1m">Under 1M</button>
-          <button type="button" class="preset-btn" data-xf-preset="budget10m">Under 10M</button>
-          <button type="button" class="preset-btn" data-xf-preset="budget50m">Under 50M</button>
-          <button type="button" class="preset-btn" data-xf-preset="budget100m">Under 100M</button>
-          <button type="button" class="preset-btn" data-xf-preset="budget250m">Under 250M</button>
-          <button type="button" class="preset-btn" data-xf-preset="budget500m">Under 500M</button>
-        </div>
-
-        <div class="preset-filters">
-          <span class="preset-label">Type</span>
-          <button type="button" class="preset-btn" data-xf-preset="decantsOnly">Decants only</button>
-          <button type="button" class="preset-btn" data-xf-preset="setsOnly">Sets only</button>
-          <button type="button" class="preset-btn" data-xf-preset="f2p">F2P</button>
-          <button type="button" class="preset-btn" data-xf-preset="members">Members</button>
-        </div>
-
-        <div class="filter-group wide">
-          <label for="xfSearch">Search transforms or items</label>
-          <input id="xfSearch" type="text" placeholder="e.g. super combat, dragon bones" autocomplete="off" />
-        </div>
-
-        <div class="filter-group">
-          <label for="xfType">Category</label>
-          <select id="xfType">
-            <option value="all">All transforms</option>
-            <option value="decant">Decant potions</option>
-            <option value="set_combine">Combine set</option>
-            <option value="set_split">Split set</option>
-            <option value="uncharge">Uncharge</option>
-            <option value="sets">All item sets</option>
-          </select>
-        </div>
-
-        <div class="filter-group" hidden>
-          <label for="xfSkill">Skill</label>
-          <select id="xfSkill">
-            <option value="all">All skills</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="xfMembersFilter">Members</label>
-          <select id="xfMembersFilter">
-            <option value="all">All recipes</option>
-            <option value="members">Members only</option>
-            <option value="f2p">F2P only</option>
-          </select>
-        </div>
-
-        <div class="filter-group">
-          <label for="xfMinProfit">Min profit</label>
-          <input id="xfMinProfit" type="number" min="0" placeholder="0" />
-        </div>
-
-        <div class="filter-group">
-          <label for="xfMaxBudget">Max budget (input cost)</label>
-          <input id="xfMaxBudget" type="number" min="0" placeholder="Any" />
-        </div>
-
-        <div class="filter-group">
-          <label for="xfMinMargin">Min ROI %</label>
-          <input id="xfMinMargin" type="number" step="0.1" min="0" placeholder="0" />
-        </div>
-
-        <div class="filter-group">
-          <label for="xfMinGpHour">Min GP / hour</label>
-          <input id="xfMinGpHour" type="number" min="0" placeholder="0" />
-        </div>
-
-        <div class="filter-group">
-          <label for="xfMaxCycleMin">Max cycle (min)</label>
-          <input id="xfMaxCycleMin" type="number" min="0" placeholder="Any" />
-        </div>
-
-        <div class="toggles">
-          <label class="toggle">
-            <input id="xfIncludeTax" type="checkbox" checked />
-            Include 2% GE tax on sells
-          </label>
-          <label class="toggle">
-            <input id="xfProfitableOnly" type="checkbox" checked />
-            Profitable only
-          </label>
-        </div>
-
-        <div class="filter-actions">
-          <button type="button" id="refreshTransformsBtn">Refresh prices</button>
-          <button type="button" id="resetTransformsBtn">Reset filters</button>
-        </div>
-      </section>
-
-      <div id="recipeBestBanner" class="recipe-best-banner" hidden></div>
-      <p id="transformsMeta" class="results-meta"></p>
-      <div class="gra-item-list-wrap">
-        <div id="transformsList" class="gra-item-list gra-item-list--transforms" role="table" aria-label="Recipe transforms">
-          <div class="gra-item-list__header" role="row">
-            <div class="gra-item-list__head col-recipe sortable" data-xf-sort="name" role="columnheader">Recipe</div>
-            <div class="gra-item-list__head col-io col-hide-narrow" role="columnheader">Inputs</div>
-            <div class="gra-item-list__head col-io col-hide-narrow" role="columnheader">Outputs</div>
-            <div class="gra-item-list__head num sortable" data-xf-sort="inputLimit" role="columnheader">Buy limit</div>
-            <div class="gra-item-list__head num sortable" data-xf-sort="gpNeeded" role="columnheader">GP needed</div>
-            <div class="gra-item-list__head num sortable" data-xf-sort="sellValue" role="columnheader">Revenue</div>
-            <div class="gra-item-list__head num sortable" data-xf-sort="profit" role="columnheader">Profit (limit)</div>
-            <div class="gra-item-list__head num col-hide-xs sortable" data-xf-sort="marginPct" role="columnheader">ROI</div>
-            <div class="gra-item-list__head num sortable" data-xf-sort="gpPerHour" role="columnheader">GP / hr</div>
-            <div class="gra-item-list__head num sortable" data-xf-sort="buyTimeHours" role="columnheader">Est. buy</div>
-            <div class="gra-item-list__head num sortable" data-xf-sort="sellTimeHours" role="columnheader">Est. sell</div>
-            <div class="gra-item-list__head num sortable" data-xf-sort="cycleHours" role="columnheader">Cycle</div>
-            <div class="gra-item-list__head num col-hide-narrow sortable" data-xf-sort="minVolume5m" role="columnheader">5m vol.</div>
-            <div class="gra-item-list__head num col-hide-narrow sortable" data-xf-sort="minDailyVolume" role="columnheader">Daily vol.</div>
-            <div class="gra-item-list__head col-hide-narrow sortable" data-xf-sort="category" role="columnheader">Category</div>
-            <div class="gra-item-list__head col-hide-narrow sortable" data-xf-sort="members" role="columnheader">Members</div>
-          </div>
-          <div id="transformsBody" class="gra-item-list__body" role="rowgroup">
-            <div class="gra-item-list__empty loading">Loading recipe catalog…</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-  </main>
+      </main>
     </div>
 
     <aside class="ad-rail ad-rail-right" aria-label="Advertisement">
@@ -527,111 +224,48 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="/assets/js/prices-core.js"></script>
   <script src="/assets/js/item-list.js"></script>
+  <script src="/assets/js/transforms.js"></script>
   <script src="/assets/js/sync.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/site-chrome.js"></script>
 
   <script>
-    const API_BASE = "https://prices.runescape.wiki/api/v1/osrs";
-    const USER_AGENT = "Graardor -  tools (graardor.com)";
-    /** Your ko-fi.com username only (not the full URL). Example: "gavin" → ko-fi.com/gavin */
-    const KO_FI_USERNAME = "greatblue";
-    const GE_TAX_RATE = 0.02;
-    const GE_TAX_CAP = 5_000_000;
-    const GE_TAX_EXEMPT_BELOW = 100;
-    const BOND_ID = 13190;
-    const WIKI_IMG = "https://oldschool.runescape.wiki/images/";
-
-    let items = [];
-    let cachedApiData = null;
-    let debounceTimer = null;
-    let activeTab = "top10";
-    let top10Sort = { key: "gpPerHour", dir: "desc" };
-    let pricesLoadedAt = null;
-    let volumeTimestamps = { ts5m: null, tsHour: null };
-    let lastUpdatedTimer = null;
-    let transformCatalog = null;
-    let transformRows = [];
-    let transformsSort = { key: "gpPerHour", dir: "desc" };
-
-    const WIKI_PAGE_BASE = "https://oldschool.runescape.wiki/w/";
-    const FAVORITES_STORAGE_KEY = "osrs-ge-flip-favorites-v1";
     const RECIPE_FAV_STORAGE_KEY = "osrs-ge-flip-recipe-favorites-v1";
-    let favoriteIds = new Set();
     let recipeFavoriteKeys = new Set();
     let urlSyncTimer = null;
     let suppressUrlSync = false;
     let toastTimer = null;
-
-    const SORT_KEY_TO_DROPDOWN = {
-      buy: "buyPrice",
-      buyTimeHours: "buyTime",
-      sellTimeHours: "sellTime",
-    };
-
-    const DROPDOWN_TO_SORT_KEY = {
-      buyPrice: "buy",
-      buyTime: "buyTimeHours",
-      sellTime: "sellTimeHours",
-    };
+    let pricesLoadedAt = null;
+    let volumeTimestamps = { ts5m: null, tsHour: null };
+    let lastUpdatedTimer = null;
 
     const el = (id) => document.getElementById(id);
 
-    function initKoFiLink() {
-      const username = KO_FI_USERNAME.trim().replace(/^https?:\/\/(www\.)?ko-fi\.com\//i, "").replace(/\/.*$/, "");
-      if (!username) return;
-      const link = el("koFiLink");
-      const sep = el("koFiSep");
-      const footer = el("koFiFooterLink");
-      const href = `https://ko-fi.com/${encodeURIComponent(username)}`;
-      if (link) {
-        link.href = href;
-        link.hidden = false;
-      }
-      if (sep) sep.hidden = false;
-      if (footer) footer.href = href;
-    }
-
-    function wikiPageUrl(name) {
-      return WIKI_PAGE_BASE + encodeURIComponent(name.replace(/ /g, "_"));
-    }
-
     function loadStoredFavorites() {
       try {
-        favoriteIds = new Set(JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || "[]").map(String));
         recipeFavoriteKeys = new Set(JSON.parse(localStorage.getItem(RECIPE_FAV_STORAGE_KEY) || "[]"));
       } catch {
-        favoriteIds = new Set();
         recipeFavoriteKeys = new Set();
       }
     }
 
     function saveStoredFavorites() {
-      localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favoriteIds]));
       localStorage.setItem(RECIPE_FAV_STORAGE_KEY, JSON.stringify([...recipeFavoriteKeys]));
       if (window.Graardor?.pushSync) {
-        Graardor.pushSync(FAVORITES_STORAGE_KEY, [...favoriteIds]);
         Graardor.pushSync(RECIPE_FAV_STORAGE_KEY, [...recipeFavoriteKeys]);
       }
     }
 
-    function isItemFavorite(id) {
-      return favoriteIds.has(String(id));
-    }
-
     function recipeFavoriteKey(row) {
-      return `${row.type}|${row.name}|${row.label ?? ""}|${recipeKindLabel(row)}`;
+      return `${row.type}|${row.name}|${row.label ?? ""}|${Graardor.Transforms.recipeKindLabel(row)}`;
     }
 
     function isRecipeFavorite(row) {
       return recipeFavoriteKeys.has(recipeFavoriteKey(row));
     }
 
-    function toggleItemFavorite(id) {
-      const key = String(id);
-      if (favoriteIds.has(key)) favoriteIds.delete(key);
-      else favoriteIds.add(key);
-      saveStoredFavorites();
+    function favoriteStarButton(id, kind, active) {
+      return `<button type="button" class="star-btn${active ? " active" : ""}" data-fav-id="${Graardor.escapeHtml(String(id))}" data-fav-kind="${kind}" title="${active ? "Remove favorite" : "Add favorite"}">★</button>`;
     }
 
     function showToast(message) {
@@ -645,14 +279,10 @@
 
     function copyText(text, successMessage) {
       const value = String(text);
-      const onSuccess = () => showToast(successMessage);
-      const onFail = () => showToast("Could not copy — try again");
-
       if (navigator.clipboard?.writeText) {
-        navigator.clipboard.writeText(value).then(onSuccess, onFail);
+        navigator.clipboard.writeText(value).then(() => showToast(successMessage), () => showToast("Could not copy — try again"));
         return;
       }
-
       const textarea = document.createElement("textarea");
       textarea.value = value;
       textarea.setAttribute("readonly", "");
@@ -662,49 +292,11 @@
       textarea.select();
       try {
         document.execCommand("copy");
-        onSuccess();
+        showToast(successMessage);
       } catch {
-        onFail();
+        showToast("Could not copy — try again");
       }
       document.body.removeChild(textarea);
-    }
-
-    function getFlipQty() {
-      return parseNum("flipQty");
-    }
-
-    function favoriteStarButton(id, kind, active) {
-      return `<button type="button" class="star-btn${active ? " active" : ""}" data-fav-id="${escapeHtml(String(id))}" data-fav-kind="${kind}" title="${active ? "Remove favorite" : "Add favorite"}">★</button>`;
-    }
-
-    function itemTitleAttr(name) {
-      return ` title="${escapeHtml(name)}"`;
-    }
-
-    function itemNameCellHtml(item) {
-      return Graardor.itemListNameCell(item, {
-        favHtml: favoriteStarButton(item.id, "item", isItemFavorite(item.id)),
-      });
-    }
-
-    function copyPriceCell(price, side, label) {
-      const sideLabel = label || (side === "buy" ? "Rec. buy" : "Rec. sell");
-      const cls = `num price-copyable ${side === "buy" ? "price-buy" : "price-sell"}`;
-      return Graardor.itemListNumCell(formatPrice(price), cls, sideLabel, {
-        "data-copy-price": Math.round(price),
-        title: `Click to copy ${side} price`,
-      });
-    }
-
-    function profitQtyCell(item) {
-      if (item.profitAtQty == null) {
-        return Graardor.itemListNumCell("—", "num col-hide-narrow col-hide-mid", "Profit (qty)");
-      }
-      const cls = item.profitAtQty >= 0 ? "positive" : "negative";
-      const title = item.flipQtyUsed ? `Based on ${item.flipQtyUsed.toLocaleString()} items` : "";
-      return Graardor.itemListNumCell(formatGp(item.profitAtQty), `num col-hide-narrow col-hide-mid ${cls}`, "Profit (qty)", {
-        title,
-      });
     }
 
     function syncUrlFromState() {
@@ -712,31 +304,8 @@
       clearTimeout(urlSyncTimer);
       urlSyncTimer = setTimeout(() => {
         const params = new URLSearchParams();
-        params.set("tab", activeTab);
-        const qty = getFlipQty();
-        if (qty != null) params.set("qty", String(qty));
-        if (isChecked("favoritesOnly")) params.set("fav", "1");
-
-        if (activeTab === "top10") {
-          const preset = document.querySelector("[data-t10-preset].active")?.dataset.t10Preset;
-          if (preset) params.set("t10", preset);
-        }
-
-        if (activeTab === "search") {
-          const q = getInputValue("searchText").trim();
-          if (q) params.set("q", q);
-          if (getInputValue("membersFilter") !== "all") params.set("members", getInputValue("membersFilter"));
-        }
-
-        if (activeTab === "transforms") {
-          const xfPreset = document.querySelector("[data-xf-preset].active")?.dataset.xfPreset;
-          if (xfPreset) params.set("xf", xfPreset);
-          if (getInputValue("xfType") !== "all") params.set("xfType", getInputValue("xfType"));
-          if (getInputValue("xfSkill") !== "all") params.set("xfSkill", getInputValue("xfSkill"));
-          const xfQ = getInputValue("xfSearch").trim();
-          if (xfQ) params.set("xfQ", xfQ);
-        }
-
+        if (el("favoritesOnly")?.checked) params.set("fav", "1");
+        Graardor.Transforms.getUrlParams(params);
         const qs = params.toString();
         history.replaceState(null, "", qs ? `${location.pathname}?${qs}` : location.pathname);
       }, 350);
@@ -745,76 +314,9 @@
     function applyUrlState() {
       suppressUrlSync = true;
       const params = new URLSearchParams(location.search);
-
-      if (params.get("qty")) el("flipQty").value = params.get("qty");
-      if (params.get("fav") === "1") el("favoritesOnly").checked = true;
-
-      const tab = params.get("tab");
-      if (tab === "search" || tab === "top10" || tab === "transforms") switchTab(tab);
-
-      if (params.get("t10") && T10_PRESETS[params.get("t10")]) {
-        applyTop10Preset(params.get("t10"));
-      }
-
-      if (params.get("q")) el("searchText").value = params.get("q");
-      if (params.get("members")) el("membersFilter").value = params.get("members");
-
-      if (params.get("xfType")) el("xfType").value = params.get("xfType");
-      if (params.get("xfSkill")) el("xfSkill").value = params.get("xfSkill");
-      if (params.get("xfQ")) el("xfSearch").value = params.get("xfQ");
-      if (params.get("xf") && XF_PRESETS[params.get("xf")]) {
-        applyXfPreset(params.get("xf"));
-      }
-
+      if (params.get("fav") === "1" && el("favoritesOnly")) el("favoritesOnly").checked = true;
+      Graardor.Transforms.applyUrlParams(params);
       suppressUrlSync = false;
-    }
-
-    function applyDecantsPreset() {
-      applyXfPreset("decantsOnly");
-    }
-
-    function bindGlobalInteractions() {
-      document.addEventListener("click", (e) => {
-        const copyNode = e.target.closest("[data-copy-price]");
-        if (copyNode) {
-          copyText(copyNode.dataset.copyPrice, `Copied ${Number(copyNode.dataset.copyPrice).toLocaleString()} gp`);
-          return;
-        }
-
-        const star = e.target.closest(".star-btn");
-        if (!star) return;
-        e.preventDefault();
-        const kind = star.dataset.favKind;
-        if (kind === "item") {
-          toggleItemFavorite(star.dataset.favId);
-          renderAll();
-        } else if (kind === "recipe") {
-          const key = star.dataset.favId;
-          if (recipeFavoriteKeys.has(key)) recipeFavoriteKeys.delete(key);
-          else recipeFavoriteKeys.add(key);
-          saveStoredFavorites();
-          renderTransforms();
-        }
-      });
-
-      el("copyLinkBtn")?.addEventListener("click", () => {
-        syncUrlFromState();
-        copyText(location.href, "Link copied — share your filters");
-      });
-
-      el("flipQty")?.addEventListener("input", () => {
-        renderAll();
-        renderTransforms();
-        syncUrlFromState();
-      });
-
-      el("favoritesOnly")?.addEventListener("change", () => {
-        renderAll();
-        renderTransforms();
-        syncUrlFromState();
-      });
-
-      el("bestDecantsBtn")?.addEventListener("click", applyDecantsPreset);
     }
 
     function formatTimeAgo(date) {
@@ -825,8 +327,7 @@
       if (min < 60) return `${min}m ago`;
       const hr = Math.floor(min / 60);
       if (hr < 24) return `${hr}h ago`;
-      const days = Math.floor(hr / 24);
-      return `${days}d ago`;
+      return `${Math.floor(hr / 24)}d ago`;
     }
 
     function updateLastUpdatedDisplay() {
@@ -835,14 +336,9 @@
         if (node) node.textContent = "";
         return;
       }
-
       const parts = [`Last updated ${formatTimeAgo(pricesLoadedAt)}`];
-      if (volumeTimestamps.ts5m) {
-        parts.push(`5m data ${volumeTimestamps.ts5m.toLocaleTimeString()}`);
-      }
-      if (volumeTimestamps.tsHour) {
-        parts.push(`1h data ${volumeTimestamps.tsHour.toLocaleTimeString()}`);
-      }
+      if (volumeTimestamps.ts5m) parts.push(`5m data ${volumeTimestamps.ts5m.toLocaleTimeString()}`);
+      if (volumeTimestamps.tsHour) parts.push(`1h data ${volumeTimestamps.tsHour.toLocaleTimeString()}`);
       node.textContent = parts.join(" · ");
     }
 
@@ -852,1466 +348,91 @@
       lastUpdatedTimer = setInterval(updateLastUpdatedDisplay, 15000);
     }
 
-    async function fetchJson(path) {
-      const res = await fetch(`${API_BASE}${path}`, { headers: { "User-Agent": USER_AGENT } });
-      if (!res.ok) throw new Error(`API error ${res.status} on ${path}`);
-      return res.json();
-    }
-
-    function iconUrl(filename) {
-      if (!filename) return "";
-      return WIKI_IMG + encodeURIComponent(filename.replace(/ /g, "_"));
-    }
-
-    function formatGp(n) {
-      if (n == null || !Number.isFinite(n)) return "—";
-      if (Math.abs(n) >= 1_000_000) return (n / 1_000_000).toFixed(2) + "M";
-      if (Math.abs(n) >= 1_000) return (n / 1_000).toFixed(1) + "K";
-      return Math.round(n).toLocaleString();
-    }
-
-    function formatPrice(n) {
-      if (n == null || !Number.isFinite(n)) return "—";
-      return Math.round(n).toLocaleString();
-    }
-
-    function formatDuration(hours) {
-      if (hours == null || !Number.isFinite(hours) || hours <= 0) return "—";
-      if (hours < 1 / 60) return "< 1m";
-      const totalMinutes = Math.round(hours * 60);
-      if (totalMinutes < 60) return `${totalMinutes}m`;
-      const h = Math.floor(totalMinutes / 60);
-      const m = totalMinutes % 60;
-      return m ? `${h}h ${m}m` : `${h}h`;
-    }
-
-    function parseNum(id) {
-      const input = el(id);
-      if (!input) return null;
-      const v = input.value.trim();
-      if (v === "") return null;
-      const n = Number(v);
-      return Number.isFinite(n) ? n : null;
-    }
-
-    function getInputValue(id) {
-      const input = el(id);
-      return input ? input.value : "";
-    }
-
-    function isChecked(id) {
-      const input = el(id);
-      return input ? input.checked : false;
-    }
-
-    function effectiveHourlyRate(vol5m, volHour) {
-      const rate5m = vol5m > 0 ? vol5m * 12 : 0;
-      if (rate5m > 0 && volHour > 0) return rate5m * 0.65 + volHour * 0.35;
-      if (rate5m > 0) return rate5m;
-      return volHour;
-    }
-
-    function hoursToFillLimit(limit, itemsPerHour) {
-      if (!limit || !itemsPerHour || itemsPerHour <= 0) return null;
-      return limit / itemsPerHour;
-    }
-
-    function buildRawItem(mapping, latest, hourly, fiveMin) {
-      const buy = latest.low;
-      const sell = latest.high;
-      if (buy == null || sell == null || buy <= 0) return null;
-
-      const limit = mapping.limit ?? 0;
-      const buyVolHour = hourly?.lowPriceVolume ?? 0;
-      const sellVolHour = hourly?.highPriceVolume ?? 0;
-      const buyVol5m = fiveMin?.lowPriceVolume ?? 0;
-      const sellVol5m = fiveMin?.highPriceVolume ?? 0;
-      const volume5m = buyVol5m + sellVol5m;
-
-      const buyRateHour = effectiveHourlyRate(buyVol5m, buyVolHour);
-      const sellRateHour = effectiveHourlyRate(sellVol5m, sellVolHour);
-      const dailyVolume = (buyRateHour + sellRateHour) * 24;
-      const buyTimeHours = hoursToFillLimit(limit, buyRateHour);
-      const sellTimeHours = hoursToFillLimit(limit, sellRateHour);
-      const flipCycleHours =
-        buyTimeHours != null && sellTimeHours != null ? buyTimeHours + sellTimeHours : null;
-
-      return {
-        id: mapping.id,
-        name: mapping.name,
-        icon: mapping.icon,
-        members: mapping.members,
-        buy,
-        sell,
-        limit,
-        gpNeeded: buy * limit,
-        volume5m,
-        dailyVolume,
-        buyTimeHours,
-        sellTimeHours,
-        flipCycleHours,
-        buyVolHour,
-        sellVolHour,
-        buyRateHour,
-        sellRateHour,
-      };
-    }
-
-    function isBond(item) {
-      return item.id === BOND_ID;
-    }
-
-    function calcGeTaxPerItem(sellPrice, itemId, includeTax) {
-      if (!includeTax || sellPrice == null || !Number.isFinite(sellPrice)) return 0;
-      if (itemId === BOND_ID) return 0;
-      if (sellPrice < GE_TAX_EXEMPT_BELOW) return 0;
-      return Math.min(Math.floor(sellPrice * GE_TAX_RATE), GE_TAX_CAP);
-    }
-
-    function enrichItem(item, includeTax) {
-      const taxPerItem = calcGeTaxPerItem(item.sell, item.id, includeTax);
-      const taxCapped =
-        includeTax &&
-        item.id !== BOND_ID &&
-        item.sell >= GE_TAX_EXEMPT_BELOW &&
-        Math.floor(item.sell * GE_TAX_RATE) > GE_TAX_CAP;
-      const sellAfterTax = item.sell - taxPerItem;
-      const marginGp = sellAfterTax - item.buy;
-      const marginPct = (marginGp / item.buy) * 100;
-      const taxLostLimit = taxPerItem * item.limit;
-      const profitAfterTax = marginGp * item.limit;
-      const flipQty = getFlipQty();
-      const flipQtyUsed = flipQty != null ? Math.min(flipQty, item.limit || flipQty) : null;
-      const profitAtQty = flipQtyUsed != null ? marginGp * flipQtyUsed : null;
-      const gpPerHour =
-        item.flipCycleHours != null && item.flipCycleHours > 0
-          ? profitAfterTax / item.flipCycleHours
-          : null;
-
-      return {
-        ...item,
-        taxPerItem,
-        taxLostLimit,
-        taxCapped,
-        sellAfterTax,
-        marginGp,
-        marginPct,
-        profitAfterTax,
-        profitAtQty,
-        flipQtyUsed,
-        gpPerHour,
-      };
-    }
-
-    function buildItems() {
-      if (!cachedApiData) return [];
-      const { mapping, latest, hourly, fiveMin } = cachedApiData;
-      return mapping
-        .map((m) => {
-          const l = latest[m.id];
-          if (!l) return null;
-          return buildRawItem(m, l, hourly?.[m.id], fiveMin?.[m.id]);
-        })
-        .filter(Boolean);
-    }
-
-    async function loadTransformCatalog() {
-      try {
-        const res = await fetch("/data/recipes.json");
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        transformCatalog = await res.json();
-        populateSkillFilter();
-      } catch (err) {
-        transformCatalog = null;
-        el("transformsBody").innerHTML = Graardor.itemListEmpty(`Could not load recipe catalog: ${escapeHtml(err.message)}`, true);
-        el("transformsMeta").textContent = "Run npm run build:recipes to generate data/recipes.json";
-      }
-    }
-
-    function populateSkillFilter() {
-      const select = el("xfSkill");
-      if (!select || !transformCatalog?.stats?.skills) return;
-      const current = select.value;
-      select.innerHTML =
-        '<option value="all">All skills</option>' +
-        transformCatalog.stats.skills
-          .map((skill) => `<option value="${escapeHtml(skill)}">${escapeHtml(skill)}</option>`)
-          .join("");
-      if (current && [...select.options].some((o) => o.value === current)) {
-        select.value = current;
-      }
-      const urlSkill = new URLSearchParams(location.search).get("xfSkill");
-      if (urlSkill && [...select.options].some((o) => o.value === urlSkill)) {
-        select.value = urlSkill;
-      }
-    }
-
-    function mappingById() {
-      if (!cachedApiData) return new Map();
-      return new Map(cachedApiData.mapping.map((m) => [m.id, m]));
-    }
-
-    function getTransformPrices(itemId) {
-      if (!cachedApiData) return null;
-      const mapping = mappingById().get(itemId);
-      const latest = cachedApiData.latest[itemId];
-      if (!mapping || !latest) return null;
-
-      const hourly = cachedApiData.hourly[itemId];
-      const fiveMin = cachedApiData.fiveMin[itemId];
-      const buyVolHour = hourly?.lowPriceVolume ?? 0;
-      const sellVolHour = hourly?.highPriceVolume ?? 0;
-      const buyVol5m = fiveMin?.lowPriceVolume ?? 0;
-      const sellVol5m = fiveMin?.highPriceVolume ?? 0;
-      const volume5m = buyVol5m + sellVol5m;
-      const buyRateHour = effectiveHourlyRate(buyVol5m, buyVolHour);
-      const sellRateHour = effectiveHourlyRate(sellVol5m, sellVolHour);
-      const dailyVolume = (buyRateHour + sellRateHour) * 24;
-
-      return {
-        id: itemId,
-        name: mapping.name,
-        icon: mapping.icon,
-        members: mapping.members,
-        buy: latest.low,
-        sell: latest.high,
-        limit: mapping.limit ?? 0,
-        volume5m,
-        dailyVolume,
-        buyRateHour,
-        sellRateHour,
-      };
-    }
-
-    function hoursForQty(qty, ratePerHour) {
-      if (!qty || !ratePerHour || ratePerHour <= 0) return null;
-      return qty / ratePerHour;
-    }
-
-    function enrichRecipeRow(row) {
-      return Graardor.enrichTransformRecipeRow(row);
-    }
-
-    function sellAfterTax(sellPrice, itemId, includeTax) {
-      if (sellPrice == null || !Number.isFinite(sellPrice)) return null;
-      return sellPrice - calcGeTaxPerItem(sellPrice, itemId, includeTax);
-    }
-
-    function availableDoseInts(decant) {
-      return Object.keys(decant.doses)
-        .map(Number)
-        .filter((d) => d >= 1 && d <= 4)
-        .sort((a, b) => a - b);
-    }
-
-    function enumerateDoseParts(targetSum, doseSizes) {
-      const results = [];
-      function rec(remaining, idx, current) {
-        if (remaining === 0) {
-          if (current.length) results.push([...current]);
-          return;
-        }
-        if (idx >= doseSizes.length) return;
-        const dose = doseSizes[idx];
-        for (let qty = 0; dose * qty <= remaining; qty++) {
-          if (qty > 0) current.push({ dose, qty });
-          rec(remaining - dose * qty, idx + 1, current);
-          if (qty > 0) current.pop();
-        }
-      }
-      rec(targetSum, 0, []);
-      return results;
-    }
-
-    function isIdentityParts(parts, singleDose) {
-      return parts.length === 1 && parts[0].dose === singleDose && parts[0].qty === 1;
-    }
-
-    function decantCombineRoutes(decant) {
-      const doseSizes = availableDoseInts(decant);
-      const routes = [];
-      for (const outDose of doseSizes) {
-        for (const parts of enumerateDoseParts(outDose, doseSizes)) {
-          if (isIdentityParts(parts, outDose)) continue;
-          routes.push({ parts, outDose, outQty: 1 });
-        }
-      }
-      return routes;
-    }
-
-    function decantSplitRoutes(decant) {
-      const doseSizes = availableDoseInts(decant);
-      const routes = [];
-      for (const inDose of doseSizes) {
-        for (const parts of enumerateDoseParts(inDose, doseSizes)) {
-          if (isIdentityParts(parts, inDose)) continue;
-          routes.push({ inDose, inQty: 1, parts });
-        }
-      }
-      return routes;
-    }
-
-    function describeDecantPartsFromInts(parts, doses) {
-      return parts
-        .map(({ dose, qty }) => `${qty}× ${doses[String(dose)].name}`)
-        .join(" + ");
-    }
-
-    function recipeItemRef(itemId, qty) {
-      const p = getTransformPrices(itemId);
-      if (!p) return null;
-      return {
-        id: p.id,
-        name: p.name,
-        icon: p.icon,
-        qty,
-        members: p.members,
-        limit: p.limit ?? 0,
-        buy: p.buy,
-        sell: p.sell,
-        buyTimeHours: hoursForQty(qty, p.buyRateHour),
-        sellTimeHours: hoursForQty(qty, p.sellRateHour),
-        volume5m: p.volume5m,
-        dailyVolume: p.dailyVolume,
-        buyRateHour: p.buyRateHour,
-        sellRateHour: p.sellRateHour,
-      };
-    }
-
-    function recipeMembers(inputs, outputs) {
-      return [...inputs, ...outputs].some((item) => item.members);
-    }
-
-    function buildRecipeRow({
-      type,
-      subtype,
-      name,
-      label,
-      category,
-      inputs,
-      outputs,
-      buyCost,
-      sellValue,
-      profit,
-      searchText,
-      members: membersOverride,
-    }) {
-      return {
-        type,
-        subtype,
-        name,
-        label,
-        category,
-        inputs,
-        outputs,
-        buyCost,
-        sellValue,
-        profit,
-        marginPct: buyCost > 0 ? (profit / buyCost) * 100 : null,
-        members: membersOverride ?? recipeMembers(inputs, outputs),
-        searchText: searchText ?? name.toLowerCase(),
-      };
-    }
-
-    function evalSkillRecipe(recipe, includeTax) {
-      const inputs = [];
-      let buyCost = 0;
-      for (const c of recipe.inputs) {
-        const ref = recipeItemRef(c.id, c.qty);
-        const p = getTransformPrices(c.id);
-        if (!ref || !p?.buy) return null;
-        buyCost += p.buy * c.qty;
-        inputs.push(ref);
-      }
-
-      const outputs = [];
-      let sellValue = 0;
-      for (const c of recipe.outputs) {
-        const ref = recipeItemRef(c.id, c.qty);
-        const p = getTransformPrices(c.id);
-        const afterTax = p ? sellAfterTax(p.sell, c.id, includeTax) : null;
-        if (!ref || afterTax == null || p?.sell == null) return null;
-        sellValue += afterTax * c.qty;
-        outputs.push(ref);
-      }
-
-      return buildRecipeRow({
-        type: "skill",
-        subtype: "craft",
-        name: recipe.name,
-        label: recipe.variant,
-        category: recipe.skill,
-        inputs,
-        outputs,
-        buyCost,
-        sellValue,
-        profit: sellValue - buyCost,
-        members: recipe.members,
-        searchText: `${recipe.name} ${recipe.variant ?? ""} ${recipe.skill} ${recipe.inputs
-          .map((i) => i.name)
-          .join(" ")}`.toLowerCase(),
-      });
-    }
-
-    function evalDecantCombine(decant, includeTax) {
-      const { doses } = decant;
-      let best = null;
-
-      for (const route of decantCombineRoutes(decant)) {
-        const out = getTransformPrices(doses[String(route.outDose)].id);
-        const sellValue = out ? sellAfterTax(out.sell, out.id, includeTax) : null;
-        if (sellValue == null || out?.sell == null) continue;
-
-        const inputs = [];
-        let buyCost = 0;
-        let ok = true;
-        for (const part of route.parts) {
-          const ref = recipeItemRef(doses[String(part.dose)].id, part.qty);
-          const p = getTransformPrices(doses[String(part.dose)].id);
-          if (!ref || !p?.buy) {
-            ok = false;
-            break;
-          }
-          buyCost += p.buy * part.qty;
-          inputs.push(ref);
-        }
-        if (!ok) continue;
-
-        const outputs = [recipeItemRef(out.id, route.outQty)];
-        const profit = sellValue - buyCost;
-        const row = buildRecipeRow({
-          type: "decant",
-          subtype: "combine",
-          name: decant.name,
-          category: "Decant",
-          inputs,
-          outputs,
-          buyCost,
-          sellValue,
-          profit,
-          searchText: `${decant.name} ${describeDecantPartsFromInts(route.parts, doses)}`.toLowerCase(),
-        });
-        if (!best || profit > best.profit) best = row;
-      }
-      return best;
-    }
-
-    function evalDecantSplit(decant, includeTax) {
-      const { doses } = decant;
-      let best = null;
-
-      for (const route of decantSplitRoutes(decant)) {
-        const input = getTransformPrices(doses[String(route.inDose)].id);
-        if (!input?.buy) continue;
-
-        const outputs = [];
-        let sellValue = 0;
-        let ok = true;
-        for (const part of route.parts) {
-          const ref = recipeItemRef(doses[String(part.dose)].id, part.qty);
-          const p = getTransformPrices(doses[String(part.dose)].id);
-          const afterTax = p ? sellAfterTax(p.sell, p.id, includeTax) : null;
-          if (!ref || afterTax == null || p?.sell == null) {
-            ok = false;
-            break;
-          }
-          sellValue += afterTax * part.qty;
-          outputs.push(ref);
-        }
-        if (!ok) continue;
-
-        const inputs = [recipeItemRef(input.id, route.inQty)];
-        const profit = sellValue - input.buy;
-        const row = buildRecipeRow({
-          type: "decant",
-          subtype: "split",
-          name: decant.name,
-          category: "Decant",
-          inputs,
-          outputs,
-          buyCost: input.buy,
-          sellValue,
-          profit,
-          searchText: `${decant.name} ${describeDecantPartsFromInts(route.parts, doses)}`.toLowerCase(),
-        });
-        if (!best || profit > best.profit) best = row;
-      }
-      return best;
-    }
-
-    function evalSetCombine(set, includeTax) {
-      const inputs = [];
-      let buyCost = 0;
-      for (const c of set.components) {
-        const ref = recipeItemRef(c.id, c.qty);
-        const p = getTransformPrices(c.id);
-        if (!ref || !p?.buy) return null;
-        buyCost += p.buy * c.qty;
-        inputs.push(ref);
-      }
-      const setP = getTransformPrices(set.set.id);
-      const sellValue = setP ? sellAfterTax(setP.sell, setP.id, includeTax) : null;
-      if (sellValue == null || setP?.sell == null) return null;
-      const outputs = [recipeItemRef(set.set.id, 1)];
-      return buildRecipeRow({
-        type: "set_combine",
-        subtype: "combine",
-        name: set.name,
-        category: "Item set",
-        inputs,
-        outputs,
-        buyCost,
-        sellValue,
-        profit: sellValue - buyCost,
-        searchText: `${set.name} ${set.components.map((c) => c.name).join(" ")}`.toLowerCase(),
-      });
-    }
-
-    function evalSetSplit(set, includeTax) {
-      const setP = getTransformPrices(set.set.id);
-      if (!setP?.buy) return null;
-      const outputs = [];
-      let sellValue = 0;
-      for (const c of set.components) {
-        const ref = recipeItemRef(c.id, c.qty);
-        const p = getTransformPrices(c.id);
-        const afterTax = p ? sellAfterTax(p.sell, c.id, includeTax) : null;
-        if (!ref || afterTax == null || p?.sell == null) return null;
-        sellValue += afterTax * c.qty;
-        outputs.push(ref);
-      }
-      const inputs = [recipeItemRef(set.set.id, 1)];
-      return buildRecipeRow({
-        type: "set_split",
-        subtype: "split",
-        name: set.name,
-        category: "Item set",
-        inputs,
-        outputs,
-        buyCost: setP.buy,
-        sellValue,
-        profit: sellValue - setP.buy,
-        searchText: `${set.name} ${set.components.map((c) => c.name).join(" ")}`.toLowerCase(),
-      });
-    }
-
-    function buildTransformRows() {
-      if (!transformCatalog || !cachedApiData) return [];
-      const rows = [];
-      const includeTax = isChecked("xfIncludeTax");
-
-      for (const decant of transformCatalog.decants ?? []) {
-        const combine = evalDecantCombine(decant, isChecked("xfIncludeTax"));
-        const split = evalDecantSplit(decant, isChecked("xfIncludeTax"));
-        if (combine) rows.push(combine);
-        if (split) rows.push(split);
-      }
-
-      for (const set of transformCatalog.sets ?? []) {
-        const combine = evalSetCombine(set, isChecked("xfIncludeTax"));
-        const split = evalSetSplit(set, isChecked("xfIncludeTax"));
-        if (combine) rows.push(combine);
-        if (split) rows.push(split);
-      }
-
-      for (const uncharge of transformCatalog.uncharges ?? []) {
-        const charged = getTransformPrices(uncharge.charged.id);
-        const unch = getTransformPrices(uncharge.uncharged.id);
-        if (!charged?.buy || !unch?.sell) continue;
-        const sellValue = sellAfterTax(unch.sell, unch.id, isChecked("xfIncludeTax"));
-        if (sellValue == null) continue;
-        const profit = sellValue - charged.buy;
-        rows.push(
-          buildRecipeRow({
-            type: "uncharge",
-            subtype: "uncharge",
-            name: uncharge.name,
-            category: "Uncharge",
-            inputs: [recipeItemRef(uncharge.charged.id, 1)],
-            outputs: [recipeItemRef(uncharge.uncharged.id, 1)],
-            buyCost: charged.buy,
-            sellValue,
-            profit,
-            searchText: uncharge.name.toLowerCase(),
-          })
-        );
-      }
-
-      return rows.map(enrichRecipeRow);
-    }
-
-    function recipeKindLabel(row) {
-      if (row.type === "skill") return row.label || "Skilling";
-      if (row.type === "decant") return row.subtype === "combine" ? "Decant up" : "Decant down";
-      if (row.type === "set_combine") return "Combine set";
-      if (row.type === "set_split") return "Split set";
-      if (row.type === "uncharge") return "Uncharge";
-      return row.type;
-    }
-
-    function recipeItemChip(item, side) {
-      const isBuy = side !== "sell";
-      const price = isBuy ? item.buy : item.sell;
-      const priceLabel = isBuy ? "Buy" : "Sell";
-      const priceClass = isBuy ? "price-buy" : "price-sell";
-      const time = isBuy ? item.buyTimeHours : item.sellTimeHours;
-      const timeLabel = isBuy ? "buy" : "sell";
-      const batchQty = item.batchQty ?? item.qty;
-      const limitLine =
-        isBuy && item.limit
-          ? `<span class="recipe-limit">Limit: ${formatGp(item.limit)}</span>`
-          : "";
-      return `<div class="recipe-item recipe-item-detailed">
-        <div class="recipe-item-head">
-          <img src="${iconUrl(item.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
-          <span class="recipe-qty">${item.qty}×</span>
-          <a class="recipe-name" href="${wikiPageUrl(item.name)}" target="_blank" rel="noopener"${itemTitleAttr(item.name)}>${escapeHtml(item.name)}</a>
-        </div>
-        <div class="recipe-item-meta">
-          <span class="${priceClass} price-copyable" data-copy-price="${Math.round(price)}" title="Click to copy ${priceLabel.toLowerCase()} price">${priceLabel}: ${formatPrice(price)}</span>
-          ${limitLine}
-          <span class="recipe-vol">5m ${formatGp(item.volume5m ?? 0)} · day ${formatGp(item.dailyVolume ?? 0)}</span>
-          <span class="recipe-time">Est. ${timeLabel} (${formatGp(batchQty)}): ${formatDuration(time)}</span>
-        </div>
-      </div>`;
-    }
-
-    function recipeIoCell(items, side, label) {
-      const sideLabel = label || (side === "buy" ? "Inputs" : "Outputs");
-      return Graardor.itemListCell(
-        items.map((item) => recipeItemChip(item, side)).join(""),
-        "recipe-io col-io col-hide-narrow",
-        { "data-label": sideLabel }
-      );
-    }
-
-    function recipeDisplayName(row) {
-      if (row.type === "skill" && row.label) return `${row.name} (${row.label})`;
-      return row.name;
-    }
-
-    function filterTransformRows(rows) {
-      const search = getInputValue("xfSearch").trim().toLowerCase();
-      const type = getInputValue("xfType");
-      const skill = getInputValue("xfSkill");
-      const membersFilter = getInputValue("xfMembersFilter");
-      const minProfit = parseNum("xfMinProfit") ?? 0;
-      const maxBudget = parseNum("xfMaxBudget");
-      const minMargin = parseNum("xfMinMargin");
-      const minGpHour = parseNum("xfMinGpHour");
-      const maxCycleMin = parseNum("xfMaxCycleMin");
-      const profitableOnly = isChecked("xfProfitableOnly");
-
-      return rows.filter((row) => {
-        if (type === "sets") {
-          if (row.type !== "set_combine" && row.type !== "set_split") return false;
-        } else if (type !== "all" && row.type !== type) return false;
-        if (skill !== "all" && row.category !== skill) return false;
-        if (membersFilter === "members" && !row.members) return false;
-        if (membersFilter === "f2p" && row.members) return false;
-        if (search) {
-          const itemNames = [...row.inputs, ...row.outputs].map((i) => i.name.toLowerCase()).join(" ");
-          if (!row.searchText.includes(search) && !row.name.toLowerCase().includes(search) && !itemNames.includes(search)) {
-            return false;
-          }
-        }
-        if (profitableOnly && row.profit <= 0) return false;
-        if (row.profit < minProfit) return false;
-        if (maxBudget != null && row.gpNeeded > maxBudget) return false;
-        if (minMargin != null && (row.marginPct == null || row.marginPct < minMargin)) return false;
-        if (minGpHour != null && (row.gpPerHour == null || row.gpPerHour < minGpHour)) return false;
-        if (!withinMinuteRange(row.cycleHours, null, maxCycleMin)) return false;
-        if (isChecked("favoritesOnly") && !isRecipeFavorite(row)) return false;
-        return true;
-      });
-    }
-
-    function recipeItemTimingTooltip(item, side) {
-      const rate = side === "buy" ? item.buyRateHour : item.sellRateHour;
-      const batchQty = item.batchQty ?? item.qty;
-      if (!rate || rate <= 0) return `No recent volume at rec. ${side} side`;
-      const perMin = rate / 60;
-      return `~${Math.round(rate).toLocaleString()} items/hour at rec. ${side} (65% 5m + 35% 1h) · ~${perMin >= 1 ? perMin.toFixed(1) : perMin.toFixed(2)}/min · ${formatGp(batchQty)} for limit batch`;
-    }
-
-    function recipeCycleTooltip(row) {
-      if (row.cycleHours == null) return "Need buy and sell volume to estimate full limit cycle";
-      const batchNote = row.batchCycles > 1 ? `${row.batchCycles.toLocaleString()}× recipe · ` : "";
-      return `${batchNote}Est. buy + est. sell (${formatDuration(row.buyTimeHours)} + ${formatDuration(row.sellTimeHours)}) — slowest input buy + slowest output sell for full limit batch`;
-    }
-
-    function renderTransforms() {
-      if (!el("transformsBody")) return;
-
-      if (!transformCatalog) {
-        Graardor.renderItemList("transformsBody", { message: "Recipe catalog not loaded.", loading: true });
-        return;
-      }
-
-      if (!cachedApiData) {
-        Graardor.renderItemList("transformsBody", { message: "Load prices with Refresh prices.", loading: true });
-        el("transformsMeta").textContent = `${transformCatalog.stats.decants ?? 0} decants · ${transformCatalog.stats.sets ?? 0} sets · instant GE transforms only`;
-        return;
-      }
-
-      transformRows = buildTransformRows();
-      const filtered = filterTransformRows(transformRows);
-      const sorted = sortItemList(filtered, transformsSort.key, transformsSort.dir);
-      updateTransformsSortHeaders();
-
-      el("transformsMeta").textContent = `Showing ${sorted.length.toLocaleString()} of ${transformRows.length.toLocaleString()} transforms · catalog updated ${transformCatalog.generatedAt.slice(0, 10)} · click column headers to sort`;
-
-      if (!sorted.length) {
-        Graardor.renderItemList("transformsBody", { message: "No recipes match your filters.", loading: true });
-        if (el("recipeBestBanner")) el("recipeBestBanner").hidden = true;
-        return;
-      }
-
-      const best = sorted.find((row) => row.profit > 0);
-      const banner = el("recipeBestBanner");
-      if (banner) {
-        if (best) {
-          banner.hidden = false;
-          const gpHr =
-            best.gpPerHour != null ? ` · ${formatGp(best.gpPerHour)}/hr` : "";
-          banner.innerHTML = `Best match: <strong>${escapeHtml(recipeDisplayName(best))}</strong> — ${formatGp(best.profit)} profit${best.marginPct != null ? ` (${best.marginPct.toFixed(1)}% ROI)` : ""}${gpHr}. Verify in-game before buying.`;
-        } else {
-          banner.hidden = true;
-        }
-      }
-
-      Graardor.renderItemList("transformsBody", {
-        rowsHtml: sorted
-        .map((row) => {
-          const marginClass = row.profit >= 0 ? "positive" : "negative";
-          const gpHrClass = row.gpPerHour != null && row.gpPerHour >= 0 ? "positive" : "";
-          const memberBadge = row.members
-            ? '<span class="badge badge-members">P2P</span>'
-            : '<span class="badge badge-f2p">F2P</span>';
-          const favKey = recipeFavoriteKey(row);
-          const recipeCell = Graardor.itemListCell(
-            `<div class="item-cell">
-              ${favoriteStarButton(favKey, "recipe", isRecipeFavorite(row))}
-              <span>
-                <span class="recipe-title"${itemTitleAttr(recipeDisplayName(row))}>${escapeHtml(recipeDisplayName(row))}</span>
-                <span class="recipe-kind">${escapeHtml(recipeKindLabel(row))}</span>
-              </span>
-            </div>`,
-            "gra-item-list__cell--recipe"
-          );
-          return Graardor.itemListRow(
-            `${recipeCell}${recipeIoCell(row.inputs, "buy", "Inputs")}${recipeIoCell(row.outputs, "sell", "Outputs")}` +
-              `${Graardor.itemListNumCell(row.inputLimit == null ? "—" : formatGp(row.inputLimit), "num col-hide-xs", "Buy limit", row.limitingInputName ? { title: `Limiting input: ${row.limitingInputName}` } : undefined)}` +
-              `${Graardor.itemListNumCell(formatGp(row.gpNeeded), "num", "GP needed")}` +
-              `${Graardor.itemListNumCell(formatGp(row.sellValue), "num", "Revenue")}` +
-              `${Graardor.itemListNumCell(formatGp(row.profit), `num ${marginClass}`, "Profit (limit)")}` +
-              `${Graardor.itemListNumCell(row.marginPct == null ? "—" : `${row.marginPct.toFixed(2)}%`, `num col-hide-xs ${marginClass}`, "ROI")}` +
-              `${Graardor.itemListNumCell(row.gpPerHour == null ? "—" : formatGp(row.gpPerHour), `num ${gpHrClass} highlight-gp`, "GP / hr")}` +
-              `${durationCell(row.buyTimeHours, row.inputs.length ? recipeItemTimingTooltip(row.inputs.reduce((a, b) => (a.buyTimeHours ?? 0) >= (b.buyTimeHours ?? 0) ? a : b), "buy") : null, "Est. buy")}` +
-              `${durationCell(row.sellTimeHours, row.outputs.length ? recipeItemTimingTooltip(row.outputs.reduce((a, b) => (a.sellTimeHours ?? 0) >= (b.sellTimeHours ?? 0) ? a : b), "sell") : null, "Est. sell")}` +
-              `${durationCell(row.cycleHours, recipeCycleTooltip(row), "Cycle")}` +
-              `${Graardor.itemListNumCell(row.minVolume5m == null ? "—" : formatGp(row.minVolume5m), "num col-hide-narrow", "5m vol.")}` +
-              `${Graardor.itemListNumCell(row.minDailyVolume == null ? "—" : formatGp(row.minDailyVolume), "num col-hide-narrow", "Daily vol.")}` +
-              `${Graardor.itemListCell(escapeHtml(row.category), "col-hide-narrow", { "data-label": "Category" })}` +
-              `${Graardor.itemListCell(memberBadge, "col-hide-narrow", { "data-label": "Members" })}`
-          );
-        })
-        .join(""),
-        listId: "transformsList",
-        sortKey: transformsSort.key,
-        sortDir: transformsSort.dir,
-        sortAttr: "data-xf-sort",
-      });
-    }
-
-    function updateTransformsSortHeaders() {
-      Graardor.updateItemListSort("transformsList", transformsSort.key, transformsSort.dir, "data-xf-sort");
-    }
-
-    function handleTransformsHeaderSort(key) {
-      const dir =
-        key === transformsSort.key ? (transformsSort.dir === "desc" ? "asc" : "desc") : "desc";
-      transformsSort = { key, dir };
-      renderTransforms();
-    }
-
-    function resetTransformFilters() {
-      setXfFilters({});
-      transformsSort = { key: "gpPerHour", dir: "desc" };
-      setActiveXfPreset(null);
-      renderTransforms();
-      syncUrlFromState();
-    }
-
-    function setXfFilters(values = {}) {
-      el("xfSearch").value = values.search ?? "";
-      el("xfType").value = values.type ?? "all";
-      el("xfSkill").value = values.skill ?? "all";
-      el("xfMembersFilter").value = values.membersFilter ?? "all";
-      el("xfMinProfit").value = values.minProfit ?? "";
-      el("xfMaxBudget").value = values.maxBudget ?? "";
-      el("xfMinMargin").value = values.minMargin ?? "";
-      el("xfMinGpHour").value = values.minGpHour ?? "";
-      el("xfMaxCycleMin").value = values.maxCycleMin ?? "";
-      el("xfIncludeTax").checked = values.includeTax ?? true;
-      el("xfProfitableOnly").checked = values.profitableOnly ?? true;
-      if (values.sortKey) transformsSort = { key: values.sortKey, dir: "desc" };
-    }
-
-    const XF_PRESETS = {
-      highGpHour: { minGpHour: 100000, profitableOnly: true, sortKey: "gpPerHour" },
-      fastCycle: { maxCycleMin: 30, profitableOnly: true, sortKey: "gpPerHour" },
-      highMargin: { minMargin: 5, profitableOnly: true, sortKey: "marginPct" },
-      budget1m: { maxBudget: 1_000_000, profitableOnly: true, sortKey: "gpPerHour" },
-      budget10m: { maxBudget: 10_000_000, profitableOnly: true, sortKey: "gpPerHour" },
-      budget50m: { maxBudget: 50_000_000, profitableOnly: true, sortKey: "gpPerHour" },
-      budget100m: { maxBudget: 100_000_000, profitableOnly: true, sortKey: "gpPerHour" },
-      budget250m: { maxBudget: 250_000_000, profitableOnly: true, sortKey: "gpPerHour" },
-      budget500m: { maxBudget: 500_000_000, profitableOnly: true, sortKey: "gpPerHour" },
-      decantsOnly: { type: "decant", profitableOnly: true, sortKey: "gpPerHour" },
-      setsOnly: { type: "sets", profitableOnly: true, sortKey: "profit" },
-      f2p: { membersFilter: "f2p", profitableOnly: true, sortKey: "gpPerHour" },
-      members: { membersFilter: "members", profitableOnly: true, sortKey: "gpPerHour" },
-    };
-
-    function setActiveXfPreset(presetId) {
-      document.querySelectorAll("[data-xf-preset]").forEach((btn) => {
-        btn.classList.toggle("active", btn.dataset.xfPreset === presetId);
-      });
-    }
-
-    function applyXfPreset(presetId) {
-      const preset = XF_PRESETS[presetId];
-      if (!preset) return;
-      switchTab("transforms");
-      setXfFilters(preset);
-      setActiveXfPreset(presetId);
-      renderTransforms();
-      syncUrlFromState();
-    }
-
-    function getSortValue(item, key) {
-      if (key === "name") return item.name;
-      if (key === "buy") return item.buy;
-      if (key === "sell") return item.sell;
-      return item[key];
-    }
-
-    function sortItemList(list, key, dir) {
-      const multiplier = dir === "asc" ? 1 : -1;
-      return [...list].sort((a, b) => {
-        if (key === "name") return multiplier * a.name.localeCompare(b.name);
-        const av = getSortValue(a, key);
-        const bv = getSortValue(b, key);
-        if (av == null && bv == null) return a.name.localeCompare(b.name);
-        if (av == null) return 1;
-        if (bv == null) return -1;
-        if (av < bv) return -1 * multiplier;
-        if (av > bv) return 1 * multiplier;
-        return a.name.localeCompare(b.name);
-      });
-    }
-
-    function updateSortHeaders(listId, key, dir) {
-      Graardor.updateItemListSort(listId, key, dir);
-    }
-
-    function dropdownKeyToSortKey(dropdownKey) {
-      return DROPDOWN_TO_SORT_KEY[dropdownKey] || dropdownKey;
-    }
-
-    function sortKeyToDropdownKey(sortKey) {
-      return SORT_KEY_TO_DROPDOWN[sortKey] || sortKey;
-    }
-
-    function handleSearchHeaderSort(key) {
-      const currentKey = dropdownKeyToSortKey(getInputValue("sortBy"));
-      const currentDir = getInputValue("sortDir");
-      const dir = key === currentKey ? (currentDir === "desc" ? "asc" : "desc") : "desc";
-      el("sortBy").value = sortKeyToDropdownKey(key);
-      el("sortDir").value = dir;
-      updateSortHeaders("searchList", key, dir);
-      renderResults();
-    }
-
-    function handleTop10HeaderSort(key) {
-      const dir =
-        key === top10Sort.key ? (top10Sort.dir === "desc" ? "asc" : "desc") : "desc";
-      top10Sort = { key, dir };
-      updateSortHeaders("top10List", key, dir);
-      renderTop10();
-    }
-
-    function bindSortableHeaders(listId, handler) {
-      Graardor.bindItemListSort(listId, handler);
-    }
-
-    function taxCells(item, includeTax) {
-      if (!includeTax) {
-        return (
-          Graardor.itemListNumCell("—", "num col-hide-narrow col-hide-mid", "Tax / item") +
-          Graardor.itemListNumCell("—", "num col-hide-narrow col-hide-mid", "Tax (limit)")
-        );
-      }
-      const capNote = item.taxCapped ? " (5M cap)" : "";
-      const exemptNote =
-        item.id === BOND_ID
-          ? "Bond — GE tax exempt"
-          : item.sell < GE_TAX_EXEMPT_BELOW
-            ? "Sell price under 100 gp — no tax"
-            : `2% of rec. sell${capNote}`;
-      return (
-        Graardor.itemListNumCell(formatGp(item.taxPerItem), "num tax-lost col-hide-narrow col-hide-mid", "Tax / item", {
-          title: exemptNote,
-        }) +
-        Graardor.itemListNumCell(formatGp(item.taxLostLimit), "num tax-lost col-hide-narrow col-hide-mid", "Tax (limit)", {
-          title: "Total tax on full buy limit",
-        })
-      );
-    }
-
-    function durationCell(hours, title, label) {
-      const text = formatDuration(hours);
-      return Graardor.itemListNumCell(text, "num", label, title ? { title } : undefined);
-    }
-
-    function numCell(value, className = "num", label) {
-      return Graardor.itemListNumCell(value, className, label);
-    }
-
-    function timingTooltip(item, side) {
-      const rate = side === "buy" ? item.buyRateHour : item.sellRateHour;
-      if (!rate || rate <= 0) return "No recent volume at this price side";
-      const perMin = rate / 60;
-      return `~${Math.round(rate).toLocaleString()} items/hour at rec. ${side} (65% 5m + 35% 1h) · ~${perMin >= 1 ? perMin.toFixed(1) : perMin.toFixed(2)}/min`;
-    }
-
-    function cycleTooltip(item) {
-      if (item.flipCycleHours == null) return "Need buy and sell volume to estimate full cycle";
-      return `Est. buy + est. sell (${formatDuration(item.buyTimeHours)} + ${formatDuration(item.sellTimeHours)})`;
-    }
-
-    function itemRowHtml(item, { rank = null, showGpPerHour = false, includeTax = false } = {}) {
-      const marginClass = item.marginGp >= 0 ? "positive" : "negative";
-      const rankCell = rank != null ? Graardor.itemListNumCell(rank, "rank-cell", "#") : "";
-      const buyClass = showGpPerHour ? "num price-buy price-col-buy price-copyable" : "num price-buy price-copyable";
-      const sellClass = showGpPerHour ? "num price-sell price-col-sell price-copyable" : "num price-sell price-copyable";
-      const buyCell = Graardor.itemListNumCell(formatPrice(item.buy), buyClass, "Rec. buy", {
-        "data-copy-price": Math.round(item.buy),
-        title: "Click to copy buy price",
-      });
-      const sellCell = Graardor.itemListNumCell(formatPrice(item.sell), sellClass, "Rec. sell", {
-        "data-copy-price": Math.round(item.sell),
-        title: "Click to copy sell price",
-      });
-      const gpPerHourCell = showGpPerHour
-        ? numCell(formatGp(item.gpPerHour), "num highlight-gp", "GP / hour")
-        : "";
-      const profitCells =
-        numCell(formatGp(item.profitAfterTax), `num ${marginClass}`, "Profit (limit)") + profitQtyCell(item);
-
-      const cells =
-        rankCell +
-        itemNameCellHtml(item) +
-        buyCell +
-        sellCell +
-        gpPerHourCell +
-        numCell(formatGp(item.marginGp), `num ${marginClass}`, "Margin / item") +
-        numCell(`${item.marginPct.toFixed(2)}%`, `num col-hide-xs ${marginClass}`, "Margin %") +
-        taxCells(item, includeTax) +
-        profitCells +
-        numCell(formatGp(item.gpNeeded), "num col-hide-narrow col-hide-mid", "GP needed") +
-        numCell(formatGp(item.volume5m), "num col-hide-narrow", "5m vol.") +
-        numCell(formatGp(item.dailyVolume), "num col-hide-narrow", "Daily vol.") +
-        durationCell(item.buyTimeHours, timingTooltip(item, "buy"), "Est. buy") +
-        durationCell(item.sellTimeHours, timingTooltip(item, "sell"), "Est. sell") +
-        (showGpPerHour
-          ? durationCell(item.flipCycleHours, cycleTooltip(item), "Cycle")
-          : "") +
-        numCell(item.limit.toLocaleString(), "num col-hide-narrow", "Limit");
-
-      return Graardor.itemListRow(cells);
-    }
-
-    function passesSearchFilters(item) {
-      const search = getInputValue("searchText").trim().toLowerCase();
-      const nameMatch = search && item.name.toLowerCase().includes(search);
-      if (search && !nameMatch) return false;
-
-      const minPrice = parseNum("minPrice");
-      const maxPrice = parseNum("maxPrice");
-      const minMargin = parseNum("minMargin");
-      const minDailyVol = parseNum("minDailyVol");
-      const minLimit = parseNum("minLimit");
-      const minCycleMin = parseNum("minCycleMin");
-      const maxCycleMin = parseNum("maxCycleMin");
-      const membersFilter = getInputValue("membersFilter");
-
-      if (minPrice != null && item.buy < minPrice) return false;
-      if (maxPrice != null && item.buy > maxPrice) return false;
-      if (minMargin != null && item.marginPct < minMargin) return false;
-      if (minDailyVol != null && item.dailyVolume < minDailyVol) return false;
-      if (minLimit != null && item.limit < minLimit) return false;
-      if (!withinMinuteRange(item.flipCycleHours, minCycleMin, maxCycleMin)) return false;
-      if (membersFilter === "members" && !item.members) return false;
-      if (membersFilter === "f2p" && item.members) return false;
-      if (isChecked("favoritesOnly") && !isItemFavorite(item.id)) return false;
-      if (item.marginGp <= 0 && !nameMatch && isChecked("profitableOnly")) return false;
-      return true;
-    }
-
-    function withinMinuteRange(hours, minMinutes, maxMinutes) {
-      if (minMinutes == null && maxMinutes == null) return true;
-      if (hours == null || !Number.isFinite(hours) || hours <= 0) return false;
-      const minutes = hours * 60;
-      if (minMinutes != null && minutes < minMinutes) return false;
-      if (maxMinutes != null && minutes > maxMinutes) return false;
-      return true;
-    }
-
-    function passesTop10Filters(item) {
-      const search = getInputValue("t10Search").trim().toLowerCase();
-      const nameMatch = search && item.name.toLowerCase().includes(search);
-      if (search && !nameMatch) return false;
-
-      const maxGp = parseNum("t10MaxGp");
-      const minPrice = parseNum("t10MinPrice");
-      const maxPrice = parseNum("t10MaxPrice");
-      const minMargin = parseNum("t10MinMargin");
-      const minProfit = parseNum("t10MinProfit");
-      const minGpHour = parseNum("t10MinGpHour");
-      const min5mVol = parseNum("t10Min5mVol");
-      const minDailyVol = parseNum("t10MinDailyVol");
-      const minLimit = parseNum("t10MinLimit");
-      const maxLimit = parseNum("t10MaxLimit");
-      const minCycleMin = parseNum("t10MinCycleMin");
-      const maxCycleMin = parseNum("t10MaxCycleMin");
-      const minBuyMin = parseNum("t10MinBuyMin");
-      const maxBuyMin = parseNum("t10MaxBuyMin");
-      const minSellMin = parseNum("t10MinSellMin");
-      const maxSellMin = parseNum("t10MaxSellMin");
-      const membersFilter = getInputValue("t10MembersFilter");
-
-      if (maxGp != null && item.gpNeeded > maxGp) return false;
-      if (minPrice != null && item.buy < minPrice) return false;
-      if (maxPrice != null && item.buy > maxPrice) return false;
-      if (minMargin != null && item.marginPct < minMargin) return false;
-      if (minProfit != null && item.profitAfterTax < minProfit) return false;
-      if (minGpHour != null && (item.gpPerHour == null || item.gpPerHour < minGpHour)) return false;
-      if (min5mVol != null && item.volume5m < min5mVol) return false;
-      if (minDailyVol != null && item.dailyVolume < minDailyVol) return false;
-      if (minLimit != null && item.limit < minLimit) return false;
-      if (maxLimit != null && item.limit > maxLimit) return false;
-      if (!withinMinuteRange(item.flipCycleHours, minCycleMin, maxCycleMin)) return false;
-      if (!withinMinuteRange(item.buyTimeHours, minBuyMin, maxBuyMin)) return false;
-      if (!withinMinuteRange(item.sellTimeHours, minSellMin, maxSellMin)) return false;
-      if (membersFilter === "members" && !item.members) return false;
-      if (membersFilter === "f2p" && item.members) return false;
-      if (isChecked("favoritesOnly") && !isItemFavorite(item.id)) return false;
-      if (item.marginGp <= 0 && !nameMatch) return false;
-      return true;
-    }
-
-    function sortItems(list) {
-      const key = dropdownKeyToSortKey(getInputValue("sortBy"));
-      const dir = getInputValue("sortDir");
-      updateSortHeaders("searchList", key, dir);
-      return sortItemList(list, key, dir);
-    }
-
-    function updateFlipSummaryStrip() {
-      if (!items.length || typeof renderSummaryStrip !== "function") {
-        if (typeof renderSummaryStrip === "function") renderSummaryStrip("flipSummary", []);
-        return;
-      }
-      const includeTax = isChecked("t10IncludeTax");
-      const enriched = items.map((item) => enrichItem(item, includeTax));
-      const pool = enriched.filter(passesTop10Filters).filter(
-        (i) => !isBond(i) && i.gpPerHour != null && i.gpPerHour > 0
-      );
-      const best = sortItemList(pool, "gpPerHour", "desc")[0];
-      let bestTransform = null;
-      if (transformRows?.length) {
-        bestTransform = sortItemList(
-          filterTransformRows(transformRows).filter((r) => r.profit > 0),
-          "gpPerHour",
-          "desc"
-        )[0];
-      }
-      renderSummaryStrip("flipSummary", [
-        {
-          label: "Best flip GP/hr",
-          value: best ? formatGp(best.gpPerHour) : "—",
-          className: "highlight-gp",
-          hint: best ? best.name : "Loosen top 10 filters",
-          link: best ? `/tools/item?id=${best.id}` : null,
-        },
-        {
-          label: "Best transform",
-          value: bestTransform?.gpPerHour != null ? formatGp(bestTransform.gpPerHour) + "/hr" : "—",
-          className: bestTransform ? "highlight-gp" : "",
-          hint: bestTransform ? recipeDisplayName(bestTransform) : "Open Transforms tab",
-        },
-        { label: "Items priced", value: items.length.toLocaleString() },
-        { label: "Favorites", value: favoriteIds.size.toLocaleString() },
-        {
-          label: "Prices",
-          value: pricesLoadedAt ? formatTimeAgo(pricesLoadedAt) : "—",
-          hint: "Refresh when offers fill",
-        },
-      ]);
-    }
-
-    function renderTop10() {
-      if (!items.length) {
-        el("top10Meta").textContent = "Load price data first, then use Refresh if needed.";
-        Graardor.renderItemList("top10Body", { message: "No price data loaded yet.", loading: true });
-        return;
-      }
-
-      const includeTax = isChecked("t10IncludeTax");
-      const enriched = items.map((item) => enrichItem(item, includeTax));
-      const matching = enriched.filter(passesTop10Filters);
-      const pool = matching.filter(
-        (item) => !isBond(item) && item.gpPerHour != null && item.gpPerHour > 0
-      );
-      const candidates = sortItemList(pool, top10Sort.key, top10Sort.dir).slice(0, 10);
-      updateSortHeaders("top10List", top10Sort.key, top10Sort.dir);
-
-      const budgetNote =
-        parseNum("t10MaxGp") != null ? ` · GP budget cap: ${formatGp(parseNum("t10MaxGp"))}` : "";
-
-      el("top10Meta").textContent = candidates.length
-        ? `Top ${candidates.length} flips by ${top10Sort.key === "gpPerHour" ? "GP/hour" : "selected column"} (from ${pool.length} eligible items${budgetNote})`
-        : `No flips match your top 10 filters (${matching.filter((i) => !isBond(i)).length} non-bond items passed filters). Try loosening restrictions.${budgetNote}`;
-
-      if (!candidates.length) {
-        Graardor.renderItemList("top10Body", {
-          message: "No recommendations available with current filters.",
-          loading: true,
-          listId: "top10List",
-          sortKey: top10Sort.key,
-          sortDir: top10Sort.dir,
-        });
-        return;
-      }
-
-      Graardor.renderItemList("top10Body", {
-        rowsHtml: candidates
-          .map((item, i) => itemRowHtml(item, { rank: i + 1, showGpPerHour: true, includeTax }))
-          .join(""),
-        listId: "top10List",
-        sortKey: top10Sort.key,
-        sortDir: top10Sort.dir,
-      });
-      updateFlipSummaryStrip();
-    }
-
-    function renderAll() {
-      renderResults();
-      renderTop10();
-    }
-
-    function renderResults() {
-      if (!items.length) {
-        el("resultsMeta").textContent =
-          "Load price data first — click Refresh prices. (Locally: run start.bat for http://localhost:3500)";
-        Graardor.renderItemList("resultsBody", { message: "No price data loaded yet.", loading: true });
-        return;
-      }
-
-      const includeTax = isChecked("includeTax");
-      const enriched = items.map((item) => enrichItem(item, includeTax));
-      const filtered = sortItems(enriched.filter(passesSearchFilters));
-      const searchActive = getInputValue("searchText").trim().length > 0;
-
-      el("resultsMeta").textContent =
-        filtered.length === items.length
-          ? `${filtered.length} of ${items.length} items with prices`
-          : `${filtered.length} of ${items.length} items match your filters`;
-
-      if (!filtered.length) {
-        Graardor.renderItemList("resultsBody", {
-          message:
-            'No items match your filters. Try loosening them, turn off "Profitable flips only", or search by exact item name.',
-          loading: true,
-          listId: "searchList",
-          sortKey: dropdownKeyToSortKey(getInputValue("sortBy")),
-          sortDir: getInputValue("sortDir"),
-        });
-        return;
-      }
-
-      const maxRows = searchActive ? filtered.length : 500;
-      const shown = filtered.slice(0, maxRows);
-      Graardor.renderItemList("resultsBody", {
-        rowsHtml: shown.map((item) => itemRowHtml(item, { includeTax })).join(""),
-        listId: "searchList",
-        sortKey: dropdownKeyToSortKey(getInputValue("sortBy")),
-        sortDir: getInputValue("sortDir"),
-      });
-
-      if (filtered.length > maxRows) {
-        el("resultsMeta").textContent += ` (showing top ${maxRows})`;
-      }
-    }
-
-    function scheduleTop10Render() {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(renderTop10, 100);
-    }
-
-    function escapeHtml(str) {
-      return str
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-
-    function scheduleRender() {
-      clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(renderAll, 100);
-    }
-
-    function switchTab(tabId) {
-      activeTab = tabId;
-      document.querySelectorAll(".tab").forEach((btn) => {
-        btn.classList.toggle("active", btn.dataset.tab === tabId);
-      });
-      document.querySelectorAll(".tab-panel").forEach((panel) => {
-        panel.classList.toggle("active", panel.id === `${tabId}Panel`);
-      });
-      syncUrlFromState();
-    }
-
-    async function loadData(forceRefresh = false) {
+    async function loadPrices(forceRefresh = false) {
       const hasCache = Boolean(Graardor.cachedApiData);
       if (!hasCache || forceRefresh) {
         el("status").textContent = forceRefresh ? "Refreshing price data…" : "Loading price data…";
         el("status").className = "";
-        Graardor.applyItemListSkeleton("resultsBody", 15, 10);
-        Graardor.applyItemListSkeleton("top10Body", 18, 10);
+        Graardor.applyItemListSkeleton("transformsBody", 12, 8);
       } else {
         el("status").textContent = "Updating…";
-        el("status").className = "";
       }
 
       try {
-        cachedApiData = await Graardor.loadPrices({ useCache: true, force: forceRefresh });
-
-        items = buildItems();
-
+        await Graardor.loadPrices({ useCache: true, force: forceRefresh });
         pricesLoadedAt = Graardor.pricesLoadedAt;
         volumeTimestamps = {
           ts5m: Graardor.pricesMeta?.ts5m ?? null,
           tsHour: Graardor.pricesMeta?.tsHour ?? null,
         };
-
-        const mapping = cachedApiData.mapping;
+        const mapping = Graardor.cachedApiData.mapping;
+        const priced = Object.keys(Graardor.cachedApiData.latest).length;
         const cacheNote = Graardor.pricesMeta?.fromCache ? " (cached — click Refresh for live prices)" : "";
-        el("status").textContent = `Loaded ${items.length.toLocaleString()} of ${mapping.length.toLocaleString()} items — refresh manually when your flip step completes${cacheNote}`;
+        el("status").textContent = `${priced.toLocaleString()} items priced — refresh when your offers fill${cacheNote}`;
         el("status").className = "ok";
         startLastUpdatedClock();
-        renderAll();
-        renderTransforms();
+        Graardor.Transforms.render();
       } catch (err) {
-        items = [];
         pricesLoadedAt = null;
-        volumeTimestamps = { ts5m: null, tsHour: null };
         if (lastUpdatedTimer) clearInterval(lastUpdatedTimer);
         el("lastUpdated").textContent = "";
         el("status").textContent = `Failed to load data: ${err.message}`;
         el("status").className = "error";
-        const errHtml = `Could not load price data. Check your connection and click <strong>Refresh prices</strong>.<br><small>${escapeHtml(err.message)}</small>`;
-        Graardor.renderItemList("resultsBody", { message: errHtml, loading: true });
-        Graardor.renderItemList("top10Body", { message: errHtml, loading: true });
-        el("resultsMeta").textContent = "Price data not loaded — filters will apply once data loads.";
-        el("top10Meta").textContent = "Price data not loaded — filters will apply once data loads.";
-        if (el("transformsBody")) {
-          Graardor.renderItemList("transformsBody", { message: errHtml, loading: true });
-        }
-      }
-    }
-
-    function setTop10Filters(values = {}) {
-      el("t10Search").value = values.search ?? "";
-      el("t10MaxGp").value = values.maxGp ?? "";
-      el("t10MinPrice").value = values.minPrice ?? "";
-      el("t10MaxPrice").value = values.maxPrice ?? "";
-      el("t10MinMargin").value = values.minMargin ?? "";
-      el("t10MinProfit").value = values.minProfit ?? "";
-      el("t10MinGpHour").value = values.minGpHour ?? "";
-      el("t10Min5mVol").value = values.min5mVol ?? "";
-      el("t10MinDailyVol").value = values.minDailyVol ?? "";
-      el("t10MinLimit").value = values.minLimit ?? "";
-      el("t10MaxLimit").value = values.maxLimit ?? "";
-      el("t10MinCycleMin").value = values.minCycleMin ?? "";
-      el("t10MaxCycleMin").value = values.maxCycleMin ?? "";
-      el("t10MinBuyMin").value = values.minBuyMin ?? "";
-      el("t10MaxBuyMin").value = values.maxBuyMin ?? "";
-      el("t10MinSellMin").value = values.minSellMin ?? "";
-      el("t10MaxSellMin").value = values.maxSellMin ?? "";
-      el("t10MembersFilter").value = values.membersFilter ?? "all";
-      el("t10IncludeTax").checked = values.includeTax ?? true;
-    }
-
-    const T10_PRESETS = {
-      quickFlips: { minDailyVol: 5000, minProfit: 100000, maxCycleMin: 30, maxBuyMin: 15, maxSellMin: 15 },
-      highVolume: { minDailyVol: 5000 },
-      safeMargin: { minDailyVol: 5000, minMargin: 2, minProfit: 50000 },
-      highGpHour: { minDailyVol: 5000, minGpHour: 300000 },
-      bigProfit: { minDailyVol: 5000, minProfit: 1000000 },
-      f2pFlips: { minDailyVol: 3000, membersFilter: "f2p" },
-      budget1m: { maxGp: 1000000, minDailyVol: 5000, minMargin: 1 },
-      budget10m: { maxGp: 10000000, minDailyVol: 5000, minMargin: 0.5 },
-      budget50m: { maxGp: 50000000, minDailyVol: 5000, minMargin: 0.5 },
-      budget100m: { maxGp: 100000000, minDailyVol: 5000, minMargin: 0.5 },
-    };
-
-    function setActiveTop10Preset(presetId) {
-      document.querySelectorAll("[data-t10-preset]").forEach((btn) => {
-        btn.classList.toggle("active", btn.dataset.t10Preset === presetId);
-      });
-    }
-
-    function applyTop10Preset(presetId) {
-      const preset = T10_PRESETS[presetId];
-      if (!preset) return;
-      setTop10Filters(preset);
-      top10Sort = { key: "gpPerHour", dir: "desc" };
-      setActiveTop10Preset(presetId);
-      renderTop10();
-      syncUrlFromState();
-    }
-
-    function resetTop10Filters() {
-      setTop10Filters({});
-      top10Sort = { key: "gpPerHour", dir: "desc" };
-      setActiveTop10Preset(null);
-      renderTop10();
-      syncUrlFromState();
-    }
-
-    function resetFilters() {
-      el("searchText").value = "";
-      el("minPrice").value = "";
-      el("maxPrice").value = "";
-      el("minMargin").value = "";
-      el("minDailyVol").value = "";
-      el("minLimit").value = "";
-      el("minCycleMin").value = "";
-      el("maxCycleMin").value = "";
-      el("membersFilter").value = "all";
-      el("sortBy").value = "profitAfterTax";
-      el("sortDir").value = "desc";
-      el("includeTax").checked = true;
-      el("profitableOnly").checked = true;
-      updateSortHeaders("searchList", "profitAfterTax", "desc");
-      renderAll();
-      syncUrlFromState();
-    }
-
-    function bindFilterEvents() {
-      const searchPanel = el("searchPanel");
-      const top10Panel = el("top10Panel");
-      const transformsPanel = el("transformsPanel");
-
-      searchPanel.addEventListener("input", (e) => {
-        if (e.target.closest(".filters")) {
-          scheduleRender();
-          syncUrlFromState();
-        }
-      });
-      searchPanel.addEventListener("change", (e) => {
-        if (e.target.closest(".filters")) {
-          if (e.target.id === "sortBy" || e.target.id === "sortDir") {
-            const key = dropdownKeyToSortKey(getInputValue("sortBy"));
-            updateSortHeaders("searchList", key, getInputValue("sortDir"));
-          }
-          renderAll();
-          syncUrlFromState();
-        }
-      });
-
-      top10Panel.addEventListener("input", (e) => {
-        if (e.target.closest(".filters")) {
-          setActiveTop10Preset(null);
-          scheduleTop10Render();
-          syncUrlFromState();
-        }
-      });
-      top10Panel.addEventListener("change", (e) => {
-        if (e.target.closest(".filters")) {
-          setActiveTop10Preset(null);
-          renderTop10();
-          syncUrlFromState();
-        }
-      });
-
-      if (transformsPanel) {
-        transformsPanel.addEventListener("input", (e) => {
-          if (e.target.closest(".filters")) {
-            setActiveXfPreset(null);
-            renderTransforms();
-            syncUrlFromState();
-          }
-        });
-        transformsPanel.addEventListener("change", (e) => {
-          if (e.target.closest(".filters")) {
-            setActiveXfPreset(null);
-            renderTransforms();
-            syncUrlFromState();
-          }
+        Graardor.renderItemList("transformsBody", {
+          message: `Could not load price data. Check your connection and click <strong>Refresh prices</strong>.<br><small>${Graardor.escapeHtml(err.message)}</small>`,
+          loading: true,
         });
       }
     }
+
+    document.addEventListener("click", (e) => {
+      const copyNode = e.target.closest("[data-copy-price]");
+      if (copyNode) {
+        copyText(copyNode.dataset.copyPrice, `Copied ${Number(copyNode.dataset.copyPrice).toLocaleString()} gp`);
+        return;
+      }
+      const star = e.target.closest(".star-btn");
+      if (!star || star.dataset.favKind !== "recipe") return;
+      e.preventDefault();
+      const key = star.dataset.favId;
+      if (recipeFavoriteKeys.has(key)) recipeFavoriteKeys.delete(key);
+      else recipeFavoriteKeys.add(key);
+      saveStoredFavorites();
+      Graardor.Transforms.render();
+    });
+
+    el("copyLinkBtn")?.addEventListener("click", () => {
+      syncUrlFromState();
+      copyText(location.href, "Link copied — share your filters");
+    });
+
+    el("favoritesOnly")?.addEventListener("change", () => {
+      Graardor.Transforms.render();
+      syncUrlFromState();
+    });
 
     loadStoredFavorites();
-    initKoFiLink();
-    bindGlobalInteractions();
-    bindFilterEvents();
-    bindSortableHeaders("searchList", handleSearchHeaderSort);
-    bindSortableHeaders("top10List", handleTop10HeaderSort);
-    Graardor.bindItemListSort("transformsList", handleTransformsHeaderSort, "data-xf-sort");
 
-    document.querySelectorAll(".tab").forEach((btn) => {
-      btn.addEventListener("click", () => switchTab(btn.dataset.tab));
+    Graardor.Transforms.init({
+      includeSkillRecipes: false,
+      favoriteStarButton,
+      recipeFavoriteKey,
+      isRecipeFavorite,
+      syncUrl: syncUrlFromState,
+      refreshPrices: () => loadPrices(true),
     });
-
-    document.querySelectorAll("[data-t10-preset]").forEach((btn) => {
-      btn.addEventListener("click", () => applyTop10Preset(btn.dataset.t10Preset));
-    });
-
-    document.querySelectorAll("[data-xf-preset]").forEach((btn) => {
-      btn.addEventListener("click", () => applyXfPreset(btn.dataset.xfPreset));
-    });
-
-    el("refreshBtn").addEventListener("click", () => loadData(true));
-    el("refreshTop10Btn").addEventListener("click", () => loadData(true));
-    el("refreshTransformsBtn").addEventListener("click", () => loadData(true));
-    el("resetBtn").addEventListener("click", resetFilters);
-    el("resetTop10Btn").addEventListener("click", resetTop10Filters);
-    el("resetTransformsBtn").addEventListener("click", resetTransformFilters);
 
     Graardor.onToolListRefresh(() => {
-      if (cachedApiData) {
-        renderAll();
-        renderTransforms();
-      }
+      if (Graardor.cachedApiData) Graardor.Transforms.render();
     });
 
     Graardor.whenToolLayoutReady(() => {
-      loadTransformCatalog().then(() => {
+      Graardor.Transforms.loadCatalog().then(() => {
         applyUrlState();
-        const tabParam = new URLSearchParams(location.search).get("tab");
-        if (!tabParam || tabParam === "top10") switchTab("transforms");
-        renderTransforms();
-        loadData();
+        Graardor.Transforms.render();
+        loadPrices();
       });
     });
   </script>
-
-
 </body>
 </html>

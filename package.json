@@ -6,6 +6,7 @@
   "scripts": {
     "start": "npx --yes serve -l 3500",
     "build:recipes": "node scripts/build-recipes.mjs",
+    "build:items-meta": "node scripts/build-items-meta.mjs",
     "build:transforms": "node scripts/build-recipes.mjs"
   },
   "dependencies": {

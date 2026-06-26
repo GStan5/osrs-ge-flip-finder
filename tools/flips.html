@@ -535,6 +535,7 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="/assets/js/prices-core.js"></script>
   <script src="/assets/js/item-list.js"></script>
+  <script src="/assets/js/transforms.js"></script>
   <script src="/assets/js/sync.js"></script>
   <script src="/assets/js/auth.js"></script>
   <script src="/assets/js/site-chrome.js"></script>
@@ -558,10 +559,6 @@
     let pricesLoadedAt = null;
     let volumeTimestamps = { ts5m: null, tsHour: null };
     let lastUpdatedTimer = null;
-    let transformCatalog = null;
-    let transformRows = [];
-    let transformsSort = { key: "gpPerHour", dir: "desc" };
-
     const WIKI_PAGE_BASE = "https://oldschool.runescape.wiki/w/";
     const FAVORITES_STORAGE_KEY = "osrs-ge-flip-favorites-v1";
     const RECIPE_FAV_STORAGE_KEY = "osrs-ge-flip-recipe-favorites-v1";
@@ -628,7 +625,7 @@
     }
 
     function recipeFavoriteKey(row) {
-      return `${row.type}|${row.name}|${row.label ?? ""}|${recipeKindLabel(row)}`;
+      return `${row.type}|${row.name}|${row.label ?? ""}|${Graardor.Transforms.recipeKindLabel(row)}`;
     }
 
     function isRecipeFavorite(row) {
@@ -738,12 +735,7 @@
         }
 
         if (activeTab === "transforms") {
-          const xfPreset = document.querySelector("[data-xf-preset].active")?.dataset.xfPreset;
-          if (xfPreset) params.set("xf", xfPreset);
-          if (getInputValue("xfType") !== "all") params.set("xfType", getInputValue("xfType"));
-          if (getInputValue("xfSkill") !== "all") params.set("xfSkill", getInputValue("xfSkill"));
-          const xfQ = getInputValue("xfSearch").trim();
-          if (xfQ) params.set("xfQ", xfQ);
+          Graardor.Transforms.getUrlParams(params);
         }
 
         const qs = params.toString();
@@ -768,18 +760,11 @@
       if (params.get("q")) el("searchText").value = params.get("q");
       if (params.get("members")) el("membersFilter").value = params.get("members");
 
-      if (params.get("xfType")) el("xfType").value = params.get("xfType");
-      if (params.get("xfSkill")) el("xfSkill").value = params.get("xfSkill");
-      if (params.get("xfQ")) el("xfSearch").value = params.get("xfQ");
-      if (params.get("xf") && XF_PRESETS[params.get("xf")]) {
-        applyXfPreset(params.get("xf"));
+      if (activeTab === "transforms" || params.get("xf") || params.get("xfType") || params.get("xfQ")) {
+        Graardor.Transforms.applyUrlParams(params);
       }
 
       suppressUrlSync = false;
-    }
-
-    function applyDecantsPreset() {
-      applyXfPreset("decantsOnly");
     }
 
     function bindGlobalInteractions() {
@@ -802,7 +787,7 @@
           if (recipeFavoriteKeys.has(key)) recipeFavoriteKeys.delete(key);
           else recipeFavoriteKeys.add(key);
           saveStoredFavorites();
-          renderTransforms();
+          Graardor.Transforms.render();
         }
       });
 
@@ -813,17 +798,15 @@
 
       el("flipQty")?.addEventListener("input", () => {
         renderAll();
-        renderTransforms();
+        Graardor.Transforms.render();
         syncUrlFromState();
       });
 
       el("favoritesOnly")?.addEventListener("change", () => {
         renderAll();
-        renderTransforms();
+        Graardor.Transforms.render();
         syncUrlFromState();
       });
-
-      el("bestDecantsBtn")?.addEventListener("click", applyDecantsPreset);
     }
 
     function formatTimeAgo(date) {
@@ -1022,682 +1005,6 @@
           return buildRawItem(m, l, hourly?.[m.id], fiveMin?.[m.id]);
         })
         .filter(Boolean);
-    }
-
-    async function loadTransformCatalog() {
-      try {
-        const res = await fetch("/data/recipes.json");
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        transformCatalog = await res.json();
-        populateSkillFilter();
-      } catch (err) {
-        transformCatalog = null;
-        el("transformsBody").innerHTML = Graardor.itemListEmpty(`Could not load recipe catalog: ${escapeHtml(err.message)}`, true);
-        el("transformsMeta").textContent = "Run npm run build:recipes to generate data/recipes.json";
-      }
-    }
-
-    function populateSkillFilter() {
-      const select = el("xfSkill");
-      if (!select || !transformCatalog?.stats?.skills) return;
-      const current = select.value;
-      select.innerHTML =
-        '<option value="all">All skills</option>' +
-        transformCatalog.stats.skills
-          .map((skill) => `<option value="${escapeHtml(skill)}">${escapeHtml(skill)}</option>`)
-          .join("");
-      if (current && [...select.options].some((o) => o.value === current)) {
-        select.value = current;
-      }
-      const urlSkill = new URLSearchParams(location.search).get("xfSkill");
-      if (urlSkill && [...select.options].some((o) => o.value === urlSkill)) {
-        select.value = urlSkill;
-      }
-    }
-
-    function mappingById() {
-      if (!cachedApiData) return new Map();
-      return new Map(cachedApiData.mapping.map((m) => [m.id, m]));
-    }
-
-    function getTransformPrices(itemId) {
-      if (!cachedApiData) return null;
-      const mapping = mappingById().get(itemId);
-      const latest = cachedApiData.latest[itemId];
-      if (!mapping || !latest) return null;
-
-      const hourly = cachedApiData.hourly[itemId];
-      const fiveMin = cachedApiData.fiveMin[itemId];
-      const buyVolHour = hourly?.lowPriceVolume ?? 0;
-      const sellVolHour = hourly?.highPriceVolume ?? 0;
-      const buyVol5m = fiveMin?.lowPriceVolume ?? 0;
-      const sellVol5m = fiveMin?.highPriceVolume ?? 0;
-      const volume5m = buyVol5m + sellVol5m;
-      const buyRateHour = effectiveHourlyRate(buyVol5m, buyVolHour);
-      const sellRateHour = effectiveHourlyRate(sellVol5m, sellVolHour);
-      const dailyVolume = (buyRateHour + sellRateHour) * 24;
-
-      return {
-        id: itemId,
-        name: mapping.name,
-        icon: mapping.icon,
-        members: mapping.members,
-        buy: latest.low,
-        sell: latest.high,
-        limit: mapping.limit ?? 0,
-        volume5m,
-        dailyVolume,
-        buyRateHour,
-        sellRateHour,
-      };
-    }
-
-    function hoursForQty(qty, ratePerHour) {
-      if (!qty || !ratePerHour || ratePerHour <= 0) return null;
-      return qty / ratePerHour;
-    }
-
-    function enrichRecipeRow(row) {
-      return Graardor.enrichTransformRecipeRow(row);
-    }
-
-    function sellAfterTax(sellPrice, itemId, includeTax) {
-      if (sellPrice == null || !Number.isFinite(sellPrice)) return null;
-      return sellPrice - calcGeTaxPerItem(sellPrice, itemId, includeTax);
-    }
-
-    function availableDoseInts(decant) {
-      return Object.keys(decant.doses)
-        .map(Number)
-        .filter((d) => d >= 1 && d <= 4)
-        .sort((a, b) => a - b);
-    }
-
-    function enumerateDoseParts(targetSum, doseSizes) {
-      const results = [];
-      function rec(remaining, idx, current) {
-        if (remaining === 0) {
-          if (current.length) results.push([...current]);
-          return;
-        }
-        if (idx >= doseSizes.length) return;
-        const dose = doseSizes[idx];
-        for (let qty = 0; dose * qty <= remaining; qty++) {
-          if (qty > 0) current.push({ dose, qty });
-          rec(remaining - dose * qty, idx + 1, current);
-          if (qty > 0) current.pop();
-        }
-      }
-      rec(targetSum, 0, []);
-      return results;
-    }
-
-    function isIdentityParts(parts, singleDose) {
-      return parts.length === 1 && parts[0].dose === singleDose && parts[0].qty === 1;
-    }
-
-    function decantCombineRoutes(decant) {
-      const doseSizes = availableDoseInts(decant);
-      const routes = [];
-      for (const outDose of doseSizes) {
-        for (const parts of enumerateDoseParts(outDose, doseSizes)) {
-          if (isIdentityParts(parts, outDose)) continue;
-          routes.push({ parts, outDose, outQty: 1 });
-        }
-      }
-      return routes;
-    }
-
-    function decantSplitRoutes(decant) {
-      const doseSizes = availableDoseInts(decant);
-      const routes = [];
-      for (const inDose of doseSizes) {
-        for (const parts of enumerateDoseParts(inDose, doseSizes)) {
-          if (isIdentityParts(parts, inDose)) continue;
-          routes.push({ inDose, inQty: 1, parts });
-        }
-      }
-      return routes;
-    }
-
-    function describeDecantPartsFromInts(parts, doses) {
-      return parts
-        .map(({ dose, qty }) => `${qty}× ${doses[String(dose)].name}`)
-        .join(" + ");
-    }
-
-    function recipeItemRef(itemId, qty) {
-      const p = getTransformPrices(itemId);
-      if (!p) return null;
-      return {
-        id: p.id,
-        name: p.name,
-        icon: p.icon,
-        qty,
-        members: p.members,
-        limit: p.limit ?? 0,
-        buy: p.buy,
-        sell: p.sell,
-        buyTimeHours: hoursForQty(qty, p.buyRateHour),
-        sellTimeHours: hoursForQty(qty, p.sellRateHour),
-        volume5m: p.volume5m,
-        dailyVolume: p.dailyVolume,
-        buyRateHour: p.buyRateHour,
-        sellRateHour: p.sellRateHour,
-      };
-    }
-
-    function recipeMembers(inputs, outputs) {
-      return [...inputs, ...outputs].some((item) => item.members);
-    }
-
-    function buildRecipeRow({
-      type,
-      subtype,
-      name,
-      label,
-      category,
-      inputs,
-      outputs,
-      buyCost,
-      sellValue,
-      profit,
-      searchText,
-      members: membersOverride,
-    }) {
-      return {
-        type,
-        subtype,
-        name,
-        label,
-        category,
-        inputs,
-        outputs,
-        buyCost,
-        sellValue,
-        profit,
-        marginPct: buyCost > 0 ? (profit / buyCost) * 100 : null,
-        members: membersOverride ?? recipeMembers(inputs, outputs),
-        searchText: searchText ?? name.toLowerCase(),
-      };
-    }
-
-    function evalSkillRecipe(recipe, includeTax) {
-      const inputs = [];
-      let buyCost = 0;
-      for (const c of recipe.inputs) {
-        const ref = recipeItemRef(c.id, c.qty);
-        const p = getTransformPrices(c.id);
-        if (!ref || !p?.buy) return null;
-        buyCost += p.buy * c.qty;
-        inputs.push(ref);
-      }
-
-      const outputs = [];
-      let sellValue = 0;
-      for (const c of recipe.outputs) {
-        const ref = recipeItemRef(c.id, c.qty);
-        const p = getTransformPrices(c.id);
-        const afterTax = p ? sellAfterTax(p.sell, c.id, includeTax) : null;
-        if (!ref || afterTax == null || p?.sell == null) return null;
-        sellValue += afterTax * c.qty;
-        outputs.push(ref);
-      }
-
-      return buildRecipeRow({
-        type: "skill",
-        subtype: "craft",
-        name: recipe.name,
-        label: recipe.variant,
-        category: recipe.skill,
-        inputs,
-        outputs,
-        buyCost,
-        sellValue,
-        profit: sellValue - buyCost,
-        members: recipe.members,
-        searchText: `${recipe.name} ${recipe.variant ?? ""} ${recipe.skill} ${recipe.inputs
-          .map((i) => i.name)
-          .join(" ")}`.toLowerCase(),
-      });
-    }
-
-    function evalDecantCombine(decant, includeTax) {
-      const { doses } = decant;
-      let best = null;
-
-      for (const route of decantCombineRoutes(decant)) {
-        const out = getTransformPrices(doses[String(route.outDose)].id);
-        const sellValue = out ? sellAfterTax(out.sell, out.id, includeTax) : null;
-        if (sellValue == null || out?.sell == null) continue;
-
-        const inputs = [];
-        let buyCost = 0;
-        let ok = true;
-        for (const part of route.parts) {
-          const ref = recipeItemRef(doses[String(part.dose)].id, part.qty);
-          const p = getTransformPrices(doses[String(part.dose)].id);
-          if (!ref || !p?.buy) {
-            ok = false;
-            break;
-          }
-          buyCost += p.buy * part.qty;
-          inputs.push(ref);
-        }
-        if (!ok) continue;
-
-        const outputs = [recipeItemRef(out.id, route.outQty)];
-        const profit = sellValue - buyCost;
-        const row = buildRecipeRow({
-          type: "decant",
-          subtype: "combine",
-          name: decant.name,
-          category: "Decant",
-          inputs,
-          outputs,
-          buyCost,
-          sellValue,
-          profit,
-          searchText: `${decant.name} ${describeDecantPartsFromInts(route.parts, doses)}`.toLowerCase(),
-        });
-        if (!best || profit > best.profit) best = row;
-      }
-      return best;
-    }
-
-    function evalDecantSplit(decant, includeTax) {
-      const { doses } = decant;
-      let best = null;
-
-      for (const route of decantSplitRoutes(decant)) {
-        const input = getTransformPrices(doses[String(route.inDose)].id);
-        if (!input?.buy) continue;
-
-        const outputs = [];
-        let sellValue = 0;
-        let ok = true;
-        for (const part of route.parts) {
-          const ref = recipeItemRef(doses[String(part.dose)].id, part.qty);
-          const p = getTransformPrices(doses[String(part.dose)].id);
-          const afterTax = p ? sellAfterTax(p.sell, p.id, includeTax) : null;
-          if (!ref || afterTax == null || p?.sell == null) {
-            ok = false;
-            break;
-          }
-          sellValue += afterTax * part.qty;
-          outputs.push(ref);
-        }
-        if (!ok) continue;
-
-        const inputs = [recipeItemRef(input.id, route.inQty)];
-        const profit = sellValue - input.buy;
-        const row = buildRecipeRow({
-          type: "decant",
-          subtype: "split",
-          name: decant.name,
-          category: "Decant",
-          inputs,
-          outputs,
-          buyCost: input.buy,
-          sellValue,
-          profit,
-          searchText: `${decant.name} ${describeDecantPartsFromInts(route.parts, doses)}`.toLowerCase(),
-        });
-        if (!best || profit > best.profit) best = row;
-      }
-      return best;
-    }
-
-    function evalSetCombine(set, includeTax) {
-      const inputs = [];
-      let buyCost = 0;
-      for (const c of set.components) {
-        const ref = recipeItemRef(c.id, c.qty);
-        const p = getTransformPrices(c.id);
-        if (!ref || !p?.buy) return null;
-        buyCost += p.buy * c.qty;
-        inputs.push(ref);
-      }
-      const setP = getTransformPrices(set.set.id);
-      const sellValue = setP ? sellAfterTax(setP.sell, setP.id, includeTax) : null;
-      if (sellValue == null || setP?.sell == null) return null;
-      const outputs = [recipeItemRef(set.set.id, 1)];
-      return buildRecipeRow({
-        type: "set_combine",
-        subtype: "combine",
-        name: set.name,
-        category: "Item set",
-        inputs,
-        outputs,
-        buyCost,
-        sellValue,
-        profit: sellValue - buyCost,
-        searchText: `${set.name} ${set.components.map((c) => c.name).join(" ")}`.toLowerCase(),
-      });
-    }
-
-    function evalSetSplit(set, includeTax) {
-      const setP = getTransformPrices(set.set.id);
-      if (!setP?.buy) return null;
-      const outputs = [];
-      let sellValue = 0;
-      for (const c of set.components) {
-        const ref = recipeItemRef(c.id, c.qty);
-        const p = getTransformPrices(c.id);
-        const afterTax = p ? sellAfterTax(p.sell, c.id, includeTax) : null;
-        if (!ref || afterTax == null || p?.sell == null) return null;
-        sellValue += afterTax * c.qty;
-        outputs.push(ref);
-      }
-      const inputs = [recipeItemRef(set.set.id, 1)];
-      return buildRecipeRow({
-        type: "set_split",
-        subtype: "split",
-        name: set.name,
-        category: "Item set",
-        inputs,
-        outputs,
-        buyCost: setP.buy,
-        sellValue,
-        profit: sellValue - setP.buy,
-        searchText: `${set.name} ${set.components.map((c) => c.name).join(" ")}`.toLowerCase(),
-      });
-    }
-
-    function buildTransformRows() {
-      if (!transformCatalog || !cachedApiData) return [];
-      const rows = [];
-      const includeTax = isChecked("xfIncludeTax");
-
-      for (const decant of transformCatalog.decants ?? []) {
-        const combine = evalDecantCombine(decant, isChecked("xfIncludeTax"));
-        const split = evalDecantSplit(decant, isChecked("xfIncludeTax"));
-        if (combine) rows.push(combine);
-        if (split) rows.push(split);
-      }
-
-      for (const set of transformCatalog.sets ?? []) {
-        const combine = evalSetCombine(set, isChecked("xfIncludeTax"));
-        const split = evalSetSplit(set, isChecked("xfIncludeTax"));
-        if (combine) rows.push(combine);
-        if (split) rows.push(split);
-      }
-
-      for (const uncharge of transformCatalog.uncharges ?? []) {
-        const charged = getTransformPrices(uncharge.charged.id);
-        const unch = getTransformPrices(uncharge.uncharged.id);
-        if (!charged?.buy || !unch?.sell) continue;
-        const sellValue = sellAfterTax(unch.sell, unch.id, isChecked("xfIncludeTax"));
-        if (sellValue == null) continue;
-        const profit = sellValue - charged.buy;
-        rows.push(
-          buildRecipeRow({
-            type: "uncharge",
-            subtype: "uncharge",
-            name: uncharge.name,
-            category: "Uncharge",
-            inputs: [recipeItemRef(uncharge.charged.id, 1)],
-            outputs: [recipeItemRef(uncharge.uncharged.id, 1)],
-            buyCost: charged.buy,
-            sellValue,
-            profit,
-            searchText: uncharge.name.toLowerCase(),
-          })
-        );
-      }
-
-      return rows.map(enrichRecipeRow);
-    }
-
-    function recipeKindLabel(row) {
-      if (row.type === "skill") return row.label || "Skilling";
-      if (row.type === "decant") return row.subtype === "combine" ? "Decant up" : "Decant down";
-      if (row.type === "set_combine") return "Combine set";
-      if (row.type === "set_split") return "Split set";
-      if (row.type === "uncharge") return "Uncharge";
-      return row.type;
-    }
-
-    function recipeItemChip(item, side) {
-      const isBuy = side !== "sell";
-      const price = isBuy ? item.buy : item.sell;
-      const priceLabel = isBuy ? "Buy" : "Sell";
-      const priceClass = isBuy ? "price-buy" : "price-sell";
-      const time = isBuy ? item.buyTimeHours : item.sellTimeHours;
-      const timeLabel = isBuy ? "buy" : "sell";
-      const batchQty = item.batchQty ?? item.qty;
-      const limitLine =
-        isBuy && item.limit
-          ? `<span class="recipe-limit">Limit: ${formatGp(item.limit)}</span>`
-          : "";
-      return `<div class="recipe-item recipe-item-detailed">
-        <div class="recipe-item-head">
-          <img src="${iconUrl(item.icon)}" alt="" loading="lazy" onerror="this.style.visibility='hidden'" />
-          <span class="recipe-qty">${item.qty}×</span>
-          <a class="recipe-name" href="${wikiPageUrl(item.name)}" target="_blank" rel="noopener"${itemTitleAttr(item.name)}>${escapeHtml(item.name)}</a>
-        </div>
-        <div class="recipe-item-meta">
-          <span class="${priceClass} price-copyable" data-copy-price="${Math.round(price)}" title="Click to copy ${priceLabel.toLowerCase()} price">${priceLabel}: ${formatPrice(price)}</span>
-          ${limitLine}
-          <span class="recipe-vol">5m ${formatGp(item.volume5m ?? 0)} · day ${formatGp(item.dailyVolume ?? 0)}</span>
-          <span class="recipe-time">Est. ${timeLabel} (${formatGp(batchQty)}): ${formatDuration(time)}</span>
-        </div>
-      </div>`;
-    }
-
-    function recipeIoCell(items, side, label) {
-      const sideLabel = label || (side === "buy" ? "Inputs" : "Outputs");
-      return Graardor.itemListCell(
-        items.map((item) => recipeItemChip(item, side)).join(""),
-        "recipe-io col-io col-hide-narrow",
-        { "data-label": sideLabel }
-      );
-    }
-
-    function recipeDisplayName(row) {
-      if (row.type === "skill" && row.label) return `${row.name} (${row.label})`;
-      return row.name;
-    }
-
-    function filterTransformRows(rows) {
-      const search = getInputValue("xfSearch").trim().toLowerCase();
-      const type = getInputValue("xfType");
-      const skill = getInputValue("xfSkill");
-      const membersFilter = getInputValue("xfMembersFilter");
-      const minProfit = parseNum("xfMinProfit") ?? 0;
-      const maxBudget = parseNum("xfMaxBudget");
-      const minMargin = parseNum("xfMinMargin");
-      const minGpHour = parseNum("xfMinGpHour");
-      const maxCycleMin = parseNum("xfMaxCycleMin");
-      const profitableOnly = isChecked("xfProfitableOnly");
-
-      return rows.filter((row) => {
-        if (type === "sets") {
-          if (row.type !== "set_combine" && row.type !== "set_split") return false;
-        } else if (type !== "all" && row.type !== type) return false;
-        if (skill !== "all" && row.category !== skill) return false;
-        if (membersFilter === "members" && !row.members) return false;
-        if (membersFilter === "f2p" && row.members) return false;
-        if (search) {
-          const itemNames = [...row.inputs, ...row.outputs].map((i) => i.name.toLowerCase()).join(" ");
-          if (!row.searchText.includes(search) && !row.name.toLowerCase().includes(search) && !itemNames.includes(search)) {
-            return false;
-          }
-        }
-        if (profitableOnly && row.profit <= 0) return false;
-        if (row.profit < minProfit) return false;
-        if (maxBudget != null && row.gpNeeded > maxBudget) return false;
-        if (minMargin != null && (row.marginPct == null || row.marginPct < minMargin)) return false;
-        if (minGpHour != null && (row.gpPerHour == null || row.gpPerHour < minGpHour)) return false;
-        if (!withinMinuteRange(row.cycleHours, null, maxCycleMin)) return false;
-        if (isChecked("favoritesOnly") && !isRecipeFavorite(row)) return false;
-        return true;
-      });
-    }
-
-    function recipeItemTimingTooltip(item, side) {
-      const rate = side === "buy" ? item.buyRateHour : item.sellRateHour;
-      const batchQty = item.batchQty ?? item.qty;
-      if (!rate || rate <= 0) return `No recent volume at rec. ${side} side`;
-      const perMin = rate / 60;
-      return `~${Math.round(rate).toLocaleString()} items/hour at rec. ${side} (65% 5m + 35% 1h) · ~${perMin >= 1 ? perMin.toFixed(1) : perMin.toFixed(2)}/min · ${formatGp(batchQty)} for limit batch`;
-    }
-
-    function recipeCycleTooltip(row) {
-      if (row.cycleHours == null) return "Need buy and sell volume to estimate full limit cycle";
-      const batchNote = row.batchCycles > 1 ? `${row.batchCycles.toLocaleString()}× recipe · ` : "";
-      return `${batchNote}Est. buy + est. sell (${formatDuration(row.buyTimeHours)} + ${formatDuration(row.sellTimeHours)}) — slowest input buy + slowest output sell for full limit batch`;
-    }
-
-    function renderTransforms() {
-      if (!el("transformsBody")) return;
-
-      if (!transformCatalog) {
-        Graardor.renderItemList("transformsBody", { message: "Recipe catalog not loaded.", loading: true });
-        return;
-      }
-
-      if (!cachedApiData) {
-        Graardor.renderItemList("transformsBody", { message: "Load prices with Refresh prices.", loading: true });
-        el("transformsMeta").textContent = `${transformCatalog.stats.decants ?? 0} decants · ${transformCatalog.stats.sets ?? 0} sets · instant GE transforms only`;
-        return;
-      }
-
-      transformRows = buildTransformRows();
-      const filtered = filterTransformRows(transformRows);
-      const sorted = sortItemList(filtered, transformsSort.key, transformsSort.dir);
-      updateTransformsSortHeaders();
-
-      el("transformsMeta").textContent = `Showing ${sorted.length.toLocaleString()} of ${transformRows.length.toLocaleString()} recipes · catalog updated ${transformCatalog.generatedAt.slice(0, 10)} · click column headers to sort`;
-
-      if (!sorted.length) {
-        Graardor.renderItemList("transformsBody", { message: "No recipes match your filters.", loading: true });
-        if (el("recipeBestBanner")) el("recipeBestBanner").hidden = true;
-        return;
-      }
-
-      const best = sorted.find((row) => row.profit > 0);
-      const banner = el("recipeBestBanner");
-      if (banner) {
-        if (best) {
-          banner.hidden = false;
-          const gpHr =
-            best.gpPerHour != null ? ` · ${formatGp(best.gpPerHour)}/hr` : "";
-          banner.innerHTML = `Best match: <strong>${escapeHtml(recipeDisplayName(best))}</strong> — ${formatGp(best.profit)} profit${best.marginPct != null ? ` (${best.marginPct.toFixed(1)}% ROI)` : ""}${gpHr}. Verify in-game before buying.`;
-        } else {
-          banner.hidden = true;
-        }
-      }
-
-      Graardor.renderItemList("transformsBody", {
-        rowsHtml: sorted
-        .map((row) => {
-          const marginClass = row.profit >= 0 ? "positive" : "negative";
-          const gpHrClass = row.gpPerHour != null && row.gpPerHour >= 0 ? "positive" : "";
-          const memberBadge = row.members
-            ? '<span class="badge badge-members">P2P</span>'
-            : '<span class="badge badge-f2p">F2P</span>';
-          const favKey = recipeFavoriteKey(row);
-          const recipeCell = Graardor.itemListCell(
-            `<div class="item-cell">
-              ${favoriteStarButton(favKey, "recipe", isRecipeFavorite(row))}
-              <span>
-                <span class="recipe-title"${itemTitleAttr(recipeDisplayName(row))}>${escapeHtml(recipeDisplayName(row))}</span>
-                <span class="recipe-kind">${escapeHtml(recipeKindLabel(row))}</span>
-              </span>
-            </div>`,
-            "gra-item-list__cell--recipe"
-          );
-          return Graardor.itemListRow(
-            `${recipeCell}${recipeIoCell(row.inputs, "buy", "Inputs")}${recipeIoCell(row.outputs, "sell", "Outputs")}` +
-              `${Graardor.itemListNumCell(row.inputLimit == null ? "—" : formatGp(row.inputLimit), "num col-hide-xs", "Buy limit", row.limitingInputName ? { title: `Limiting input: ${row.limitingInputName}` } : undefined)}` +
-              `${Graardor.itemListNumCell(formatGp(row.gpNeeded), "num", "GP needed")}` +
-              `${Graardor.itemListNumCell(formatGp(row.sellValue), "num", "Revenue")}` +
-              `${Graardor.itemListNumCell(formatGp(row.profit), `num ${marginClass}`, "Profit (limit)")}` +
-              `${Graardor.itemListNumCell(row.marginPct == null ? "—" : `${row.marginPct.toFixed(2)}%`, `num col-hide-xs ${marginClass}`, "ROI")}` +
-              `${Graardor.itemListNumCell(row.gpPerHour == null ? "—" : formatGp(row.gpPerHour), `num ${gpHrClass} highlight-gp`, "GP / hr")}` +
-              `${durationCell(row.buyTimeHours, row.inputs.length ? recipeItemTimingTooltip(row.inputs.reduce((a, b) => (a.buyTimeHours ?? 0) >= (b.buyTimeHours ?? 0) ? a : b), "buy") : null, "Est. buy")}` +
-              `${durationCell(row.sellTimeHours, row.outputs.length ? recipeItemTimingTooltip(row.outputs.reduce((a, b) => (a.sellTimeHours ?? 0) >= (b.sellTimeHours ?? 0) ? a : b), "sell") : null, "Est. sell")}` +
-              `${durationCell(row.cycleHours, recipeCycleTooltip(row), "Cycle")}` +
-              `${Graardor.itemListNumCell(row.minVolume5m == null ? "—" : formatGp(row.minVolume5m), "num col-hide-narrow", "5m vol.")}` +
-              `${Graardor.itemListNumCell(row.minDailyVolume == null ? "—" : formatGp(row.minDailyVolume), "num col-hide-narrow", "Daily vol.")}` +
-              `${Graardor.itemListCell(escapeHtml(row.category), "col-hide-narrow", { "data-label": "Category" })}` +
-              `${Graardor.itemListCell(memberBadge, "col-hide-narrow", { "data-label": "Members" })}`
-          );
-        })
-        .join(""),
-        listId: "transformsList",
-        sortKey: transformsSort.key,
-        sortDir: transformsSort.dir,
-        sortAttr: "data-xf-sort",
-      });
-      updateFlipSummaryStrip();
-    }
-
-    function updateTransformsSortHeaders() {
-      Graardor.updateItemListSort("transformsList", transformsSort.key, transformsSort.dir, "data-xf-sort");
-    }
-
-    function handleTransformsHeaderSort(key) {
-      const dir =
-        key === transformsSort.key ? (transformsSort.dir === "desc" ? "asc" : "desc") : "desc";
-      transformsSort = { key, dir };
-      renderTransforms();
-    }
-
-    function resetTransformFilters() {
-      setXfFilters({});
-      transformsSort = { key: "gpPerHour", dir: "desc" };
-      setActiveXfPreset(null);
-      renderTransforms();
-      syncUrlFromState();
-    }
-
-    function setXfFilters(values = {}) {
-      el("xfSearch").value = values.search ?? "";
-      el("xfType").value = values.type ?? "all";
-      el("xfSkill").value = values.skill ?? "all";
-      el("xfMembersFilter").value = values.membersFilter ?? "all";
-      el("xfMinProfit").value = values.minProfit ?? "";
-      el("xfMaxBudget").value = values.maxBudget ?? "";
-      el("xfMinMargin").value = values.minMargin ?? "";
-      el("xfMinGpHour").value = values.minGpHour ?? "";
-      el("xfMaxCycleMin").value = values.maxCycleMin ?? "";
-      el("xfIncludeTax").checked = values.includeTax ?? true;
-      el("xfProfitableOnly").checked = values.profitableOnly ?? true;
-      if (values.sortKey) transformsSort = { key: values.sortKey, dir: "desc" };
-    }
-
-    const XF_PRESETS = {
-      highGpHour: { minGpHour: 100000, profitableOnly: true, sortKey: "gpPerHour" },
-      fastCycle: { maxCycleMin: 30, profitableOnly: true, sortKey: "gpPerHour" },
-      highMargin: { minMargin: 5, profitableOnly: true, sortKey: "marginPct" },
-      budget1m: { maxBudget: 1_000_000, profitableOnly: true, sortKey: "gpPerHour" },
-      budget10m: { maxBudget: 10_000_000, profitableOnly: true, sortKey: "gpPerHour" },
-      budget50m: { maxBudget: 50_000_000, profitableOnly: true, sortKey: "gpPerHour" },
-      budget100m: { maxBudget: 100_000_000, profitableOnly: true, sortKey: "gpPerHour" },
-      budget250m: { maxBudget: 250_000_000, profitableOnly: true, sortKey: "gpPerHour" },
-      budget500m: { maxBudget: 500_000_000, profitableOnly: true, sortKey: "gpPerHour" },
-      decantsOnly: { type: "decant", profitableOnly: true, sortKey: "gpPerHour" },
-      setsOnly: { type: "sets", profitableOnly: true, sortKey: "profit" },
-      f2p: { membersFilter: "f2p", profitableOnly: true, sortKey: "gpPerHour" },
-      members: { membersFilter: "members", profitableOnly: true, sortKey: "gpPerHour" },
-    };
-
-    function setActiveXfPreset(presetId) {
-      document.querySelectorAll("[data-xf-preset]").forEach((btn) => {
-        btn.classList.toggle("active", btn.dataset.xfPreset === presetId);
-      });
-    }
-
-    function applyXfPreset(presetId) {
-      const preset = XF_PRESETS[presetId];
-      if (!preset) return;
-      switchTab("transforms");
-      setXfFilters(preset);
-      setActiveXfPreset(presetId);
-      renderTransforms();
-      syncUrlFromState();
     }
 
     function getSortValue(item, key) {
@@ -1941,9 +1248,10 @@
       );
       const best = sortItemList(pool, "gpPerHour", "desc")[0];
       let bestTransform = null;
+      const transformRows = Graardor.Transforms.getRows();
       if (transformRows?.length) {
-        bestTransform = sortItemList(
-          filterTransformRows(transformRows).filter((r) => r.profit > 0),
+        bestTransform = Graardor.Transforms.sortRows(
+          Graardor.Transforms.filterRows(transformRows).filter((r) => r.profit > 0),
           "gpPerHour",
           "desc"
         )[0];
@@ -1960,7 +1268,7 @@
           label: "Best transform",
           value: bestTransform?.gpPerHour != null ? formatGp(bestTransform.gpPerHour) + "/hr" : "—",
           className: bestTransform ? "highlight-gp" : "",
-          hint: bestTransform ? recipeDisplayName(bestTransform) : "Open Transforms tab",
+          hint: bestTransform ? Graardor.Transforms.recipeDisplayName(bestTransform) : "Open Transforms tab",
         },
         { label: "Items priced", value: items.length.toLocaleString() },
         { label: "Favorites", value: favoriteIds.size.toLocaleString() },
@@ -2124,7 +1432,7 @@
         el("status").className = "ok";
         startLastUpdatedClock();
         renderAll();
-        renderTransforms();
+        Graardor.Transforms.render();
       } catch (err) {
         items = [];
         pricesLoadedAt = null;
@@ -2225,7 +1533,6 @@
     function bindFilterEvents() {
       const searchPanel = el("searchPanel");
       const top10Panel = el("top10Panel");
-      const transformsPanel = el("transformsPanel");
 
       searchPanel.addEventListener("input", (e) => {
         if (e.target.closest(".filters")) {
@@ -2258,23 +1565,6 @@
           syncUrlFromState();
         }
       });
-
-      if (transformsPanel) {
-        transformsPanel.addEventListener("input", (e) => {
-          if (e.target.closest(".filters")) {
-            setActiveXfPreset(null);
-            renderTransforms();
-            syncUrlFromState();
-          }
-        });
-        transformsPanel.addEventListener("change", (e) => {
-          if (e.target.closest(".filters")) {
-            setActiveXfPreset(null);
-            renderTransforms();
-            syncUrlFromState();
-          }
-        });
-      }
     }
 
     loadStoredFavorites();
@@ -2283,7 +1573,17 @@
     bindFilterEvents();
     bindSortableHeaders("searchList", handleSearchHeaderSort);
     bindSortableHeaders("top10List", handleTop10HeaderSort);
-    Graardor.bindItemListSort("transformsList", handleTransformsHeaderSort, "data-xf-sort");
+
+    Graardor.Transforms.init({
+      includeSkillRecipes: true,
+      favoriteStarButton,
+      recipeFavoriteKey,
+      isRecipeFavorite,
+      switchTab,
+      syncUrl: syncUrlFromState,
+      refreshPrices: () => loadData(true),
+      onRendered: updateFlipSummaryStrip,
+    });
 
     document.querySelectorAll(".tab").forEach((btn) => {
       btn.addEventListener("click", () => switchTab(btn.dataset.tab));
@@ -2293,28 +1593,22 @@
       btn.addEventListener("click", () => applyTop10Preset(btn.dataset.t10Preset));
     });
 
-    document.querySelectorAll("[data-xf-preset]").forEach((btn) => {
-      btn.addEventListener("click", () => applyXfPreset(btn.dataset.xfPreset));
-    });
-
     el("refreshBtn").addEventListener("click", () => loadData(true));
     el("refreshTop10Btn").addEventListener("click", () => loadData(true));
-    el("refreshTransformsBtn").addEventListener("click", () => loadData(true));
     el("resetBtn").addEventListener("click", resetFilters);
     el("resetTop10Btn").addEventListener("click", resetTop10Filters);
-    el("resetTransformsBtn").addEventListener("click", resetTransformFilters);
 
     Graardor.onToolListRefresh(() => {
       if (cachedApiData) {
         renderAll();
-        renderTransforms();
+        Graardor.Transforms.render();
       }
     });
 
     Graardor.whenToolLayoutReady(() => {
-      loadTransformCatalog().then(() => {
+      Graardor.Transforms.loadCatalog().then(() => {
         applyUrlState();
-        renderTransforms();
+        Graardor.Transforms.render();
         loadData();
       });
     });

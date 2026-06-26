@@ -3,9 +3,75 @@
   let itemId = Number(params.get("id"));
   const queryParam = (params.get("q") || "").trim();
   let searchTimer;
+  let itemsMeta = null;
 
   function findItemById(id) {
     return G.cachedApiData?.mapping?.find((m) => m.id === id) || null;
+  }
+
+  async function loadItemsMeta() {
+    if (itemsMeta) return itemsMeta;
+    try {
+      const res = await fetch("/data/items-meta.json");
+      if (!res.ok) return null;
+      itemsMeta = await res.json();
+      return itemsMeta;
+    } catch {
+      return null;
+    }
+  }
+
+  function statCell(value) {
+    if (value == null || value === 0) return "<td>—</td>";
+    const cls = value > 0 ? "positive-stat" : "";
+    const prefix = value > 0 ? "+" : "";
+    return `<td class="${cls}">${prefix}${value}</td>`;
+  }
+
+  function renderEquipmentPanel(meta) {
+    if (!meta?.slot) return "";
+
+    const atk = meta.attack || {};
+    const def = meta.defence || {};
+    const hasAttack = Object.values(atk).some((v) => v);
+    const hasDefence = Object.values(def).some((v) => v);
+    const extras = [];
+    if (meta.strength) extras.push(["Melee str", meta.strength]);
+    if (meta.rangedStrength) extras.push(["Ranged str", meta.rangedStrength]);
+    if (meta.magicDamage) extras.push(["Magic dmg", meta.magicDamage]);
+    if (meta.prayer) extras.push(["Prayer", meta.prayer]);
+
+    let tableRows = "";
+    if (hasAttack || hasDefence) {
+      tableRows += `<tr><th></th><th>Stab</th><th>Slash</th><th>Crush</th><th>Magic</th><th>Ranged</th></tr>`;
+      if (hasAttack) {
+        tableRows += `<tr><td>Attack</td>${statCell(atk.stab)}${statCell(atk.slash)}${statCell(atk.crush)}${statCell(atk.magic)}${statCell(atk.ranged)}</tr>`;
+      }
+      if (hasDefence) {
+        tableRows += `<tr><td>Defence</td>${statCell(def.stab)}${statCell(def.slash)}${statCell(def.crush)}${statCell(def.magic)}${statCell(def.ranged)}</tr>`;
+      }
+    }
+
+    const extrasHtml = extras.length
+      ? `<div class="stat-grid" style="margin-top:0.75rem">${extras
+          .map(
+            ([label, val]) =>
+              `<div class="stat-card"><span class="label">${G.escapeHtml(label)}</span><span class="value positive-stat">+${val}</span></div>`
+          )
+          .join("")}</div>`
+      : "";
+
+    if (!tableRows && !extrasHtml) {
+      return `<div class="item-equipment-panel"><h2>Equipment</h2><span class="item-equipment-slot">${G.escapeHtml(meta.slot)}</span><p class="results-meta">Equipable — no combat bonuses.</p></div>`;
+    }
+
+    return `<div class="item-equipment-panel">
+        <h2>Equipment stats</h2>
+        <span class="item-equipment-slot">${G.escapeHtml(meta.slot.replace(/_/g, " "))}</span>
+        ${tableRows ? `<table class="item-stat-table">${tableRows}</table>` : ""}
+        ${extrasHtml}
+        <p class="results-meta" style="margin-top:0.5rem">Bundled game data — regenerate with <code>npm run build:items-meta</code></p>
+      </div>`;
   }
 
   function searchItems(q) {
@@ -51,7 +117,7 @@
     return { marginGp, marginPct, profitAfterTax, tax, buy, sell };
   }
 
-  function renderDetail(isPro) {
+  function renderDetail(isPro, equipmentMeta) {
     const root = G.el("itemDetailRoot");
     if (!root) return;
 
@@ -109,6 +175,7 @@
           </div>
         </div>
         ${proBlock}
+        ${renderEquipmentPanel(equipmentMeta)}
       </div>`;
 
     loadSparkline(isPro);
@@ -161,7 +228,9 @@
         const me = await fetch("/api/me", { credentials: "same-origin" }).then((r) => r.json());
         isPro = Boolean(me.pro);
       } catch { /* ignore */ }
-      renderDetail(isPro);
+      const metaBundle = await loadItemsMeta();
+      const equipmentMeta = metaBundle?.items?.[String(itemId)] || null;
+      renderDetail(isPro, equipmentMeta);
     } catch (err) {
       G.updateStatus("itemStatus", `Failed: ${err.message}`, "error");
       G.el("itemDetailRoot").innerHTML = `<p class="loading">${G.escapeHtml(err.message)}</p>`;
