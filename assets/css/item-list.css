@@ -13,11 +13,13 @@ body.site .gra-item-list-wrap {
 }
 
 .gra-item-list {
-  --gra-col-name: minmax(8rem, 1fr);
-  --gra-col-num: minmax(4.5rem, max-content);
+  --gra-col-name: minmax(5.5rem, 1fr);
+  --gra-col-num: minmax(4.25rem, max-content);
+  --gra-col-gp: minmax(5.25rem, max-content);
+  --gra-col-price: minmax(6.25rem, max-content);
   --gra-col-rank: minmax(1.75rem, max-content);
-  --gra-col-recipe: minmax(10rem, 1.15fr);
-  --gra-col-io: minmax(5.5rem, 0.85fr);
+  --gra-col-recipe: minmax(8rem, 1.1fr);
+  --gra-col-io: minmax(5rem, 0.85fr);
   width: 100%;
   max-width: 100%;
   min-width: 0;
@@ -27,7 +29,7 @@ body.site .gra-item-list-wrap {
 .gra-item-list__header,
 .gra-item-list__row {
   display: grid;
-  column-gap: 6px;
+  column-gap: 8px;
   align-items: center;
   min-width: 0;
 }
@@ -91,8 +93,10 @@ body.site .gra-item-list__row:hover {
 .gra-item-list__cell--num {
   white-space: nowrap;
   font-size: 0.8125rem;
-  overflow: visible;
-  text-overflow: clip;
+  font-variant-numeric: tabular-nums;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .gra-item-list__cell--name .item-cell,
@@ -138,15 +142,48 @@ body.site .gra-item-list__row:hover {
   font-style: italic;
 }
 
-/* Column templates per tool list */
+/* Column templates per tool list — per-type mins so buy/sell never collide */
 .gra-item-list--flip-search .gra-item-list__header,
 .gra-item-list--flip-search .gra-item-list__row {
-  grid-template-columns: var(--gra-col-name) repeat(14, var(--gra-col-num));
+  grid-template-columns:
+    var(--gra-col-name)
+    var(--gra-col-price)
+    var(--gra-col-price)
+    var(--gra-col-gp)
+    var(--gra-col-num)
+    var(--gra-col-gp)
+    var(--gra-col-gp)
+    var(--gra-col-gp)
+    var(--gra-col-gp)
+    var(--gra-col-gp)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-num);
 }
 
 .gra-item-list--flip-top10 .gra-item-list__header,
 .gra-item-list--flip-top10 .gra-item-list__row {
-  grid-template-columns: var(--gra-col-rank) var(--gra-col-name) repeat(16, var(--gra-col-num));
+  grid-template-columns:
+    var(--gra-col-rank)
+    var(--gra-col-name)
+    var(--gra-col-price)
+    var(--gra-col-price)
+    var(--gra-col-gp)
+    var(--gra-col-gp)
+    var(--gra-col-num)
+    var(--gra-col-gp)
+    var(--gra-col-gp)
+    var(--gra-col-gp)
+    var(--gra-col-gp)
+    var(--gra-col-gp)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-num);
 }
 
 .gra-item-list--transforms .gra-item-list__header,
@@ -155,17 +192,47 @@ body.site .gra-item-list__row:hover {
     var(--gra-col-recipe)
     var(--gra-col-io)
     var(--gra-col-io)
-    repeat(12, var(--gra-col-num));
+    var(--gra-col-price)
+    var(--gra-col-price)
+    var(--gra-col-gp)
+    var(--gra-col-num)
+    var(--gra-col-gp)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-io)
+    var(--gra-col-io);
 }
 
 .gra-item-list--alch .gra-item-list__header,
 .gra-item-list--alch .gra-item-list__row {
-  grid-template-columns: var(--gra-col-name) repeat(10, var(--gra-col-num));
+  grid-template-columns:
+    var(--gra-col-name)
+    var(--gra-col-price)
+    var(--gra-col-price)
+    var(--gra-col-price)
+    var(--gra-col-gp)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-gp)
+    var(--gra-col-gp);
 }
 
 .gra-item-list--coffer .gra-item-list__header,
 .gra-item-list--coffer .gra-item-list__row {
-  grid-template-columns: var(--gra-col-name) repeat(7, var(--gra-col-num));
+  grid-template-columns:
+    var(--gra-col-name)
+    var(--gra-col-price)
+    var(--gra-col-price)
+    var(--gra-col-gp)
+    var(--gra-col-gp)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-gp);
 }
 
 /* Top 10 buy/sell emphasis */
@@ -273,6 +340,11 @@ body.site .gra-item-list__row:hover {
     gap: 0.75rem;
     padding: 0.12rem 0;
     text-align: right;
+  }
+
+  .gra-item-list__cell--num {
+    overflow: visible;
+    text-overflow: clip;
   }
 
   .gra-item-list__cell:not(.gra-item-list__cell--name):not(.gra-item-list__cell--recipe):not(.rank-cell)::before {

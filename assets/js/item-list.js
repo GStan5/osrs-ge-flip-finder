@@ -28,7 +28,12 @@
 
   G.itemListNumCell = function itemListNumCell(value, className, label, attrs) {
     const cls = ["gra-item-list__cell--num", className].filter(Boolean).join(" ");
-    const merged = { ...(attrs || {}), ...(label ? { "data-label": label } : {}) };
+    const merged = { ...(attrs || {}) };
+    if (label) merged["data-label"] = label;
+    if (merged.title == null && value != null && value !== "—") {
+      const plain = String(value).replace(/<[^>]*>/g, "").trim();
+      if (plain) merged.title = plain;
+    }
     return G.itemListCell(value, cls, merged);
   };
 
