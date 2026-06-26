@@ -73,7 +73,7 @@
       paths: ["/tools/prep", "/tools/monster"],
       tools: [
         { href: "/tools/prep", label: "Boss prep", desc: "Gear & inventory lists" },
-        { href: "/tools/monster", label: "Monster lookup", desc: "Combat & slayer stats" },
+        { href: "/tools/monster", label: "Monster lookup", desc: "Stats, slayer & drops" },
         { href: "/guides", label: "Guides", desc: "How-to articles" },
       ],
     },

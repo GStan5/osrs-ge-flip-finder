@@ -14,6 +14,18 @@ const OUT = join(ROOT, "data", "monsters-meta.json");
 const SOURCE =
   "https://raw.githubusercontent.com/osrsbox/osrsbox-db/master/docs/monsters-complete.json";
 
+function compactDrop(d) {
+  if (!d?.id || !d?.name) return null;
+  return {
+    id: d.id,
+    name: d.name,
+    quantity: String(d.quantity ?? "1"),
+    rarity: d.rarity ?? 0,
+    rolls: d.rolls ?? 1,
+    noted: Boolean(d.noted),
+  };
+}
+
 function compactMonster(m) {
   if (!m?.id || !m?.name || m.duplicate) return null;
 
@@ -26,7 +38,7 @@ function compactMonster(m) {
       }
     : null;
 
-  return {
+  const compact = {
     id: m.id,
     name: m.name,
     members: Boolean(m.members),
@@ -65,6 +77,11 @@ function compactMonster(m) {
     wikiName: m.wiki_name || m.name,
     examine: m.examine || "",
   };
+
+  const drops = (m.drops || []).map(compactDrop).filter(Boolean);
+  if (drops.length) compact.drops = drops;
+
+  return compact;
 }
 
 async function main() {

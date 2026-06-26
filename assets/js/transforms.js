@@ -667,7 +667,7 @@
         body.innerHTML = G.itemListEmpty(`Could not load recipe catalog: ${G.escapeHtml(err.message)}`, true);
       }
       const meta = el("transformsMeta");
-      if (meta) meta.textContent = "Run npm run build:recipes to generate data/recipes.json";
+      if (meta) meta.textContent = "Recipe catalog unavailable. Please try again later.";
     }
   }
 

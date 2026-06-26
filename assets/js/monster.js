@@ -114,6 +114,54 @@
     return html;
   }
 
+  function formatDropRate(rarity) {
+    if (rarity >= 1) return "Always";
+    if (rarity <= 0) return "—";
+    const pct = rarity * 100;
+    if (pct >= 10) return `${pct.toFixed(1)}%`;
+    const denom = Math.max(1, Math.round(1 / rarity));
+    if (pct >= 0.1) return `1/${denom} (~${pct.toFixed(2)}%)`;
+    return `1/${denom}`;
+  }
+
+  function formatDropQuantity(quantity, noted) {
+    const qty = G.escapeHtml(String(quantity));
+    return noted ? `${qty} (noted)` : qty;
+  }
+
+  function renderDropsCard(monster) {
+    const drops = monster.drops || [];
+    if (!drops.length) {
+      return `<section class="lookup-card monster-drops-card">
+          <h2>Drops</h2>
+          <p class="results-meta">No drop table available for this monster.</p>
+        </section>`;
+    }
+
+    const sorted = [...drops].sort((a, b) => (b.rarity || 0) - (a.rarity || 0));
+    const rows = sorted
+      .map((d) => {
+        const rolls = d.rolls > 1 ? ` ×${d.rolls}` : "";
+        return `<tr>
+          <td><a href="${G.itemPageUrl(d.id)}">${G.escapeHtml(d.name)}</a></td>
+          <td>${formatDropQuantity(d.quantity, d.noted)}${rolls}</td>
+          <td class="monster-drop-rate">${formatDropRate(d.rarity)}</td>
+        </tr>`;
+      })
+      .join("");
+
+    return `<section class="lookup-card monster-drops-card">
+        <h2>Drops</h2>
+        <p class="results-meta">Sorted common → rare. Rates are per kill roll.</p>
+        <div class="monster-drops-scroll">
+          <table class="item-stat-table monster-drops-table">
+            <thead><tr><th>Item</th><th>Quantity</th><th>Rate</th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>
+      </section>`;
+  }
+
   function renderSlayerCard(monster) {
     if (!monster.slayer) {
       return `<section class="lookup-card monster-slayer-card">
@@ -185,8 +233,9 @@
         <section class="lookup-card monster-stats-card">
           <h2>Offence &amp; defence bonuses</h2>
           ${renderOffenceDefence(monster)}
-          <p class="lookup-card-foot">Bundled game data · <code>npm run build:monsters-meta</code></p>
         </section>
+
+        ${renderDropsCard(monster)}
       </article>`;
   }
 

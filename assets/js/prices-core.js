@@ -188,6 +188,12 @@ window.Graardor = window.Graardor || {};
     return G.WIKI_IMG + encodeURIComponent(filename.replace(/ /g, "_"));
   };
 
+  G.monsterIconUrl = function monsterIconUrl(monster) {
+    if (!monster) return "";
+    const name = (monster.wikiName || monster.name).replace(/ \(.*\)$/, "").trim();
+    return G.iconUrl(`${name}.png`);
+  };
+
   G.wikiPageUrl = function wikiPageUrl(name) {
     return G.WIKI_PAGE_BASE + encodeURIComponent(name.replace(/ /g, "_"));
   };

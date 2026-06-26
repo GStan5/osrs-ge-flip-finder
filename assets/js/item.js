@@ -112,7 +112,6 @@
         <h2>Equipment stats</h2>
         <span class="item-equipment-slot">${G.escapeHtml(meta.slot.replace(/_/g, " "))}</span>
         ${body}
-        <p class="lookup-card-foot">Bundled game data · <code>npm run build:items-meta</code></p>
       </section>`;
   }
 
