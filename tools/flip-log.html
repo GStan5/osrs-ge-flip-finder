@@ -68,21 +68,21 @@
         · Stored locally · Cloud sync when signed in
       </p>
 
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>Item</th>
-              <th class="num">Buy</th>
-              <th class="num">Sell</th>
-              <th class="num">Qty</th>
-              <th class="num">Profit</th>
-              <th class="num">When</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody id="flipLogBody"></tbody>
-        </table>
+      <div class="gra-item-list-wrap">
+        <div class="gra-item-list gra-item-list--flip-log" id="flipLogList" role="table" aria-label="Logged flips">
+          <div class="gra-item-list__header" role="row">
+            <div class="gra-item-list__head col-item" role="columnheader">Item</div>
+            <div class="gra-item-list__head num" role="columnheader">Buy</div>
+            <div class="gra-item-list__head num" role="columnheader">Sell</div>
+            <div class="gra-item-list__head num" role="columnheader">Qty</div>
+            <div class="gra-item-list__head num" role="columnheader">Profit</div>
+            <div class="gra-item-list__head num" role="columnheader">When</div>
+            <div class="gra-item-list__head" role="columnheader"></div>
+          </div>
+          <div class="gra-item-list__body" id="flipLogBody" role="rowgroup">
+            <div class="gra-item-list__empty loading">Loading…</div>
+          </div>
+        </div>
       </div>
 
       <div class="actions" style="margin-top:1rem;">
@@ -97,6 +97,7 @@
 
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/item-list.js"></script>
   <script src="/assets/js/sync.js"></script>
   <script src="/assets/js/flip-log.js"></script>
   <script src="/assets/js/auth.js"></script>

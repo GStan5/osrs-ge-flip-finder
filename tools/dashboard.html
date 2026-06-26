@@ -34,11 +34,23 @@
       <div id="dashLogSummary" class="stat-grid"></div>
       <p><a href="/tools/flip-log">Manage flip log →</a> · <a href="/tools/alerts">Price alerts →</a></p>
       <h2 class="filters-title" style="margin-top:1.5rem;">Community top items (7d)</h2>
-      <div class="table-wrap"><table><thead><tr><th>Item</th><th class="num">Flips</th><th class="num">Profit</th></tr></thead><tbody id="dashCommunityBody"></tbody></table></div>
+      <div class="gra-item-list-wrap">
+        <div class="gra-item-list gra-item-list--community-compact" id="dashCommunityList" role="table" aria-label="Community top items">
+          <div class="gra-item-list__header" role="row">
+            <div class="gra-item-list__head col-item" role="columnheader">Item</div>
+            <div class="gra-item-list__head num" role="columnheader">Flips</div>
+            <div class="gra-item-list__head num" role="columnheader">Profit</div>
+          </div>
+          <div class="gra-item-list__body" id="dashCommunityBody" role="rowgroup">
+            <div class="gra-item-list__empty loading">Loading…</div>
+          </div>
+        </div>
+      </div>
     </div>
   </main></div>
   <footer class="site-footer"><p><a href="/">← Graardor home</a></p></footer>
   <script src="/assets/js/prices-core.js"></script>
+  <script src="/assets/js/item-list.js"></script>
   <script src="/assets/js/sync.js"></script>
   <script src="/assets/js/dashboard.js"></script>
   <script src="/assets/js/auth.js"></script>

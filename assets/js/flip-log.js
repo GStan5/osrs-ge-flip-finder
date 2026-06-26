@@ -25,6 +25,23 @@
     );
   }
 
+  function flipLogRowHtml(row, realIndex) {
+    const cls = row.profit >= 0 ? "positive" : "negative";
+    return G.itemListRow(
+      G.itemListCell(G.escapeHtml(row.itemName), "gra-item-list__cell--name", { "data-label": "Item" }) +
+        G.itemListNumCell(G.formatPrice(row.buyPrice), "num", "Buy") +
+        G.itemListNumCell(G.formatPrice(row.sellPrice), "num", "Sell") +
+        G.itemListNumCell(row.qty.toLocaleString(), "num", "Qty") +
+        G.itemListNumCell(G.formatGp(row.profit), `num ${cls}`, "Profit") +
+        G.itemListNumCell(new Date(row.at).toLocaleString(), "num", "When") +
+        G.itemListCell(
+          `<button type="button" class="link-btn" data-delete="${realIndex}">Remove</button>`,
+          null,
+          { "data-label": "" }
+        )
+    );
+  }
+
   function render() {
     const entries = loadEntries();
     const { profit, count } = totals(entries);
@@ -34,28 +51,20 @@
       <div><strong>${count}</strong> logged flips</div>
       <div>Total profit: <strong class="${profitCls}">${G.formatGp(profit)}</strong> gp</div>`;
 
-    const body = G.el("flipLogBody");
     if (!entries.length) {
-      body.innerHTML = '<tr><td colspan="7" class="loading">No flips logged yet — add your first below.</td></tr>';
+      G.renderItemList("flipLogBody", {
+        message: "No flips logged yet — add your first below.",
+        loading: true,
+      });
       return;
     }
 
-    body.innerHTML = [...entries]
-      .reverse()
-      .map((row, idx) => {
-        const realIndex = entries.length - 1 - idx;
-        const cls = row.profit >= 0 ? "positive" : "negative";
-        return `<tr>
-          <td>${G.escapeHtml(row.itemName)}</td>
-          <td class="num">${G.formatPrice(row.buyPrice)}</td>
-          <td class="num">${G.formatPrice(row.sellPrice)}</td>
-          <td class="num">${row.qty.toLocaleString()}</td>
-          <td class="num ${cls}">${G.formatGp(row.profit)}</td>
-          <td class="num">${new Date(row.at).toLocaleString()}</td>
-          <td><button type="button" class="link-btn" data-delete="${realIndex}">Remove</button></td>
-        </tr>`;
-      })
-      .join("");
+    G.renderItemList("flipLogBody", {
+      rowsHtml: [...entries]
+        .reverse()
+        .map((row, idx) => flipLogRowHtml(row, entries.length - 1 - idx))
+        .join(""),
+    });
   }
 
   function bindDelete() {

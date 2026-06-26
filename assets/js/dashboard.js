@@ -21,22 +21,32 @@
     try {
       const res = await fetch("/api/aggregates?days=7");
       const data = await res.json();
-      const body = G.el("dashCommunityBody");
       if (!data.items?.length) {
-        body.innerHTML = '<tr><td colspan="3" class="loading">No community data yet — opt in on the flip log.</td></tr>';
+        G.renderItemList("dashCommunityBody", {
+          message: "No community data yet — opt in on the flip log.",
+          loading: true,
+        });
         return;
       }
-      body.innerHTML = data.items
-        .map(
-          (row) => `<tr>
-          <td>${G.escapeHtml(row.item_name)}</td>
-          <td class="num">${row.flip_count}</td>
-          <td class="num highlight-gp">${G.formatGp(Number(row.total_profit))}</td>
-        </tr>`
-        )
-        .join("");
+      G.renderItemList("dashCommunityBody", {
+        rowsHtml: data.items
+          .map(
+            (row) =>
+              G.itemListRow(
+                G.itemListCell(G.escapeHtml(row.item_name), "gra-item-list__cell--name", {
+                  "data-label": "Item",
+                }) +
+                  G.itemListNumCell(row.flip_count, "num", "Flips") +
+                  G.itemListNumCell(G.formatGp(Number(row.total_profit)), "num highlight-gp", "Profit")
+              )
+          )
+          .join(""),
+      });
     } catch {
-      G.el("dashCommunityBody").innerHTML = '<tr><td colspan="3" class="loading">Could not load community stats.</td></tr>';
+      G.renderItemList("dashCommunityBody", {
+        message: "Could not load community stats.",
+        loading: true,
+      });
     }
   }
 

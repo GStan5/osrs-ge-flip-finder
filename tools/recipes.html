@@ -1732,7 +1732,7 @@
       return Graardor.itemListRow(cells);
     }
 
-
+    function passesSearchFilters(item) {
       const search = getInputValue("searchText").trim().toLowerCase();
       const nameMatch = search && item.name.toLowerCase().includes(search);
       if (search && !nameMatch) return false;
@@ -1816,6 +1816,49 @@
       const dir = getInputValue("sortDir");
       updateSortHeaders("searchList", key, dir);
       return sortItemList(list, key, dir);
+    }
+
+    function updateFlipSummaryStrip() {
+      if (!items.length || typeof renderSummaryStrip !== "function") {
+        if (typeof renderSummaryStrip === "function") renderSummaryStrip("flipSummary", []);
+        return;
+      }
+      const includeTax = isChecked("t10IncludeTax");
+      const enriched = items.map((item) => enrichItem(item, includeTax));
+      const pool = enriched.filter(passesTop10Filters).filter(
+        (i) => !isBond(i) && i.gpPerHour != null && i.gpPerHour > 0
+      );
+      const best = sortItemList(pool, "gpPerHour", "desc")[0];
+      let bestTransform = null;
+      if (transformRows?.length) {
+        bestTransform = sortItemList(
+          filterTransformRows(transformRows).filter((r) => r.profit > 0),
+          "gpPerHour",
+          "desc"
+        )[0];
+      }
+      renderSummaryStrip("flipSummary", [
+        {
+          label: "Best flip GP/hr",
+          value: best ? formatGp(best.gpPerHour) : "—",
+          className: "highlight-gp",
+          hint: best ? best.name : "Loosen top 10 filters",
+          link: best ? `/tools/item?id=${best.id}` : null,
+        },
+        {
+          label: "Best transform",
+          value: bestTransform?.gpPerHour != null ? formatGp(bestTransform.gpPerHour) + "/hr" : "—",
+          className: bestTransform ? "highlight-gp" : "",
+          hint: bestTransform ? recipeDisplayName(bestTransform) : "Open Transforms tab",
+        },
+        { label: "Items priced", value: items.length.toLocaleString() },
+        { label: "Favorites", value: favoriteIds.size.toLocaleString() },
+        {
+          label: "Prices",
+          value: pricesLoadedAt ? formatTimeAgo(pricesLoadedAt) : "—",
+          hint: "Refresh when offers fill",
+        },
+      ]);
     }
 
     function renderTop10() {
@@ -1912,7 +1955,7 @@
       }
     }
 
-
+    function scheduleTop10Render() {
       clearTimeout(debounceTimer);
       debounceTimer = setTimeout(renderTop10, 100);
     }
@@ -1990,7 +2033,7 @@
       }
     }
 
-(values = {}) {
+    function setTop10Filters(values = {}) {
       el("t10Search").value = values.search ?? "";
       el("t10MaxGp").value = values.maxGp ?? "";
       el("t10MinPrice").value = values.minPrice ?? "";

@@ -241,6 +241,35 @@ body.site .gra-item-list__row:hover {
     var(--gra-col-gp);
 }
 
+.gra-item-list--flip-log .gra-item-list__header,
+.gra-item-list--flip-log .gra-item-list__row {
+  grid-template-columns:
+    var(--gra-col-name)
+    var(--gra-col-price)
+    var(--gra-col-price)
+    var(--gra-col-num)
+    var(--gra-col-gp)
+    var(--gra-col-timing)
+    minmax(4rem, max-content);
+}
+
+.gra-item-list--community .gra-item-list__header,
+.gra-item-list--community .gra-item-list__row {
+  grid-template-columns:
+    var(--gra-col-rank)
+    var(--gra-col-name)
+    var(--gra-col-gp)
+    var(--gra-col-num);
+}
+
+.gra-item-list--community-compact .gra-item-list__header,
+.gra-item-list--community-compact .gra-item-list__row {
+  grid-template-columns:
+    var(--gra-col-name)
+    var(--gra-col-num)
+    var(--gra-col-gp);
+}
+
 /* Top 10 buy/sell emphasis */
 .gra-item-list--flip-top10 .gra-item-list__head.col-price-buy,
 .gra-item-list--flip-top10 .gra-item-list__cell.price-col-buy {
