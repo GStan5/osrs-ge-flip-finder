@@ -92,20 +92,22 @@ const RUNE_NAMES = {
  * @type {Array<{ input: string, output: string, spell: number, gem: string, type: string }>}
  */
 const PAIRS = [
-  // Sapphire
+  // Sapphire (Lvl-1)
   { input: "Sapphire ring", output: "Ring of recoil", spell: 1, gem: "sapphire", type: "ring" },
   { input: "Sapphire necklace", output: "Games necklace(8)", spell: 1, gem: "sapphire", type: "necklace" },
   { input: "Sapphire amulet", output: "Amulet of magic", spell: 1, gem: "sapphire", type: "amulet" },
+  { input: "Sapphire bracelet", output: "Bracelet of clay", spell: 1, gem: "sapphire", type: "bracelet" },
   // Opal (Lvl-1 / Lvl-2)
   { input: "Opal necklace", output: "Dodgy necklace", spell: 1, gem: "opal", type: "necklace" },
   { input: "Opal amulet", output: "Amulet of bounty", spell: 1, gem: "opal", type: "amulet" },
   { input: "Opal bracelet", output: "Expeditious bracelet", spell: 1, gem: "opal", type: "bracelet" },
   { input: "Opal ring", output: "Ring of pursuit", spell: 2, gem: "opal", type: "ring" },
   { input: "Jade bracelet", output: "Flamtaer bracelet", spell: 2, gem: "jade", type: "bracelet" },
-  // Emerald
+  // Emerald (Lvl-2)
   { input: "Emerald ring", output: "Ring of dueling(8)", spell: 2, gem: "emerald", type: "ring" },
   { input: "Emerald necklace", output: "Binding necklace", spell: 2, gem: "emerald", type: "necklace" },
   { input: "Emerald amulet", output: "Amulet of defence", spell: 2, gem: "emerald", type: "amulet" },
+  { input: "Emerald bracelet", output: "Castle wars bracelet(3)", spell: 2, gem: "emerald", type: "bracelet" },
   // Topaz
   { input: "Topaz necklace", output: "Necklace of passage(5)", spell: 2, gem: "topaz", type: "necklace" },
   { input: "Topaz amulet", output: "Amulet of bounty", spell: 2, gem: "topaz", type: "amulet" },
@@ -115,11 +117,10 @@ const PAIRS = [
   { input: "Ruby ring", output: "Ring of forging", spell: 3, gem: "ruby", type: "ring" },
   { input: "Ruby amulet", output: "Amulet of strength", spell: 3, gem: "ruby", type: "amulet" },
   { input: "Ruby bracelet", output: "Inoculation bracelet", spell: 3, gem: "ruby", type: "bracelet" },
-  // Diamond
+  // Diamond (Lvl-4) — no bracelet enchant in OSRS (Bracelet of ethereum is from Revenants + ether)
   { input: "Diamond ring", output: "Ring of life", spell: 4, gem: "diamond", type: "ring" },
   { input: "Diamond necklace", output: "Phoenix necklace", spell: 4, gem: "diamond", type: "necklace" },
   { input: "Diamond amulet", output: "Amulet of power", spell: 4, gem: "diamond", type: "amulet" },
-  { input: "Diamond bracelet", output: "Bracelet of ethereum (uncharged)", spell: 4, gem: "diamond", type: "bracelet" },
   // Dragonstone
   { input: "Dragonstone ring", output: "Ring of wealth", spell: 5, gem: "dragonstone", type: "ring" },
   { input: "Dragon necklace", output: "Skills necklace(6)", spell: 5, gem: "dragonstone", type: "necklace" },
@@ -174,6 +175,15 @@ function resolveItem(index, name) {
   // Amulet of glory variants
   if (name === "Amulet of glory(4)") {
     return index.exact.get("Amulet of glory(4)") || index.exact.get("Amulet of glory (4)");
+  }
+
+  // Castle wars bracelet variants
+  if (name.includes("Castle wars brac")) {
+    return (
+      index.exact.get("Castle wars bracelet(3)") ||
+      index.exact.get("Castle wars brace(5)") ||
+      index.exact.get("Castle wars bracelet(5)")
+    );
   }
 
   throw new Error(`Could not resolve item: ${name}`);

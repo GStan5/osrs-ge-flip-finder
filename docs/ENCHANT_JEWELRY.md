@@ -28,10 +28,11 @@ npm run build:enchant-jewelry
 - `type` — `ring`, `necklace`, `amulet`, `bracelet`
 - `spellName`, `magicLevel`, `runes[]` — spell cost (cosmic + elemental or zenyte runes)
 
-### Exclusions
+### Exclusions (not standard Lvl 1–7 enchant spells or not GE-tradeable)
 
-- **Ruby necklace → Digsite pendant** — not on GE (untradeable output).
-- **Onyx necklace** — no standard Lvl-6 enchant product on GE.
+- **Diamond bracelet** — no enchant spell; Bracelet of ethereum is from Revenants + ether attachment.
+- **Ruby necklace → Digsite pendant** — enchant exists but output is untradeable (not on GE).
+- **Onyx necklace → Berserker necklace** — enchant exists but output is untradeable (not on GE).
 
 ## Profit calculation
 
@@ -46,11 +47,25 @@ profit       = sellAfterTax − totalCost
 margin       = (profit / totalCost) × 100
 ```
 
+### GE limit batch (per row)
+
+Limit and volume come from `getItemPrice(inputId)` — mapping `limit` plus `/5m` and `/1h` buy-side volume:
+
+```
+buyRateHour  = effectiveHourlyRate(buyVol5m, buyVolHour)  // 65% 5m + 35% 1h
+dailyVolume  = (buyRateHour + sellRateHour) × 24
+buyTimeHours = buyLimit ÷ buyRateHour
+limitGpCost  = totalCost × buyLimit
+limitProfit  = profit × buyLimit
+```
+
+Show `—` when limit, volume, or rate data is unavailable.
+
 Rows are omitted when input buy or output sell price is missing. Rune costs use live GE buy prices; partial rune data shows `*` on rune cost.
 
 ## UI
 
-- **List:** `.gra-item-list--enchant` — dual wiki icons (input → output), spell, magic lvl, rune/buy/sell/profit/margin columns
+- **List:** `.gra-item-list--enchant` — dual wiki icons (input → output), spell, magic lvl, rune/buy/sell/profit/margin, GE limit, daily vol., est. buy time, GP (limit), profit (limit)
 - **Default sort:** profit descending
 - **Filters:** gem tier, item type, search, min profit, min margin, max buy, profitable-only
 - **Refresh:** `Refresh prices` → `loadPrices({ force: true })`

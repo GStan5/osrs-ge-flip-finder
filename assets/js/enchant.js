@@ -40,6 +40,14 @@
       const margin = profit != null && totalCost != null && totalCost > 0 ? (profit / totalCost) * 100 : null;
       const priceMissing = buyCost == null || sellRaw == null;
 
+      const buyLimit = input?.limit > 0 ? input.limit : null;
+      const volume5m = input?.volume5m > 0 ? input.volume5m : null;
+      const dailyVolume = input?.dailyVolume > 0 ? input.dailyVolume : null;
+      const buyRateHour = input?.buyRateHour > 0 ? input.buyRateHour : null;
+      const buyTimeHours = buyLimit != null ? G.hoursToFillQty(buyLimit, buyRateHour) : null;
+      const limitGpCost = buyLimit != null && totalCost != null ? totalCost * buyLimit : null;
+      const limitProfit = profit != null && buyLimit != null ? profit * buyLimit : null;
+
       return {
         id: entry.id,
         inputId: entry.inputId,
@@ -64,8 +72,13 @@
         margin,
         priceMissing,
         members: entry.members,
-        limit: input?.limit ?? 0,
-        limitProfit: profit != null ? profit * (input?.limit > 0 ? input.limit : 1) : null,
+        buyLimit,
+        volume5m,
+        dailyVolume,
+        buyRateHour,
+        buyTimeHours,
+        limitGpCost,
+        limitProfit,
         searchText: `${entry.inputName} ${entry.outputName} ${entry.spellName} ${entry.gem} ${entry.type}`.toLowerCase(),
       };
     });
@@ -136,6 +149,19 @@
     return G.formatPrice(row.runeCost);
   }
 
+  function buyTimingTooltip(row) {
+    if (!row.buyRateHour) return "No recent buy-side volume — est. buy time unavailable";
+    const perMin = row.buyRateHour / 60;
+    const rateNote = `~${Math.round(row.buyRateHour).toLocaleString()} items/hour at rec. buy (65% 5m + 35% 1h)`;
+    if (row.buyLimit == null) return rateNote;
+    return `${rateNote} · limit ÷ rate = est. buy time · ${row.buyLimit.toLocaleString()} for full 4h GE limit`;
+  }
+
+  function limitGpTooltip(row) {
+    if (row.limitGpCost == null) return "Need buy cost and GE limit";
+    return `(buy ${G.formatPrice(row.buyCost)} + runes ${G.formatPrice(row.runeCost)}) × ${row.buyLimit?.toLocaleString()} limit`;
+  }
+
   function enchantRowHtml(row) {
     const profitCls =
       row.profit == null ? "" : row.profit >= 0 ? "positive" : "negative";
@@ -144,7 +170,7 @@
       enchantPairCell(row) +
         G.itemListCell(G.escapeHtml(row.spellName), "col-hide-xs spell-col", { "data-label": "Spell", title: row.spellName }) +
         G.itemListNumCell(String(row.magicLevel), "num col-hide-narrow", "Magic") +
-        G.itemListNumCell(runeCostLabel(row), "num", "Rune cost", { title: runeTitle + (row.runeMissing ? " · some rune prices missing" : "") }) +
+        G.itemListNumCell(runeCostLabel(row), "num col-hide-xs", "Rune cost", { title: runeTitle + (row.runeMissing ? " · some rune prices missing" : "") }) +
         G.itemListNumCell(row.buyCost != null ? G.formatPrice(row.buyCost) : "—", "num price-buy price-col-buy price-copyable", "Buy cost", {
           ...(row.buyCost != null ? { "data-copy-price": Math.round(row.buyCost), title: "Click to copy buy price" } : { title: "Buy price unavailable" }),
         }) +
@@ -155,7 +181,23 @@
               : "Sell price unavailable",
         }) +
         G.itemListNumCell(row.profit != null ? G.formatGp(row.profit) : "—", `num ${profitCls}`, "Profit") +
-        G.itemListNumCell(row.margin != null ? row.margin.toFixed(1) + "%" : "—", `num col-hide-xs ${profitCls}`, "Margin")
+        G.itemListNumCell(row.margin != null ? row.margin.toFixed(1) + "%" : "—", `num col-hide-narrow ${profitCls}`, "Margin") +
+        G.itemListNumCell(row.buyLimit != null ? row.buyLimit.toLocaleString() : "—", "num col-hide-narrow", "GE limit", {
+          title: row.buyLimit != null ? "4-hour rolling GE buy limit (unenchanted item)" : "Limit unavailable",
+        }) +
+        G.itemListNumCell(row.dailyVolume != null ? G.formatGp(row.dailyVolume) : "—", "num col-hide-narrow", "Daily vol.", {
+          title:
+            row.volume5m != null
+              ? `Est. daily = (buy+sell rate) × 24h · 5m vol. ${G.formatGp(row.volume5m)}`
+              : "Volume unavailable",
+        }) +
+        G.itemListNumCell(G.formatDuration(row.buyTimeHours), "num", "Est. buy", { title: buyTimingTooltip(row) }) +
+        G.itemListNumCell(row.limitGpCost != null ? G.formatGp(row.limitGpCost) : "—", "num col-hide-xs", "GP (limit)", {
+          title: limitGpTooltip(row),
+        }) +
+        G.itemListNumCell(row.limitProfit != null ? G.formatGp(row.limitProfit) : "—", `num ${profitCls}`, "Profit (limit)", {
+          title: row.limitProfit != null ? `Profit per cast × ${row.buyLimit?.toLocaleString()} limit (after GE tax)` : "Need profit and limit",
+        })
     );
   }
 
@@ -189,7 +231,7 @@
     const missingPrices = rows.length > 0 && pricedCount === 0;
 
     G.el("enchantMeta").textContent = filtered.length
-      ? `${filtered.length.toLocaleString()} of ${catalog?.itemCount ?? rows.length} enchantable items · profit = sell after GE tax − buy − runes${missingPrices ? " · some prices missing — refresh or turn off Profitable only" : ""}`
+      ? `${filtered.length.toLocaleString()} of ${catalog?.itemCount ?? rows.length} enchantable items · profit = sell after GE tax − buy − runes · est. buy = limit ÷ buy rate (65% 5m + 35% 1h vol.)${missingPrices ? " · some prices missing — refresh or turn off Profitable only" : ""}`
       : rows.length
         ? "No items match your filters."
         : catalog?.items?.length
@@ -224,9 +266,9 @@
       G.el("enchantSummary")?.removeAttribute("hidden");
       renderSummaryStrip("enchantSummary", [
         {
-          label: "Best profit",
-          value: best.profit != null ? G.formatGp(best.profit) : "—",
-          className: best.profit != null && best.profit >= 0 ? "highlight-gp" : "",
+          label: "Best limit profit",
+          value: best.limitProfit != null ? G.formatGp(best.limitProfit) : best.profit != null ? G.formatGp(best.profit) : "—",
+          className: best.limitProfit != null && best.limitProfit >= 0 ? "highlight-gp" : best.profit != null && best.profit >= 0 ? "highlight-gp" : "",
           hint: best.outputName,
           link: G.itemPageUrl(best.outputId),
         },
@@ -289,7 +331,7 @@
     const hasCache = Boolean(G.cachedApiData);
     if (!hasCache || forceRefresh) {
       G.updateStatus("enchantStatus", forceRefresh ? "Refreshing price data…" : "Loading price data…", "");
-      G.applyItemListSkeleton("enchantBody", 8, 8);
+      G.applyItemListSkeleton("enchantBody", 13, 8);
     }
     try {
       if (!catalog) await loadCatalog();

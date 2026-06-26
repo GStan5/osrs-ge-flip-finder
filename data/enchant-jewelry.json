@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-26T16:36:16.936Z",
+  "generatedAt": "2026-06-26T16:48:04.154Z",
   "spellCount": 7,
-  "itemCount": 33,
+  "itemCount": 34,
   "spells": {
     "1": {
       "name": "Enchant Level-1 Jewellery",
@@ -212,6 +212,33 @@
         }
       ],
       "members": false
+    },
+    {
+      "id": "11072-11074",
+      "inputId": 11072,
+      "outputId": 11074,
+      "inputName": "Sapphire bracelet",
+      "outputName": "Bracelet of clay",
+      "inputIcon": "Sapphire bracelet.png",
+      "outputIcon": "Bracelet of clay.png",
+      "gem": "sapphire",
+      "type": "bracelet",
+      "spellLevel": 1,
+      "spellName": "Enchant Level-1 Jewellery",
+      "magicLevel": 7,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 555,
+          "name": "Water rune",
+          "qty": 1
+        }
+      ],
+      "members": true
     },
     {
       "id": "21090-21143",
@@ -428,6 +455,33 @@
         }
       ],
       "members": false
+    },
+    {
+      "id": "11076-11079",
+      "inputId": 11076,
+      "outputId": 11079,
+      "inputName": "Emerald bracelet",
+      "outputName": "Castle wars bracelet(3)",
+      "inputIcon": "Emerald bracelet.png",
+      "outputIcon": "Castle wars bracelet.png",
+      "gem": "emerald",
+      "type": "bracelet",
+      "spellLevel": 2,
+      "spellName": "Enchant Level-2 Jewellery",
+      "magicLevel": 27,
+      "runes": [
+        {
+          "id": 564,
+          "name": "Cosmic rune",
+          "qty": 1
+        },
+        {
+          "id": 556,
+          "name": "Air rune",
+          "qty": 3
+        }
+      ],
+      "members": true
     },
     {
       "id": "21096-21146",
@@ -698,33 +752,6 @@
         }
       ],
       "members": false
-    },
-    {
-      "id": "11092-21817",
-      "inputId": 11092,
-      "outputId": 21817,
-      "inputName": "Diamond bracelet",
-      "outputName": "Bracelet of ethereum (uncharged)",
-      "inputIcon": "Diamond bracelet.png",
-      "outputIcon": "Bracelet of ethereum.png",
-      "gem": "diamond",
-      "type": "bracelet",
-      "spellLevel": 4,
-      "spellName": "Enchant Level-4 Jewellery",
-      "magicLevel": 57,
-      "runes": [
-        {
-          "id": 564,
-          "name": "Cosmic rune",
-          "qty": 1
-        },
-        {
-          "id": 557,
-          "name": "Earth rune",
-          "qty": 10
-        }
-      ],
-      "members": true
     },
     {
       "id": "1645-2572",

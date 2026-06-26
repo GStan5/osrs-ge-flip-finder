@@ -408,7 +408,12 @@ body.site .gra-item-list__row:hover {
     var(--gra-col-price)
     var(--gra-col-price)
     var(--gra-col-gp)
-    var(--gra-col-num);
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-num)
+    var(--gra-col-timing)
+    var(--gra-col-gp)
+    var(--gra-col-gp);
 }
 
 .gra-item-list--enchant .gra-item-list__header > :nth-child(1),
@@ -427,6 +432,16 @@ body.site .gra-item-list__row:hover {
 .gra-item-list--enchant .gra-item-list__row > :nth-child(7) { grid-column: 7; }
 .gra-item-list--enchant .gra-item-list__header > :nth-child(8),
 .gra-item-list--enchant .gra-item-list__row > :nth-child(8) { grid-column: 8; }
+.gra-item-list--enchant .gra-item-list__header > :nth-child(9),
+.gra-item-list--enchant .gra-item-list__row > :nth-child(9) { grid-column: 9; }
+.gra-item-list--enchant .gra-item-list__header > :nth-child(10),
+.gra-item-list--enchant .gra-item-list__row > :nth-child(10) { grid-column: 10; }
+.gra-item-list--enchant .gra-item-list__header > :nth-child(11),
+.gra-item-list--enchant .gra-item-list__row > :nth-child(11) { grid-column: 11; }
+.gra-item-list--enchant .gra-item-list__header > :nth-child(12),
+.gra-item-list--enchant .gra-item-list__row > :nth-child(12) { grid-column: 12; }
+.gra-item-list--enchant .gra-item-list__header > :nth-child(13),
+.gra-item-list--enchant .gra-item-list__row > :nth-child(13) { grid-column: 13; }
 
 .enchant-pair {
   flex-wrap: wrap;
