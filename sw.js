@@ -1,4 +1,4 @@
-const CACHE = "graardor-v41";
+const CACHE = "graardor-v42";
 
 self.addEventListener("install", (event) => {
   self.skipWaiting();
