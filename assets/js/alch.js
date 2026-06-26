@@ -94,7 +94,7 @@
         G.itemListNumCell(G.formatPrice(natureCost), "num col-hide-xs", "Nature cost") +
         G.itemListNumCell(G.formatGp(row.profit), `num ${profitCls}`, "Profit") +
         G.itemListNumCell(row.roi != null ? row.roi.toFixed(1) + "%" : "—", `num col-hide-xs ${profitCls}`, "ROI") +
-        G.itemListNumCell(G.formatDuration(row.buyTimeHours), "num col-hide-narrow", "Est. buy") +
+        G.itemListNumCell(G.formatDuration(row.buyTimeHours), "num", "Est. buy") +
         G.itemListNumCell(G.formatGp(row.volume5m), "num col-hide-narrow", "5m vol.") +
         G.itemListNumCell(G.formatGp(row.dailyVolume), "num col-hide-narrow", "Daily vol.") +
         G.itemListNumCell(row.gpPerHour == null ? "—" : G.formatGp(row.gpPerHour), `num ${gpHrCls}`, "GP / hr") +

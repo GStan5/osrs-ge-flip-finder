@@ -1385,7 +1385,7 @@ body.site.has-header-subnav .site-header {
 
 /* ── Full-width tool layout (site-chrome.js layoutToolPage) ── */
 body.site.tool-page-wide .tool-layout-grid {
-  max-width: 1400px;
+  max-width: min(100%, 1600px);
   margin: 0 auto;
   padding: 0.5rem 1.25rem 2rem;
   min-width: 0;
@@ -1570,7 +1570,7 @@ body.site.tool-page-wide .tool-main-column main {
 }
 
 body.site.tool-page-wide .tool-main-column .table-wrap {
-  overflow-x: hidden;
+  overflow-x: visible;
 }
 
 @media (max-width: 767px) {

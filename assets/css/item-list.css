@@ -1,11 +1,12 @@
 /* Graardor item list — CSS Grid rows (replaces tool tables) */
 
 .gra-item-list-wrap {
-  overflow-x: hidden;
+  overflow-x: auto;
   max-width: 100%;
   border: 1px solid var(--border);
   border-radius: 0;
   background: var(--surface);
+  -webkit-overflow-scrolling: touch;
 }
 
 body.site .gra-item-list-wrap {
@@ -14,7 +15,8 @@ body.site .gra-item-list-wrap {
 
 .gra-item-list {
   --gra-col-name: minmax(5.5rem, 1fr);
-  --gra-col-num: minmax(4.25rem, max-content);
+  --gra-col-num: minmax(5rem, max-content);
+  --gra-col-timing: minmax(5.5rem, max-content);
   --gra-col-gp: minmax(5.25rem, max-content);
   --gra-col-price: minmax(6.25rem, max-content);
   --gra-col-rank: minmax(1.75rem, max-content);
@@ -53,7 +55,12 @@ body.site .gra-item-list__header {
   color: var(--title);
   line-height: 1.2;
   white-space: normal;
-  min-width: 0;
+  min-width: min-content;
+  overflow: visible;
+}
+
+.gra-item-list__head.num {
+  white-space: nowrap;
 }
 
 .gra-item-list__head.num,
@@ -94,9 +101,8 @@ body.site .gra-item-list__row:hover {
   white-space: nowrap;
   font-size: 0.8125rem;
   font-variant-numeric: tabular-nums;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .gra-item-list__cell--name .item-cell,
@@ -158,8 +164,8 @@ body.site .gra-item-list__row:hover {
     var(--gra-col-gp)
     var(--gra-col-num)
     var(--gra-col-num)
-    var(--gra-col-num)
-    var(--gra-col-num)
+    var(--gra-col-timing)
+    var(--gra-col-timing)
     var(--gra-col-num);
 }
 
@@ -180,9 +186,9 @@ body.site .gra-item-list__row:hover {
     var(--gra-col-gp)
     var(--gra-col-num)
     var(--gra-col-num)
-    var(--gra-col-num)
-    var(--gra-col-num)
-    var(--gra-col-num)
+    var(--gra-col-timing)
+    var(--gra-col-timing)
+    var(--gra-col-timing)
     var(--gra-col-num);
 }
 
@@ -197,9 +203,9 @@ body.site .gra-item-list__row:hover {
     var(--gra-col-gp)
     var(--gra-col-num)
     var(--gra-col-gp)
-    var(--gra-col-num)
-    var(--gra-col-num)
-    var(--gra-col-num)
+    var(--gra-col-timing)
+    var(--gra-col-timing)
+    var(--gra-col-timing)
     var(--gra-col-num)
     var(--gra-col-num)
     var(--gra-col-io)
@@ -215,7 +221,7 @@ body.site .gra-item-list__row:hover {
     var(--gra-col-price)
     var(--gra-col-gp)
     var(--gra-col-num)
-    var(--gra-col-num)
+    var(--gra-col-timing)
     var(--gra-col-num)
     var(--gra-col-num)
     var(--gra-col-gp)
@@ -285,6 +291,12 @@ body.site .gra-item-list__row:hover {
 /* Skeleton rows */
 .gra-item-list__row.skeleton-row .gra-item-list__cell {
   padding: 0.35rem;
+}
+
+@media (max-width: 1279px) {
+  .gra-item-list .col-hide-mid {
+    display: none !important;
+  }
 }
 
 @media (max-width: 767px) {
