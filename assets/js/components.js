@@ -705,8 +705,8 @@ window.Graardor = window.Graardor || {};
         <p class="price-chart-empty results-meta" hidden>No chart data for this range.</p>
       </div>
       <div class="sparkline-legend price-chart-legend">
-        <span class="sell"><span class="legend-swatch"></span> High (sell)</span>
-        <span class="buy"><span class="legend-swatch"></span> Low (buy)</span>
+        <span class="buy"><span class="legend-swatch"></span> Buy (high)</span>
+        <span class="sell"><span class="legend-swatch"></span> Sell (low)</span>
       </div>
       ${
         isPro
@@ -740,25 +740,33 @@ window.Graardor = window.Graardor || {};
     }
 
     function hideTooltip() {
+      const hadHover = hoverIndex != null;
       hoverIndex = null;
       tooltip.hidden = true;
-      draw();
+      tooltip.classList.remove("is-visible");
+      if (hadHover) draw();
+    }
+
+    function formatTooltipGp(n) {
+      const formatted = G.formatPrice(n);
+      return formatted === "—" ? formatted : `${formatted} gp`;
     }
 
     function showTooltipForIndex(index, clientX, clientY) {
       if (!chartState?.meta?.length) return;
-      const pt = chartState.meta.find((m) => m.index === index) || chartState.meta[index];
+      const pt = chartState.meta.find((m) => m.index === index);
       if (!pt) return;
 
+      const indexChanged = hoverIndex !== pt.index;
       hoverIndex = pt.index;
-      draw();
+      if (indexChanged) draw();
 
       const timeLabel = G.formatChartTimestamp(pt.timestamp, activeRange);
       tooltip.innerHTML = `<span class="price-chart-tooltip-time">${esc(timeLabel)}</span>
-        <span class="price-chart-tooltip-row sell">High <strong>${esc(G.formatPrice(pt.high))}</strong></span>
-        <span class="price-chart-tooltip-row buy">Low <strong>${esc(G.formatPrice(pt.low))}</strong></span>
-        <span class="price-chart-tooltip-row">Mid <strong>${esc(G.formatPrice(pt.mid))}</strong></span>`;
+        <span class="price-chart-tooltip-row buy">Buy (high) <strong>${esc(formatTooltipGp(pt.high))}</strong></span>
+        <span class="price-chart-tooltip-row sell">Sell (low) <strong>${esc(formatTooltipGp(pt.low))}</strong></span>`;
       tooltip.hidden = false;
+      tooltip.classList.add("is-visible");
 
       const stageRect = stage.getBoundingClientRect();
       let left = clientX - stageRect.left + 12;
@@ -778,9 +786,11 @@ window.Graardor = window.Graardor || {};
     }
 
     function nearestIndex(clientX) {
-      if (!chartState?.meta?.length) return null;
+      if (!chartState?.meta?.length || !chartState.layout) return null;
+      const { left, plotW } = chartState.layout;
       const rect = canvas.getBoundingClientRect();
       const x = clientX - rect.left;
+      if (x < left - 8 || x > left + plotW + 8) return null;
       let best = chartState.meta[0].index;
       let minDist = Infinity;
       for (const pt of chartState.meta) {
@@ -796,39 +806,38 @@ window.Graardor = window.Graardor || {};
     function onPointerMove(e) {
       if (!currentSeries?.length) return;
       const idx = nearestIndex(e.clientX);
-      if (idx == null) return;
+      if (idx == null) {
+        hideTooltip();
+        return;
+      }
       showTooltipForIndex(idx, e.clientX, e.clientY);
     }
 
-    function onPointerLeave() {
+    function onPointerLeave(e) {
+      if (stage.contains(e.relatedTarget)) return;
       hideTooltip();
     }
 
-    canvas.addEventListener("mousemove", onPointerMove);
-    canvas.addEventListener("mouseleave", onPointerLeave);
-    canvas.addEventListener(
-      "touchstart",
-      (e) => {
-        if (!e.touches.length) return;
-        const t = e.touches[0];
-        const idx = nearestIndex(t.clientX);
-        if (idx != null) showTooltipForIndex(idx, t.clientX, t.clientY);
-      },
-      { passive: true }
-    );
-    canvas.addEventListener(
-      "touchmove",
-      (e) => {
-        if (!e.touches.length) return;
-        const t = e.touches[0];
-        const idx = nearestIndex(t.clientX);
-        if (idx != null) showTooltipForIndex(idx, t.clientX, t.clientY);
-      },
-      { passive: true }
-    );
+    function onPointerDown(e) {
+      if (!currentSeries?.length) return;
+      stage.setPointerCapture(e.pointerId);
+      const idx = nearestIndex(e.clientX);
+      if (idx != null) showTooltipForIndex(idx, e.clientX, e.clientY);
+    }
+
+    function onPointerUp(e) {
+      if (stage.hasPointerCapture(e.pointerId)) stage.releasePointerCapture(e.pointerId);
+    }
+
+    stage.addEventListener("pointermove", onPointerMove);
+    stage.addEventListener("pointerleave", onPointerLeave);
+    stage.addEventListener("pointerdown", onPointerDown, { passive: true });
+    stage.addEventListener("pointerup", onPointerUp, { passive: true });
     cleanups.push(() => {
-      canvas.removeEventListener("mousemove", onPointerMove);
-      canvas.removeEventListener("mouseleave", onPointerLeave);
+      stage.removeEventListener("pointermove", onPointerMove);
+      stage.removeEventListener("pointerleave", onPointerLeave);
+      stage.removeEventListener("pointerdown", onPointerDown);
+      stage.removeEventListener("pointerup", onPointerUp);
     });
 
     if (typeof ResizeObserver !== "undefined") {

@@ -1296,6 +1296,8 @@
       border: 1px solid var(--border);
       padding: 0.5rem 0.35rem 0.25rem;
       min-height: 220px;
+      overflow: visible;
+      touch-action: none;
     }
 
     .price-chart-canvas {
@@ -1303,14 +1305,14 @@
       width: 100%;
       height: 220px;
       cursor: crosshair;
-      touch-action: pan-y;
+      touch-action: none;
     }
 
     .price-chart-tooltip {
       position: absolute;
-      z-index: 3;
+      z-index: 5;
       pointer-events: none;
-      min-width: 140px;
+      min-width: 148px;
       padding: 0.45rem 0.55rem;
       background: var(--surface);
       border: 1px solid var(--border);
@@ -1318,6 +1320,14 @@
       font-size: 0.72rem;
       line-height: 1.35;
       color: var(--text);
+    }
+
+    .price-chart-tooltip[hidden] {
+      display: none !important;
+    }
+
+    .price-chart-tooltip.is-visible {
+      display: block;
     }
 
     .price-chart-tooltip-time {

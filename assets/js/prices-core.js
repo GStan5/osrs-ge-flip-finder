@@ -233,6 +233,7 @@ window.Graardor = window.Graardor || {};
 
   /** @type {Record<string, { label: string, timestep: string, maxPoints: number, pro: boolean }>} */
   G.PRICE_CHART_RANGES = {
+    "24h": { label: "24H", timestep: "5m", maxPoints: 288, pro: false },
     "7d": { label: "7D", timestep: "1h", maxPoints: 168, pro: false },
     "30d": { label: "30D", timestep: "6h", maxPoints: 120, pro: false },
     "90d": { label: "90D", timestep: "6h", maxPoints: 360, pro: true },
@@ -267,7 +268,7 @@ window.Graardor = window.Graardor || {};
   G.formatChartTimestamp = function formatChartTimestamp(ts, rangeId) {
     if (!ts) return "—";
     const d = new Date(ts * 1000);
-    if (rangeId === "7d") {
+    if (rangeId === "24h" || rangeId === "7d") {
       return d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
     }
     if (rangeId === "1y" || rangeId === "6m") {
@@ -388,8 +389,8 @@ window.Graardor = window.Graardor || {};
       ctx.stroke();
     }
 
-    drawLine("high", sellColor);
-    drawLine("low", buyColor);
+    drawLine("high", buyColor);
+    drawLine("low", sellColor);
 
     const meta = [];
     tail.forEach((row, i) => {
@@ -408,8 +409,9 @@ window.Graardor = window.Graardor || {};
     });
 
     const hoverIndex = opts.hoverIndex;
-    if (hoverIndex != null && meta[hoverIndex]) {
-      const pt = meta[hoverIndex];
+    const hoverPt = hoverIndex != null ? meta.find((m) => m.index === hoverIndex) : null;
+    if (hoverPt) {
+      const pt = hoverPt;
       ctx.strokeStyle = themeLight ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.22)";
       ctx.lineWidth = 1;
       ctx.setLineDash([4, 4]);
@@ -422,7 +424,7 @@ window.Graardor = window.Graardor || {};
       if (pt.high != null) {
         ctx.beginPath();
         ctx.arc(pt.x, yFor(pt.high), 4, 0, Math.PI * 2);
-        ctx.fillStyle = sellColor;
+        ctx.fillStyle = buyColor;
         ctx.fill();
         ctx.strokeStyle = themeLight ? "#fff" : "#1e1e1e";
         ctx.lineWidth = 1.5;
@@ -431,7 +433,7 @@ window.Graardor = window.Graardor || {};
       if (pt.low != null) {
         ctx.beginPath();
         ctx.arc(pt.x, yFor(pt.low), 4, 0, Math.PI * 2);
-        ctx.fillStyle = buyColor;
+        ctx.fillStyle = sellColor;
         ctx.fill();
         ctx.strokeStyle = themeLight ? "#fff" : "#1e1e1e";
         ctx.lineWidth = 1.5;
