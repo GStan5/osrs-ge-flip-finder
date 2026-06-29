@@ -721,7 +721,7 @@ window.Graardor = window.Graardor || {};
     const emptyMsg = mount.querySelector(".price-chart-empty");
     const stage = mount.querySelector(".price-chart-stage");
 
-    let hoverIndex = null;
+    let hoverSample = null;
     let chartState = null;
     let currentSeries = null;
     let loadToken = 0;
@@ -735,36 +735,40 @@ window.Graardor = window.Graardor || {};
       const cfg = ranges[activeRange];
       chartState = G.renderPriceChartCanvas(canvas, currentSeries, {
         maxPoints: cfg.maxPoints,
-        hoverIndex,
+        hoverSample,
       });
     }
 
     function hideTooltip() {
-      const hadHover = hoverIndex != null;
-      hoverIndex = null;
+      const hadHover = hoverSample != null;
+      hoverSample = null;
       tooltip.hidden = true;
       tooltip.classList.remove("is-visible");
       if (hadHover) draw();
     }
 
-    function formatTooltipGp(n) {
+    function formatTooltipGp(n, estimated) {
       const formatted = G.formatPrice(n);
-      return formatted === "—" ? formatted : `${formatted} gp`;
+      if (formatted === "—") return formatted;
+      const prefix = estimated ? "~" : "";
+      return `${prefix}${formatted} gp`;
     }
 
-    function showTooltipForIndex(index, clientX, clientY) {
-      if (!chartState?.meta?.length) return;
-      const pt = chartState.meta.find((m) => m.index === index);
-      if (!pt) return;
+    function showTooltipForSample(sample, clientX, clientY) {
+      if (!sample) return;
 
-      const indexChanged = hoverIndex !== pt.index;
-      hoverIndex = pt.index;
-      if (indexChanged) draw();
+      const sampleChanged =
+        !hoverSample ||
+        hoverSample.x !== sample.x ||
+        hoverSample.high !== sample.high ||
+        hoverSample.low !== sample.low;
+      hoverSample = sample;
+      if (sampleChanged) draw();
 
-      const timeLabel = G.formatChartTimestamp(pt.timestamp, activeRange);
+      const timeLabel = G.formatChartTimestamp(sample.timestamp, activeRange);
       tooltip.innerHTML = `<span class="price-chart-tooltip-time">${esc(timeLabel)}</span>
-        <span class="price-chart-tooltip-row buy">Buy (high) <strong>${esc(formatTooltipGp(pt.high))}</strong></span>
-        <span class="price-chart-tooltip-row sell">Sell (low) <strong>${esc(formatTooltipGp(pt.low))}</strong></span>`;
+        <span class="price-chart-tooltip-row buy">Buy (high) <strong>${esc(formatTooltipGp(sample.high, sample.highEstimated))}</strong></span>
+        <span class="price-chart-tooltip-row sell">Sell (low) <strong>${esc(formatTooltipGp(sample.low, sample.lowEstimated))}</strong></span>`;
       tooltip.hidden = false;
       tooltip.classList.add("is-visible");
 
@@ -785,32 +789,21 @@ window.Graardor = window.Graardor || {};
       });
     }
 
-    function nearestIndex(clientX) {
-      if (!chartState?.meta?.length || !chartState.layout) return null;
-      const { left, plotW } = chartState.layout;
+    function sampleAtClientX(clientX) {
+      if (!chartState?.layout) return null;
       const rect = canvas.getBoundingClientRect();
-      const x = clientX - rect.left;
-      if (x < left - 8 || x > left + plotW + 8) return null;
-      let best = chartState.meta[0].index;
-      let minDist = Infinity;
-      for (const pt of chartState.meta) {
-        const dist = Math.abs(pt.x - x);
-        if (dist < minDist) {
-          minDist = dist;
-          best = pt.index;
-        }
-      }
-      return best;
+      const plotX = clientX - rect.left;
+      return G.samplePriceChartAtX(chartState, plotX);
     }
 
     function onPointerMove(e) {
       if (!currentSeries?.length) return;
-      const idx = nearestIndex(e.clientX);
-      if (idx == null) {
+      const sample = sampleAtClientX(e.clientX);
+      if (sample == null) {
         hideTooltip();
         return;
       }
-      showTooltipForIndex(idx, e.clientX, e.clientY);
+      showTooltipForSample(sample, e.clientX, e.clientY);
     }
 
     function onPointerLeave(e) {
@@ -821,8 +814,8 @@ window.Graardor = window.Graardor || {};
     function onPointerDown(e) {
       if (!currentSeries?.length) return;
       stage.setPointerCapture(e.pointerId);
-      const idx = nearestIndex(e.clientX);
-      if (idx != null) showTooltipForIndex(idx, e.clientX, e.clientY);
+      const sample = sampleAtClientX(e.clientX);
+      if (sample != null) showTooltipForSample(sample, e.clientX, e.clientY);
     }
 
     function onPointerUp(e) {

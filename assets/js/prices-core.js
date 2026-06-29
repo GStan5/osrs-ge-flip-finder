@@ -277,9 +277,97 @@ window.Graardor = window.Graardor || {};
     return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
   };
 
+  /** Linearly fill gaps between known price samples; no values outside first/last known index. */
+  G.interpolatePriceLine = function interpolatePriceLine(tail, key) {
+    const values = new Array(tail.length).fill(null);
+    const estimated = new Array(tail.length).fill(false);
+    const known = [];
+    tail.forEach((row, i) => {
+      const v = row[key];
+      if (v != null) known.push({ i, v });
+    });
+    if (!known.length) return { values, estimated, first: -1, last: -1 };
+
+    const first = known[0].i;
+    const last = known[known.length - 1].i;
+    known.forEach(({ i, v }) => {
+      values[i] = v;
+      estimated[i] = false;
+    });
+    for (let k = 0; k < known.length - 1; k++) {
+      const a = known[k];
+      const b = known[k + 1];
+      for (let i = a.i + 1; i < b.i; i++) {
+        const t = (i - a.i) / (b.i - a.i);
+        values[i] = Math.round(a.v + (b.v - a.v) * t);
+        estimated[i] = true;
+      }
+    }
+    return { values, estimated, first, last };
+  };
+
+  /** Sample buy/sell prices at a plot X coordinate (matches drawn line interpolation). */
+  G.samplePriceChartAtX = function samplePriceChartAtX(chartState, plotX) {
+    if (!chartState?.layout || !chartState.tail?.length) return null;
+    const { left, plotW } = chartState.layout;
+    const { tail, highLine, lowLine } = chartState;
+    if (plotX < left || plotX > left + plotW) return null;
+
+    const n = tail.length;
+    const frac = (plotX - left) / plotW;
+    const floatIndex = frac * Math.max(n - 1, 1);
+    const ts0 = tail[0].timestamp;
+    const tsN = tail[n - 1].timestamp;
+    const timestamp =
+      ts0 != null && tsN != null ? Math.round(ts0 + (tsN - ts0) * frac) : null;
+
+    function lerpLine(line) {
+      if (line.first < 0) return { value: null, estimated: false };
+      if (floatIndex < line.first || floatIndex > line.last) {
+        return { value: null, estimated: false };
+      }
+      const i0 = Math.floor(floatIndex);
+      const i1 = Math.min(Math.ceil(floatIndex), n - 1);
+      if (i0 === i1) {
+        return { value: line.values[i0], estimated: line.estimated[i0] };
+      }
+      const t = floatIndex - i0;
+      const v0 = line.values[i0];
+      const v1 = line.values[i1];
+      if (v0 == null && v1 == null) return { value: null, estimated: false };
+      if (v0 == null) return { value: v1, estimated: line.estimated[i1] };
+      if (v1 == null) return { value: v0, estimated: line.estimated[i0] };
+      const value = Math.round(v0 + (v1 - v0) * t);
+      const estimated = line.estimated[i0] || line.estimated[i1] || (t > 0 && t < 1);
+      return { value, estimated };
+    }
+
+    const high = lerpLine(highLine);
+    const low = lerpLine(lowLine);
+    const rangeFirst = Math.min(
+      highLine.first >= 0 ? highLine.first : Infinity,
+      lowLine.first >= 0 ? lowLine.first : Infinity
+    );
+    const rangeLast = Math.max(highLine.last, lowLine.last);
+    if (rangeFirst === Infinity) return null;
+    if (floatIndex < rangeFirst || floatIndex > rangeLast) {
+      return { x: plotX, timestamp, high: null, low: null, highEstimated: false, lowEstimated: false, outOfRange: true };
+    }
+
+    return {
+      x: plotX,
+      timestamp,
+      high: high.value,
+      low: low.value,
+      highEstimated: high.estimated,
+      lowEstimated: low.estimated,
+      outOfRange: false,
+    };
+  };
+
   /**
    * Draw high/low price chart on canvas. Returns layout + point metadata for hover tooltips.
-   * @returns {{ meta: Array, layout: object } | null}
+   * @returns {{ meta: Array, layout: object, tail: Array, highLine: object, lowLine: object } | null}
    */
   G.renderPriceChartCanvas = function renderPriceChartCanvas(canvas, series, options) {
     if (!canvas || !series?.length) return null;
@@ -293,9 +381,9 @@ window.Graardor = window.Graardor || {};
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     const tail = series.slice(-Math.min(series.length, opts.maxPoints || series.length));
-    const highs = tail.map((p) => p.avgHighPrice).filter((v) => v != null);
-    const lows = tail.map((p) => p.avgLowPrice).filter((v) => v != null);
-    const all = highs.concat(lows);
+    const highLine = G.interpolatePriceLine(tail, "avgHighPrice");
+    const lowLine = G.interpolatePriceLine(tail, "avgLowPrice");
+    const all = highLine.values.concat(lowLine.values).filter((v) => v != null);
     if (!all.length) return null;
 
     const min = Math.min(...all);
@@ -352,19 +440,20 @@ window.Graardor = window.Graardor || {};
       }
     }
 
-    function collectPts(kind) {
+    function collectPts(line) {
       const pts = [];
-      tail.forEach((row, i) => {
-        const val = kind === "high" ? row.avgHighPrice : row.avgLowPrice;
-        if (val == null) return;
+      if (line.first < 0) return pts;
+      for (let i = line.first; i <= line.last; i++) {
+        const val = line.values[i];
+        if (val == null) continue;
         pts.push({ x: xFor(i), y: yFor(val) });
-      });
+      }
       return pts;
     }
 
     if (opts.fillSpread !== false) {
-      const hi = collectPts("high");
-      const lo = collectPts("low");
+      const hi = collectPts(highLine);
+      const lo = collectPts(lowLine);
       if (hi.length >= 2 && lo.length >= 2) {
         ctx.beginPath();
         ctx.moveTo(hi[0].x, hi[0].y);
@@ -376,8 +465,8 @@ window.Graardor = window.Graardor || {};
       }
     }
 
-    function drawLine(kind, color) {
-      const pts = collectPts(kind);
+    function drawLine(line, color) {
+      const pts = collectPts(line);
       if (pts.length < 2) return;
       ctx.beginPath();
       ctx.strokeStyle = color;
@@ -389,29 +478,12 @@ window.Graardor = window.Graardor || {};
       ctx.stroke();
     }
 
-    drawLine("high", buyColor);
-    drawLine("low", sellColor);
+    drawLine(highLine, buyColor);
+    drawLine(lowLine, sellColor);
 
-    const meta = [];
-    tail.forEach((row, i) => {
-      if (row.avgHighPrice == null && row.avgLowPrice == null) return;
-      const high = row.avgHighPrice;
-      const low = row.avgLowPrice;
-      meta.push({
-        index: i,
-        x: xFor(i),
-        timestamp: row.timestamp,
-        high,
-        low,
-        mid:
-          high != null && low != null ? Math.round((high + low) / 2) : high != null ? high : low,
-      });
-    });
-
-    const hoverIndex = opts.hoverIndex;
-    const hoverPt = hoverIndex != null ? meta.find((m) => m.index === hoverIndex) : null;
-    if (hoverPt) {
-      const pt = hoverPt;
+    const hoverSample = opts.hoverSample;
+    if (hoverSample) {
+      const pt = hoverSample;
       ctx.strokeStyle = themeLight ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.22)";
       ctx.lineWidth = 1;
       ctx.setLineDash([4, 4]);
@@ -441,7 +513,7 @@ window.Graardor = window.Graardor || {};
       }
     }
 
-    return { meta, layout: { left, top, plotW, plotH, width, height, yFor } };
+    return { layout: { left, top, plotW, plotH, width, height, yFor }, tail, highLine, lowLine };
   };
 
   G.drawPriceSparkline = function drawPriceSparkline(canvas, series, options) {
