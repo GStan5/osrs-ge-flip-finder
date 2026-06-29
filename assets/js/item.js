@@ -186,12 +186,6 @@
       ? '<span class="badge badge-members">P2P</span>'
       : '<span class="badge badge-f2p">F2P</span>';
     const showEquipment = equipmentMeta?.slot;
-    const proBlock = isPro
-      ? `<div class="item-chart-block item-chart-pro">
-          <h3>Extended trend <span class="chart-badge">Pro · ~7 days</span></h3>
-          <canvas id="priceSparklinePro" class="price-sparkline price-sparkline-lg" aria-label="Extended price chart"></canvas>
-        </div>`
-      : `<p class="results-meta chart-pro-upsell"><a href="/upgrade">Graardor Pro</a> — 7-day charts</p>`;
 
     document.title = `${mapping.name} — Graardor`;
     G.el("itemPageTitle").textContent = mapping.name;
@@ -214,33 +208,13 @@
         ${ui.sectionCard({
           title: "Price trend",
           className: "item-chart-section",
-          bodyHtml: `<div class="item-chart-block">
-            <canvas id="priceSparkline" class="price-sparkline price-sparkline-lg" aria-label="Price chart"></canvas>
-            <div class="sparkline-legend">
-              <span class="sell"><span class="legend-swatch"></span> Sell (high)</span>
-              <span class="buy"><span class="legend-swatch"></span> Buy (low)</span>
-            </div>
-          </div>
-          ${proBlock}`,
+          bodyHtml: `<div id="itemPriceChartMount" class="item-chart-block"></div>`,
         })}
 
         ${renderQuickLinks(transformLinks)}
       </article>`;
 
-    loadSparkline(isPro);
-  }
-
-  async function loadSparkline(isPro) {
-    try {
-      const series = await G.fetchTimeseries(itemId, "5m");
-      G.drawPriceSparkline(G.el("priceSparkline"), series, { maxPoints: 72 });
-      if (isPro && G.el("priceSparklinePro")) {
-        const longSeries = await G.fetchTimeseries(itemId, "1h");
-        G.drawPriceSparkline(G.el("priceSparklinePro"), longSeries, { maxPoints: 168 });
-      }
-    } catch {
-      /* chart optional */
-    }
+    G.ui.priceChart({ mount: G.el("itemPriceChartMount"), itemId, isPro, defaultRange: "7d" });
   }
 
   async function init() {

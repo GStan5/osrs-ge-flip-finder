@@ -231,28 +231,71 @@ window.Graardor = window.Graardor || {};
     return monsterId ? `/tools/gear?monster=${monsterId}` : "/tools/gear";
   };
 
+  /** @type {Record<string, { label: string, timestep: string, maxPoints: number, pro: boolean }>} */
+  G.PRICE_CHART_RANGES = {
+    "7d": { label: "7D", timestep: "1h", maxPoints: 168, pro: false },
+    "30d": { label: "30D", timestep: "6h", maxPoints: 120, pro: false },
+    "90d": { label: "90D", timestep: "6h", maxPoints: 360, pro: true },
+    "6m": { label: "6M", timestep: "24h", maxPoints: 183, pro: true },
+    "1y": { label: "1Y", timestep: "24h", maxPoints: 365, pro: true },
+  };
+
+  G._timeseriesCache = G._timeseriesCache || new Map();
+  const TIMESERIES_CACHE_MS = 5 * 60 * 1000;
+
   G.fetchTimeseries = async function fetchTimeseries(itemId, timestep) {
     const step = timestep || "5m";
     const res = await G.fetchJson(`/timeseries?timestep=${step}&id=${itemId}`);
     return res.data || [];
   };
 
-  G.drawPriceSparkline = function drawPriceSparkline(canvas, series, options) {
-    if (!canvas || !series?.length) return;
+  G.fetchTimeseriesCached = async function fetchTimeseriesCached(itemId, timestep) {
+    const key = `${itemId}:${timestep}`;
+    const hit = G._timeseriesCache.get(key);
+    if (hit && Date.now() - hit.at < TIMESERIES_CACHE_MS) return hit.data;
+    const data = await G.fetchTimeseries(itemId, timestep);
+    G._timeseriesCache.set(key, { data, at: Date.now() });
+    return data;
+  };
+
+  G.formatChartAxisGp = function formatChartAxisGp(n) {
+    if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
+    if (n >= 1_000) return Math.round(n / 1_000) + "K";
+    return String(Math.round(n));
+  };
+
+  G.formatChartTimestamp = function formatChartTimestamp(ts, rangeId) {
+    if (!ts) return "—";
+    const d = new Date(ts * 1000);
+    if (rangeId === "7d") {
+      return d.toLocaleString(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+    }
+    if (rangeId === "1y" || rangeId === "6m") {
+      return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+    }
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+  };
+
+  /**
+   * Draw high/low price chart on canvas. Returns layout + point metadata for hover tooltips.
+   * @returns {{ meta: Array, layout: object } | null}
+   */
+  G.renderPriceChartCanvas = function renderPriceChartCanvas(canvas, series, options) {
+    if (!canvas || !series?.length) return null;
     const opts = options || {};
     const dpr = window.devicePixelRatio || 1;
     const width = canvas.clientWidth || 320;
-    const height = canvas.clientHeight || 80;
+    const height = canvas.clientHeight || 200;
     canvas.width = Math.round(width * dpr);
     canvas.height = Math.round(height * dpr);
     const ctx = canvas.getContext("2d");
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const tail = series.slice(-Math.min(series.length, opts.maxPoints || 72));
+    const tail = series.slice(-Math.min(series.length, opts.maxPoints || series.length));
     const highs = tail.map((p) => p.avgHighPrice).filter((v) => v != null);
     const lows = tail.map((p) => p.avgLowPrice).filter((v) => v != null);
     const all = highs.concat(lows);
-    if (!all.length) return;
+    if (!all.length) return null;
 
     const min = Math.min(...all);
     const max = Math.max(...all);
@@ -261,8 +304,8 @@ window.Graardor = window.Graardor || {};
     const yMax = max + pad;
     const labelW = opts.showLabels !== false ? 52 : 0;
     const left = 4 + labelW;
-    const top = 8;
-    const bottom = 18;
+    const top = 10;
+    const bottom = 22;
     const plotW = width - left - 8;
     const plotH = height - top - bottom;
 
@@ -282,12 +325,6 @@ window.Graardor = window.Graardor || {};
 
     function xFor(i) {
       return left + (i / Math.max(tail.length - 1, 1)) * plotW;
-    }
-
-    function formatAxis(n) {
-      if (n >= 1_000_000) return (n / 1_000_000).toFixed(1) + "M";
-      if (n >= 1_000) return Math.round(n / 1_000) + "K";
-      return String(Math.round(n));
     }
 
     if (opts.showGrid !== false) {
@@ -310,7 +347,7 @@ window.Graardor = window.Graardor || {};
       for (let i = 0; i <= 4; i++) {
         const val = yMax - ((yMax - yMin) / 4) * i;
         const y = top + (plotH / 4) * i;
-        ctx.fillText(formatAxis(val), left - 6, y);
+        ctx.fillText(G.formatChartAxisGp(val), left - 6, y);
       }
     }
 
@@ -345,6 +382,7 @@ window.Graardor = window.Graardor || {};
       ctx.strokeStyle = color;
       ctx.lineWidth = 2;
       ctx.lineJoin = "round";
+      ctx.lineCap = "round";
       ctx.moveTo(pts[0].x, pts[0].y);
       for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
       ctx.stroke();
@@ -352,6 +390,60 @@ window.Graardor = window.Graardor || {};
 
     drawLine("high", sellColor);
     drawLine("low", buyColor);
+
+    const meta = [];
+    tail.forEach((row, i) => {
+      if (row.avgHighPrice == null && row.avgLowPrice == null) return;
+      const high = row.avgHighPrice;
+      const low = row.avgLowPrice;
+      meta.push({
+        index: i,
+        x: xFor(i),
+        timestamp: row.timestamp,
+        high,
+        low,
+        mid:
+          high != null && low != null ? Math.round((high + low) / 2) : high != null ? high : low,
+      });
+    });
+
+    const hoverIndex = opts.hoverIndex;
+    if (hoverIndex != null && meta[hoverIndex]) {
+      const pt = meta[hoverIndex];
+      ctx.strokeStyle = themeLight ? "rgba(0,0,0,0.2)" : "rgba(255,255,255,0.22)";
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(pt.x, top);
+      ctx.lineTo(pt.x, top + plotH);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      if (pt.high != null) {
+        ctx.beginPath();
+        ctx.arc(pt.x, yFor(pt.high), 4, 0, Math.PI * 2);
+        ctx.fillStyle = sellColor;
+        ctx.fill();
+        ctx.strokeStyle = themeLight ? "#fff" : "#1e1e1e";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+      if (pt.low != null) {
+        ctx.beginPath();
+        ctx.arc(pt.x, yFor(pt.low), 4, 0, Math.PI * 2);
+        ctx.fillStyle = buyColor;
+        ctx.fill();
+        ctx.strokeStyle = themeLight ? "#fff" : "#1e1e1e";
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+    }
+
+    return { meta, layout: { left, top, plotW, plotH, width, height, yFor } };
+  };
+
+  G.drawPriceSparkline = function drawPriceSparkline(canvas, series, options) {
+    G.renderPriceChartCanvas(canvas, series, options);
   };
 
   G.formatGp = function formatGp(n) {

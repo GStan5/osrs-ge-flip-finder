@@ -672,4 +672,235 @@ window.Graardor = window.Graardor || {};
       renderResults(simulateKills(monster, kills), kills);
     });
   };
+
+  /**
+   * Interactive GE high/low price chart with range chips and hover tooltips.
+   * @param {{ mount: HTMLElement, itemId: number, isPro?: boolean, defaultRange?: string }} opts
+   * @returns {{ destroy: () => void, loadRange: (id: string) => Promise<void> }}
+   */
+  G.ui.priceChart = function priceChart({ mount, itemId, isPro = false, defaultRange = "7d" }) {
+    if (!mount) return { destroy() {}, loadRange() {} };
+
+    const ranges = G.PRICE_CHART_RANGES;
+    let activeRange = ranges[defaultRange] ? defaultRange : "7d";
+    if (ranges[activeRange].pro && !isPro) activeRange = "7d";
+
+    const presets = Object.entries(ranges).map(([id, cfg]) => ({
+      id,
+      label: cfg.pro && !isPro ? `${cfg.label} · Pro` : cfg.label,
+      attrs: cfg.pro && !isPro ? { "data-pro-locked": "1" } : undefined,
+    }));
+
+    mount.innerHTML = `<div class="price-chart">
+      ${G.ui.presetChips({
+        groups: [{ label: "Range", presets }],
+        dataAttr: "data-chart-range",
+        activeId: activeRange,
+        className: "price-chart-ranges",
+      })}
+      <div class="price-chart-stage">
+        <canvas class="price-chart-canvas" aria-label="Price trend chart"></canvas>
+        <div class="price-chart-tooltip" hidden role="tooltip"></div>
+        <div class="price-chart-loading" hidden aria-live="polite"><span class="loading-skeleton price-chart-loading-bar"></span></div>
+        <p class="price-chart-empty results-meta" hidden>No chart data for this range.</p>
+      </div>
+      <div class="sparkline-legend price-chart-legend">
+        <span class="sell"><span class="legend-swatch"></span> High (sell)</span>
+        <span class="buy"><span class="legend-swatch"></span> Low (buy)</span>
+      </div>
+      ${
+        isPro
+          ? ""
+          : `<p class="results-meta chart-pro-upsell"><a href="/upgrade">Graardor Pro</a> — 90-day, 6-month &amp; yearly charts</p>`
+      }
+    </div>`;
+
+    const canvas = mount.querySelector(".price-chart-canvas");
+    const tooltip = mount.querySelector(".price-chart-tooltip");
+    const loading = mount.querySelector(".price-chart-loading");
+    const emptyMsg = mount.querySelector(".price-chart-empty");
+    const stage = mount.querySelector(".price-chart-stage");
+
+    let hoverIndex = null;
+    let chartState = null;
+    let currentSeries = null;
+    let loadToken = 0;
+    const cleanups = [];
+
+    function draw() {
+      if (!currentSeries?.length) {
+        chartState = null;
+        return;
+      }
+      const cfg = ranges[activeRange];
+      chartState = G.renderPriceChartCanvas(canvas, currentSeries, {
+        maxPoints: cfg.maxPoints,
+        hoverIndex,
+      });
+    }
+
+    function hideTooltip() {
+      hoverIndex = null;
+      tooltip.hidden = true;
+      draw();
+    }
+
+    function showTooltipForIndex(index, clientX, clientY) {
+      if (!chartState?.meta?.length) return;
+      const pt = chartState.meta.find((m) => m.index === index) || chartState.meta[index];
+      if (!pt) return;
+
+      hoverIndex = pt.index;
+      draw();
+
+      const timeLabel = G.formatChartTimestamp(pt.timestamp, activeRange);
+      tooltip.innerHTML = `<span class="price-chart-tooltip-time">${esc(timeLabel)}</span>
+        <span class="price-chart-tooltip-row sell">High <strong>${esc(G.formatPrice(pt.high))}</strong></span>
+        <span class="price-chart-tooltip-row buy">Low <strong>${esc(G.formatPrice(pt.low))}</strong></span>
+        <span class="price-chart-tooltip-row">Mid <strong>${esc(G.formatPrice(pt.mid))}</strong></span>`;
+      tooltip.hidden = false;
+
+      const stageRect = stage.getBoundingClientRect();
+      let left = clientX - stageRect.left + 12;
+      let top = clientY - stageRect.top - 8;
+      tooltip.style.left = `${left}px`;
+      tooltip.style.top = `${top}px`;
+
+      requestAnimationFrame(() => {
+        const tipRect = tooltip.getBoundingClientRect();
+        const maxLeft = stageRect.width - tipRect.width - 8;
+        const maxTop = stageRect.height - tipRect.height - 8;
+        left = Math.max(8, Math.min(left, maxLeft));
+        top = Math.max(8, Math.min(top, maxTop));
+        tooltip.style.left = `${left}px`;
+        tooltip.style.top = `${top}px`;
+      });
+    }
+
+    function nearestIndex(clientX) {
+      if (!chartState?.meta?.length) return null;
+      const rect = canvas.getBoundingClientRect();
+      const x = clientX - rect.left;
+      let best = chartState.meta[0].index;
+      let minDist = Infinity;
+      for (const pt of chartState.meta) {
+        const dist = Math.abs(pt.x - x);
+        if (dist < minDist) {
+          minDist = dist;
+          best = pt.index;
+        }
+      }
+      return best;
+    }
+
+    function onPointerMove(e) {
+      if (!currentSeries?.length) return;
+      const idx = nearestIndex(e.clientX);
+      if (idx == null) return;
+      showTooltipForIndex(idx, e.clientX, e.clientY);
+    }
+
+    function onPointerLeave() {
+      hideTooltip();
+    }
+
+    canvas.addEventListener("mousemove", onPointerMove);
+    canvas.addEventListener("mouseleave", onPointerLeave);
+    canvas.addEventListener(
+      "touchstart",
+      (e) => {
+        if (!e.touches.length) return;
+        const t = e.touches[0];
+        const idx = nearestIndex(t.clientX);
+        if (idx != null) showTooltipForIndex(idx, t.clientX, t.clientY);
+      },
+      { passive: true }
+    );
+    canvas.addEventListener(
+      "touchmove",
+      (e) => {
+        if (!e.touches.length) return;
+        const t = e.touches[0];
+        const idx = nearestIndex(t.clientX);
+        if (idx != null) showTooltipForIndex(idx, t.clientX, t.clientY);
+      },
+      { passive: true }
+    );
+    cleanups.push(() => {
+      canvas.removeEventListener("mousemove", onPointerMove);
+      canvas.removeEventListener("mouseleave", onPointerLeave);
+    });
+
+    if (typeof ResizeObserver !== "undefined") {
+      const ro = new ResizeObserver(() => draw());
+      ro.observe(canvas);
+      cleanups.push(() => ro.disconnect());
+    }
+
+    const themeObs = new MutationObserver(() => draw());
+    themeObs.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+    cleanups.push(() => themeObs.disconnect());
+
+    async function loadRange(rangeId) {
+      const cfg = ranges[rangeId];
+      if (!cfg) return;
+      if (cfg.pro && !isPro) {
+        location.href = "/upgrade";
+        return;
+      }
+
+      activeRange = rangeId;
+      G.ui.setActivePreset("data-chart-range", rangeId);
+      loadToken += 1;
+      const token = loadToken;
+
+      loading.hidden = false;
+      emptyMsg.hidden = true;
+      canvas.hidden = false;
+      hideTooltip();
+
+      try {
+        const series = await G.fetchTimeseriesCached(itemId, cfg.timestep);
+        if (token !== loadToken) return;
+        currentSeries = series.slice(-cfg.maxPoints);
+        if (!currentSeries.length) {
+          canvas.hidden = true;
+          emptyMsg.hidden = false;
+          chartState = null;
+          return;
+        }
+        draw();
+      } catch {
+        if (token !== loadToken) return;
+        canvas.hidden = true;
+        emptyMsg.textContent = "Could not load chart data.";
+        emptyMsg.hidden = false;
+      } finally {
+        if (token === loadToken) loading.hidden = true;
+      }
+    }
+
+    G.ui.bindPresetChips({
+      dataAttr: "data-chart-range",
+      onSelect: (id) => {
+        if (ranges[id]?.pro && !isPro) {
+          location.href = "/upgrade";
+          return;
+        }
+        loadRange(id);
+      },
+    });
+
+    mount.querySelectorAll("[data-pro-locked]").forEach((btn) => btn.classList.add("pro-locked"));
+
+    loadRange(activeRange);
+
+    return {
+      destroy() {
+        cleanups.forEach((fn) => fn());
+        mount.innerHTML = "";
+      },
+      loadRange,
+    };
+  };
 })(window.Graardor);
